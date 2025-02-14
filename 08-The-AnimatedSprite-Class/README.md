@@ -1,0 +1,1 @@
+Source files to go with [Chapter 08: The AnimatedSprite Class](https://aristurtle.net/tutorials/building_2d_games/08_the_animatedsprite_class/)
