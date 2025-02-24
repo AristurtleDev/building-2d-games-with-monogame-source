@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGameLibrary.Audio;
+using MonoGameLibrary.Input;
 
-namespace MonoGameLibrary;
+namespace MonoGameLibrary.Scenes;
 
 /// <summary>
 /// Abstract base class for game scenes that provides core functionality and lifecycle management.
@@ -14,6 +16,10 @@ public abstract class Scene
     /// Gets a reference to the Game instance this scene belongs to.
     /// </summary>
     public Game Game { get; }
+
+    public AudioManager Audio { get; }
+
+    public InputManager Input { get; }
 
     /// <summary>
     /// Gets the ContentManager used for loading scene-specific assets.
@@ -39,11 +45,6 @@ public abstract class Scene
     public SamplerState SamplerState { get; set; } = SamplerState.PointClamp;
 
     /// <summary>
-    /// Gets the render target used by this scene for off-screen rendering.
-    /// </summary>
-    public RenderTarget2D RenderTarget { get; protected set; }
-
-    /// <summary>
     /// Creates a new Scene instance.
     /// </summary>
     /// <param name="game">The Game instance this scene belongs to.</param>
@@ -52,6 +53,8 @@ public abstract class Scene
         Game = game;
         Content = new ContentManager(game.Services);
         Content.RootDirectory = game.Content.RootDirectory;
+        Audio = game.Services.GetService<AudioManager>();
+        Input = game.Services.GetService<InputManager>();
     }
 
     /// <summary>
@@ -65,10 +68,7 @@ public abstract class Scene
     /// <summary>
     /// Loads content specific to this scene.
     /// </summary>
-    public virtual void LoadContent()
-    {
-        GenerateRenderTarget();
-    }
+    public virtual void LoadContent() { }
 
     /// <summary>
     /// Unloads all content that was loaded by this scene.
@@ -80,21 +80,10 @@ public abstract class Scene
     }
 
     /// <summary>
-    /// Creates or recreates the render target used by this scene.
-    /// Called automatically during LoadContent.
+    /// Called before the main Update method.
     /// </summary>
-    public virtual void GenerateRenderTarget()
-    {
-        int width = Game.GraphicsDevice.PresentationParameters.BackBufferWidth;
-        int height = Game.GraphicsDevice.PresentationParameters.BackBufferHeight;
-
-        if (RenderTarget != null && !RenderTarget.IsDisposed)
-        {
-            RenderTarget.Dispose();
-        }
-
-        RenderTarget = new RenderTarget2D(GraphicsDevice, width, height);
-    }
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    public virtual void BeforeUpdate(GameTime gameTime) { }
 
     /// <summary>
     /// Updates this scene's logic.
@@ -103,12 +92,17 @@ public abstract class Scene
     public virtual void Update(GameTime gameTime) { }
 
     /// <summary>
+    /// Called after the main Update method.
+    /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    public virtual void AfterUpdate(GameTime gameTime) { }
+
+    /// <summary>
     /// Prepares the scene for rendering.
     /// </summary>
     /// <param name="spriteBatch">The SpriteBatch instance used for rendering.</param>
-    public virtual void BeforeDraw(SpriteBatch spriteBatch)
+    public virtual void BeforeDraw(SpriteBatch spriteBatch, GameTime gameTime)
     {
-        GraphicsDevice.SetRenderTarget(RenderTarget);
         Game.GraphicsDevice.Clear(ClearColor);
         spriteBatch.Begin(samplerState: SamplerState);
     }
@@ -118,15 +112,14 @@ public abstract class Scene
     /// Override this method to implement scene-specific rendering.
     /// </summary>
     /// <param name="spriteBatch">The SpriteBatch instance used for rendering.</param>
-    public virtual void Draw(SpriteBatch spriteBatch) { }
+    public virtual void Draw(SpriteBatch spriteBatch, GameTime gameTime) { }
 
     /// <summary>
     /// Completes the rendering process for this scene.
     /// </summary>
     /// <param name="spriteBatch">The SpriteBatch instance used for rendering.</param>
-    public virtual void AfterDraw(SpriteBatch spriteBatch)
+    public virtual void AfterDraw(SpriteBatch spriteBatch, GameTime gameTime)
     {
         spriteBatch.End();
-        GraphicsDevice.SetRenderTarget(null);
     }
 }

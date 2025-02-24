@@ -2,27 +2,33 @@ using Microsoft.Xna.Framework;
 
 namespace MonoGameLibrary.Input;
 
-public static class InputManager
+public class InputManager : GameComponent
 {
     /// <summary>
     /// Gets the state information of keyboard input.
     /// </summary>
-    public static KeyboardInfo Keyboard { get; private set; }
+    public KeyboardInfo Keyboard { get; private set; }
 
     /// <summary>
     /// Gets the state information of mouse input.
     /// </summary>
-    public static MouseInfo Mouse { get; private set; }
+    public MouseInfo Mouse { get; private set; }
 
     /// <summary>
     /// Gets the state information of a gamepad.
     /// </summary>
-    public static GamePadInfo[] GamePads { get; private set; }
+    public GamePadInfo[] GamePads { get; private set; }
+
+    /// <summary>
+    /// Creates a new InputManager.
+    /// </summary>
+    /// <param name="game">The game this input manager belongs to.</param>
+    public InputManager(Game game) : base(game) { }
 
     /// <summary>
     /// Initializes this input manager.
     /// </summary>
-    public static void Initialize()
+    public override void Initialize()
     {
         Keyboard = new KeyboardInfo();
         Mouse = new MouseInfo();
@@ -38,7 +44,7 @@ public static class InputManager
     /// Updates the state information for the keyboard, mouse, and gamepad inputs.
     /// </summary>
     /// <param name="gameTime">A snapshot of the timing values for the current frame.</param>
-    public static void Update(GameTime gameTime)
+    public override void Update(GameTime gameTime)
     {
         Keyboard.Update();
         Mouse.Update();
