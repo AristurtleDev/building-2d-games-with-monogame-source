@@ -1,1 +1,0 @@
-Source files to go with [Chapter 06: Optimizing Texture Rendering](https://aristurtle.net/tutorials/building_2d_games/06_optimizing_texture_rendering/?tabs=vscode)

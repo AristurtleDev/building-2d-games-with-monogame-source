@@ -1,1 +1,0 @@
-Source files to go with [Chapter 11: Collision Detection](https://aristurtle.net/tutorials/building_2d_games/11_collision_detection/)

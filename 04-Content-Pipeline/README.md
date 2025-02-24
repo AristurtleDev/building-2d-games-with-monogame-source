@@ -1,1 +1,0 @@
-Source files to go with [Chapter 04: Content Pipeline](https://aristurtle.net/tutorials/building_2d_games/04_content_pipeline/?tabs=vscode)
