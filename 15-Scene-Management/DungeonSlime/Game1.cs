@@ -30,8 +30,5 @@ public class Game1 : Game
         // component collection
         SceneManager scenes = new SceneManager(this);
         Components.Add(scenes);
-
-        // Start the first game scene.
-        scenes.ChangeScene(new GameScene(this));
     }
 }

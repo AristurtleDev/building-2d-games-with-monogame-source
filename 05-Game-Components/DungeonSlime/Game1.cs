@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLibrary;
@@ -10,6 +9,8 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+
+    // Tracks the FramesPerSecondCounter instance.
     private FramesPerSecondCounter _fpsCounter;
 
     public Game1()
@@ -18,8 +19,10 @@ public class Game1 : Game
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
 
-        // Create and add the component to the game's components collection
+        // Create a new FramesPerSecondCounter.
         _fpsCounter = new FramesPerSecondCounter(this);
+
+        // Add the FramesPerSecondCounter ot the game's component collection
         Components.Add(_fpsCounter);
     }
 
@@ -42,7 +45,8 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        // TODO: Add your update logic here
+        // Update the counter
+        _fpsCounter.Update(gameTime);
 
         base.Update(gameTime);
     }
@@ -51,7 +55,11 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        // TODO: Add your drawing code here
+        // Update the frame counter.
+        _fpsCounter.UpdateCounter();
+
+        // Update the window title to show the frames per second.
+        Window.Title = $" FPS: {_fpsCounter.FramesPerSecond}";
 
         base.Draw(gameTime);
     }
