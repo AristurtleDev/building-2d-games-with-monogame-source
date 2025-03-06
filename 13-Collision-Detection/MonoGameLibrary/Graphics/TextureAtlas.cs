@@ -12,6 +12,8 @@ namespace MonoGameLibrary.Graphics;
 public class TextureAtlas
 {
     private Dictionary<string, TextureRegion> _regions;
+
+    // Stores animations added to this atlas.
     private Dictionary<string, Animation> _animations;
 
     /// <summary>
@@ -133,7 +135,6 @@ public class TextureAtlas
         return new AnimatedSprite(animation);
     }
 
-
     /// <summary>
     /// Creates a new texture atlas based a texture atlas xml configuration file.
     /// </summary>
@@ -159,7 +160,7 @@ public class TextureAtlas
                 atlas.Texture = content.Load<Texture2D>(texturePath);
 
                 // The <Regions> element contains individual <Region> elements, each one describing
-                // a different texture region within the atlas.  
+                // a different texture region within the atlas.
                 //
                 // Example:
                 // <Regions>

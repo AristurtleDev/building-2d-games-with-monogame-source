@@ -111,6 +111,12 @@ public readonly struct Circle : IEquatable<Circle>
                                                     this.Radius == other.Radius;
 
     /// <summary>
+    /// Returns the hash code for this circle.
+    /// </summary>
+    /// <returns>The hash code for this circle as a 32-bit signed integer.</returns>
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Radius);
+
+    /// <summary>
     /// Returns a value that indicates if the circle on the left hand side of the equality operator is equal to the
     /// circle on the right hand side of the equality operator.
     /// </summary>

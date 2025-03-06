@@ -102,7 +102,7 @@ public class TextureAtlas
                 atlas.Texture = content.Load<Texture2D>(texturePath);
 
                 // The <Regions> element contains individual <Region> elements, each one describing
-                // a different texture region within the atlas.  
+                // a different texture region within the atlas.
                 //
                 // Example:
                 // <Regions>
@@ -135,5 +135,4 @@ public class TextureAtlas
             }
         }
     }
-
 }

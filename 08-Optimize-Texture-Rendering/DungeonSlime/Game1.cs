@@ -9,7 +9,11 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+
+    // texture region that defines the slime sprite in the atlas.
     private TextureRegion _slime;
+
+    // texture region that defines the bat sprite in the atlas.
     private TextureRegion _bat;
 
     public Game1()
@@ -33,8 +37,10 @@ public class Game1 : Game
         // Create the texture atlas from the XML configuration file
         TextureAtlas atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
 
-        // Retrieve the slime and bat regions
+        // retrieve the slime region from the atlas.
         _slime = atlas.GetRegion("slime");
+
+        // retrieve the bat region from the atlas.
         _bat = atlas.GetRegion("bat");
     }
 
@@ -50,7 +56,8 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        _spriteBatch.Begin();
+        // Begin the sprite batch to prepare for rendering.
+        _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
         // Draw the slime texture region.
         _slime.Draw(_spriteBatch, Vector2.One, Color.White);
@@ -58,6 +65,7 @@ public class Game1 : Game
         // Draw the bat texture region 10px to the right of the slime.
         _bat.Draw(_spriteBatch, new Vector2(_slime.Width + 10, 0), Color.White);
 
+        // Always end the sprite batch when finished.
         _spriteBatch.End();
 
         base.Draw(gameTime);

@@ -127,7 +127,7 @@ public class Game1 : Game
         // Check thumbstick first since it has priority over which gamepad input
         // is movement.  It has priority since the thumbstick values provide a
         // more granular analog value that can be used for movement.
-        if (gamePadState.ThumbSticks.Left != Vector2.Zero || gamePadState.ThumbSticks.Right != Vector2.Zero)
+        if (gamePadState.ThumbSticks.Left != Vector2.Zero)
         {
             _slimePosition.X += gamePadState.ThumbSticks.Left.X * speed;
             _slimePosition.Y -= gamePadState.ThumbSticks.Left.Y * speed;
@@ -155,7 +155,7 @@ public class Game1 : Game
             // If DPadRight is down, move the slime right on the screen.
             if (gamePadState.IsButtonDown(Buttons.DPadRight))
             {
-                _slimePosition.X -= speed;
+                _slimePosition.X += speed;
             }
         }
     }

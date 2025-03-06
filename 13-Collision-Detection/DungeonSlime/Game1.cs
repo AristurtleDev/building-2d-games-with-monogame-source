@@ -34,7 +34,6 @@ public class Game1 : Game
     // Tracks the velocity of the bat.
     private Vector2 _batVelocity;
 
-
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -210,7 +209,6 @@ public class Game1 : Game
         // Multiply the direction vector by the movement speed
         _batVelocity = direction * MOVEMENT_SPEED;
     }
-
 
     private void CheckKeyboardInput()
     {

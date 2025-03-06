@@ -15,7 +15,7 @@ public class KeyboardInfo
     public KeyboardState CurrentState { get; private set; }
 
     /// <summary>
-    /// Creates a new KeyboardInfo 
+    /// Creates a new KeyboardInfo
     /// </summary>
     public KeyboardInfo()
     {

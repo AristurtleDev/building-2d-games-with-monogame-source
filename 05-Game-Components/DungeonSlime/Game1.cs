@@ -10,9 +10,6 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
 
-    // Tracks the FramesPerSecondCounter instance.
-    private FramesPerSecondCounter _fpsCounter;
-
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -20,24 +17,20 @@ public class Game1 : Game
         IsMouseVisible = true;
 
         // Create a new FramesPerSecondCounter.
-        _fpsCounter = new FramesPerSecondCounter(this);
+        FramesPerSecondCounter fpsCounter = new FramesPerSecondCounter(this);
 
-        // Add the FramesPerSecondCounter ot the game's component collection
-        Components.Add(_fpsCounter);
+        // Add it to the game's component collection
+        Components.Add(fpsCounter);
     }
 
     protected override void Initialize()
     {
-        // TODO: Add your initialization logic here
-
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-        // TODO: use this.Content to load your game content here
     }
 
     protected override void Update(GameTime gameTime)
@@ -45,21 +38,12 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        // Update the counter
-        _fpsCounter.Update(gameTime);
-
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
-
-        // Update the frame counter.
-        _fpsCounter.UpdateCounter();
-
-        // Update the window title to show the frames per second.
-        Window.Title = $" FPS: {_fpsCounter.FramesPerSecond}";
 
         base.Draw(gameTime);
     }

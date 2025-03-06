@@ -1,1 +1,0 @@
-Source files to go with [Chapter 10: Input Management](https://aristurtle.net/tutorials/building_2d_games/10_input_management/)

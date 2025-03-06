@@ -46,13 +46,14 @@ public class FramesPerSecondCounter : DrawableGameComponent
     }
 
     /// <summary>
-    /// Draws the FPS calculation to the window title.
+    /// Increments the frame counter. Should be called once per frame during the game's Draw method.
     /// </summary>
-    /// <param name="gameTime">A snapshot of the game's timing values.</param>
     public override void Draw(GameTime gameTime)
     {
         // Increment the frame counter only during draw.
         _frameCounter++;
+
+        // Update the window title to show the frames per second.
         Game.Window.Title = $"FPS: {FramesPerSecond}";
     }
 }
