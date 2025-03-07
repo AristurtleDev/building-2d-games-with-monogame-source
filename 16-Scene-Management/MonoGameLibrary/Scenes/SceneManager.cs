@@ -33,10 +33,20 @@ public class SceneManager : DrawableGameComponent, ISceneManager
     public override void Initialize()
     {
         // Get the GraphicsDeviceManager from the game's services container
-        _graphics = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
+        IGraphicsDeviceManager deviceManager = Game.Services.GetService<IGraphicsDeviceManager>();
 
-        // Get the GraphicsDevice from the game's services container
-        _graphicsDevice = (GraphicsDevice)Game.Services.GetService<IGraphicsDeviceService>();
+        // Ensure the service was available.
+        if (deviceManager != null)
+        {
+            _graphics = (GraphicsDeviceManager)deviceManager;
+        }
+        else
+        {
+            throw new InvalidOperationException("Game does not contain a graphics device service");
+        }
+
+        // Get the GraphicsDevice from the GraphicsDeviceManager.
+        _graphicsDevice = _graphics.GraphicsDevice;
 
         // Create the sprite batch that will be used to render scenes
         _spriteBatch = new SpriteBatch(_graphicsDevice);
@@ -82,7 +92,7 @@ public class SceneManager : DrawableGameComponent, ISceneManager
     {
         // Only set the next scene if it is not the same instance as the
         // current scene
-        if (ReferenceEquals(scene, _currentScene))
+        if (!ReferenceEquals(scene, _currentScene))
         {
             _nextScene = scene;
         }
@@ -109,14 +119,14 @@ public class SceneManager : DrawableGameComponent, ISceneManager
 
     protected override void Dispose(bool disposing)
     {
-        if(disposing)
+        if (disposing)
         {
-            if(_currentScene != null)
+            if (_currentScene != null)
             {
                 _currentScene.Dispose();
             }
 
-            if(_nextScene != null)
+            if (_nextScene != null)
             {
                 _nextScene.Dispose();
             }

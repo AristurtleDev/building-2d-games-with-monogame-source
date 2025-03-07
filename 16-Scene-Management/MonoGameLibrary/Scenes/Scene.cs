@@ -33,7 +33,7 @@ public abstract class Scene : IDisposable
     /// <summary>
     /// Gets a reference to the GraphicsDevice used for rendering.
     /// </summary>
-    protected GraphicsDevice GraphicsDevice { get; }
+    protected GraphicsDevice GraphicsDevice => GraphicsDeviceManager.GraphicsDevice;
 
     /// <summary>
     /// Gets a value that indicates if the scene has been disposed of.
@@ -49,10 +49,17 @@ public abstract class Scene : IDisposable
         Game = game;
 
         // Get the GraphicsDeviceManager from the game's services container
-        GraphicsDeviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
+        IGraphicsDeviceManager deviceManager = Game.Services.GetService<IGraphicsDeviceManager>();
 
-        // Get the GraphicsDevice from the game's services container
-        GraphicsDevice = (GraphicsDevice)Game.Services.GetService<IGraphicsDeviceService>();
+        // Ensure the service was available.
+        if (deviceManager != null)
+        {
+            GraphicsDeviceManager = (GraphicsDeviceManager)deviceManager;
+        }
+        else
+        {
+            throw new InvalidOperationException("Game does not contain a graphics device service");
+        }
 
         // Get the ISceneManager service from the game's service container
         SceneManager = Game.Services.GetService<ISceneManager>();
