@@ -5,44 +5,35 @@ using MonoGameLibrary;
 
 namespace DungeonSlime;
 
-public class Game1 : Game
+public class Game1 : Core
 {
-    private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
-
     // The MonoGame logo texture
     private Texture2D _logo;
 
-    public Game1()
+    public Game1() : base("Dungeon Slime", 1280, 720, false)
     {
-        _graphics = new GraphicsDeviceManager(this);
-        Content.RootDirectory = "Content";
-        IsMouseVisible = true;
 
-        // Create a new FramesPerSecondCounter.
-        FramesPerSecondCounter fpsCounter = new FramesPerSecondCounter(this);
-
-        // Add it to the game's component collection
-        Components.Add(fpsCounter);
     }
 
     protected override void Initialize()
     {
+        // TODO: Add your initialization logic here
+
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-        // Load the MonoGame logo asset using the ContentManager
         _logo = Content.Load<Texture2D>("images/logo");
+        base.LoadContent();
     }
 
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+
+        // TODO: Add your update logic here
 
         base.Update(gameTime);
     }
@@ -59,10 +50,10 @@ public class Game1 : Game
         Rectangle wordmarkSourceRect = new Rectangle(150, 34, 458, 58);
 
         // Begin the sprite batch to prepare for rendering.
-        _spriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack);
+        SpriteBatch.Begin(SpriteSortMode.FrontToBack);
 
         // Draw only the icon portion of the texture.
-        _spriteBatch.Draw(
+        SpriteBatch.Draw(
             _logo,              // texture
             new Vector2(        // position
                 Window.ClientBounds.Width,
@@ -79,7 +70,7 @@ public class Game1 : Game
         );
 
         // Draw only the word mark portion of the texture.
-        _spriteBatch.Draw(
+        SpriteBatch.Draw(
             _logo,              // texture
             new Vector2(        // position
               Window.ClientBounds.Width,
@@ -96,8 +87,10 @@ public class Game1 : Game
         );
 
         // Always end the sprite batch when finished.
-        _spriteBatch.End();
+        SpriteBatch.End();
 
         base.Draw(gameTime);
     }
+
+
 }
