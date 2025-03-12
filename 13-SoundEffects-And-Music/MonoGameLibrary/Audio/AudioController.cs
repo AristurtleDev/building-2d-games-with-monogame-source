@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 
 namespace MonoGameLibrary.Audio;
 
-public class AudioManager : GameComponent
+public class AudioController : IDisposable
 {
-    private readonly Dictionary<string, SoundEffect> _soundEffects;
-    private readonly Dictionary<string, Song> _songs;
+    // Tracks sound effect instances created so they can be paused, unpaused, and/or disposed.
     private readonly List<SoundEffectInstance> _activeSoundEffectInstances;
-    private float _previousMusicVolume;
+
+    // Tracks the volume for song playback when muting and unmuting.
+    private float _previousSongVolume;
+
+    // Tracks the volume for sound effect playback when muting and unmuting.
     private float _previousSoundEffectVolume;
 
     /// <summary>
@@ -20,32 +22,25 @@ public class AudioManager : GameComponent
     public bool IsMuted { get; private set; }
 
     /// <summary>
-    /// Creates a new AudioManager instance.
+    /// Gets a value that indicates if this audio controller has been disposed.
     /// </summary>
-    /// <param name="game">The game this audio manager will belong too..</param>
-    public AudioManager(Game game)
-        : base(game)
+    public bool IsDisposed { get; private set; }
+
+    /// <summary>
+    /// Creates a new audio controller instance.
+    /// </summary>
+    public AudioController()
     {
-        _soundEffects = new Dictionary<string, SoundEffect>();
-        _songs = new Dictionary<string, Song>();
         _activeSoundEffectInstances = new List<SoundEffectInstance>();
     }
 
-    /// <summary>
-    /// Initializes this Audio manager.
-    /// </summary>
-    public override void Initialize()
-    {
-        _previousMusicVolume = MediaPlayer.Volume = 1.0f;
-        _previousSoundEffectVolume = SoundEffect.MasterVolume = 1.0f;
-        base.Initialize();
-    }
+    // Finalizer called when object is collected by the garbage collector
+    ~AudioController() => Dispose(false);
 
     /// <summary>
-    /// Updates this Audio manager
+    /// Updates this audio controller
     /// </summary>
-    /// <param name="gameTime">A snapshot of the current timing values for the game.</param>
-    public override void Update(GameTime gameTime)
+    public void Update()
     {
         int index = 0;
 
@@ -60,99 +55,84 @@ public class AudioManager : GameComponent
 
             _activeSoundEffectInstances.RemoveAt(index);
         }
-
-        base.Update(gameTime);
     }
 
     /// <summary>
-    /// Disposes this Audio manager and cleans up resources.
+    /// Disposes of this audio controller and cleans up resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Disposes this audio controller and cleans up resources.
     /// </summary>
     /// <param name="disposing">Indicates whether managed resources should be disposed.</param>
-    protected override void Dispose(bool disposing)
+    protected void Dispose(bool disposing)
     {
+        if(IsDisposed)
+        {
+            return;
+        }
+
         if (disposing)
         {
-            foreach (SoundEffect soundEffect in _soundEffects.Values)
+            foreach (SoundEffectInstance soundEffectInstance in _activeSoundEffectInstances)
             {
-                soundEffect.Dispose();
+                soundEffectInstance.Dispose();
             }
-
-            foreach (Song song in _songs.Values)
-            {
-                song.Dispose();
-            }
-
-            _soundEffects.Clear();
-            _songs.Clear();
             _activeSoundEffectInstances.Clear();
         }
 
-        base.Dispose(disposing);
+        IsDisposed = true;
     }
 
     /// <summary>
-    /// Adds the sound effect with the specified asset name to this audio manager.
+    /// Plays the given sound effect.
     /// </summary>
-    /// <param name="assetName">The asset name of the sound effect to add.</param>
-    public void AddSoundEffect(string assetName)
+    /// <param name="soundEffect">The sound effect to play.</param>
+    /// <returns>The sound effect instance created by this method.</returns>
+    public SoundEffectInstance PlaySoundEffect(SoundEffect soundEffect)
     {
-        SoundEffect soundEffect = Game.Content.Load<SoundEffect>(assetName);
-        _soundEffects.Add(assetName, soundEffect);
+        return PlaySoundEffect(soundEffect, 1.0f, 1.0f, 0.0f, false);
     }
 
     /// <summary>
-    /// Adds the song with the specified asset name to this audio manager.
+    /// Plays the given sound effect with the specified properties.
     /// </summary>
-    /// <param name="assetName">The asset name of the song to add.</param>
-    public void AddSong(string assetName)
-    {
-        Song song = Game.Content.Load<Song>(assetName);
-        _songs.Add(assetName, song);
-    }
-
-    /// <summary>
-    /// Plays the sound effect with the specified name.
-    /// </summary>
-    /// <param name="assetName">The asset name of the sound effect to play.</param>
-    /// <returns>The sound effect instance created by playing the sound effect.</returns>
-    public SoundEffectInstance PlaySoundEffect(string assetName)
-    {
-        return PlaySoundEffect(assetName, 1.0f, 0.0f, 0.0f, false);
-    }
-
-    /// <summary>
-    /// Plays the sound effect with the specified asset name, using the specified properties.
-    /// </summary>
-    /// <param name="assetName">The asset name of the sound effect to play.</param>
+    /// <param name="soundEffect">The sound effect to play.</param>
     /// <param name="volume">The volume, ranging from 0.0 (silence) to 1.0 (full volume).</param>
     /// <param name="pitch">The pitch adjustment, ranging from -1.0 (down an octave) to 0.0 (no change) to 1.0 (up an octave).</param>
     /// <param name="pan">The panning, ranging from -1.0 (left speaker) to 0.0 (centered), 1.0 (right speaker).</param>
     /// <param name="isLooped">Whether the the sound effect should loop after playback.</param>
     /// <returns>The sound effect instance created by playing the sound effect.</returns>
-    public SoundEffectInstance PlaySoundEffect(string assetName, float volume, float pitch, float pan, bool isLooped)
+    /// <returns>The sound effect instance created by this method.</returns>
+    public SoundEffectInstance PlaySoundEffect(SoundEffect soundEffect, float volume, float pitch, float pan, bool isLooped)
     {
-        SoundEffect soundEffect = _soundEffects[assetName];
-
+        // Create an instance from the sound effect given.
         SoundEffectInstance soundEffectInstance = soundEffect.CreateInstance();
+
+        // Apply the volume, pitch, pan, and loop values specified.
         soundEffectInstance.Volume = volume;
         soundEffectInstance.Pitch = pitch;
         soundEffectInstance.Pan = pan;
         soundEffectInstance.IsLooped = isLooped;
 
+        // Tell the instance to play
         soundEffectInstance.Play();
+
+        // Add it to the active instances for tracking
+        _activeSoundEffectInstances.Add(soundEffectInstance);
 
         return soundEffectInstance;
     }
 
-    /// <summary>
-    /// Plays the song with the specified asset name.
-    /// </summary>
-    /// <param name="assetName">The asset name of the song to play.</param>
-    public void PlaySong(string assetName)
+    public void PlaySong(Song song)
     {
-        Song song = _songs[assetName];
-
-        // Check if the media player is already playing, if so, stop it
+        // Check if the media player is already playing, if so, stop it.
+        // If we don't stop it, this could cause issues on some platforms
         if (MediaPlayer.State == MediaState.Playing)
         {
             MediaPlayer.Stop();
@@ -197,7 +177,7 @@ public class AudioManager : GameComponent
     public void MuteAudio()
     {
         // Store the volume so they can be restored during ResumeAudio
-        _previousMusicVolume = MediaPlayer.Volume;
+        _previousSongVolume = MediaPlayer.Volume;
         _previousSoundEffectVolume = SoundEffect.MasterVolume;
 
         // Set all volumes to 0
@@ -213,7 +193,7 @@ public class AudioManager : GameComponent
     public void UnmuteAudio()
     {
         // Restore the previous volume values
-        MediaPlayer.Volume = _previousMusicVolume;
+        MediaPlayer.Volume = _previousSongVolume;
         SoundEffect.MasterVolume = _previousSoundEffectVolume;
 
         IsMuted = false;
