@@ -31,6 +31,13 @@
 /processorParam:Quality=Best
 /build:audio/theme.mp3
 
+#begin fonts/gameFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/gameFont.spritefont
+
 #begin images/atlas-definition.xml
 /copy:images/atlas-definition.xml
 
