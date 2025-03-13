@@ -16,6 +16,7 @@ public class TextureAtlas
     // Stores animations added to this atlas.
     private Dictionary<string, Animation> _animations;
 
+
     /// <summary>
     /// Gets or Sets the source texture represented by this texture atlas.
     /// </summary>
