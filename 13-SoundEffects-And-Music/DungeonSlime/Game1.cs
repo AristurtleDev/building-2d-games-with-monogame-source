@@ -64,17 +64,23 @@ public class Game1 : Core
         // Create the bat animated sprite from the atlas.
         _bat = atlas.CreateAnimatedSprite("bat-animation");
 
-        // Load the background music
-        Song bgSong = Content.Load<Song>("audio/theme");
-
         // Load the bounce sound effect
         _bounceSoundEffect = Content.Load<SoundEffect>("audio/bounce");
 
         // Load the collect sound effect
         _collectSoundEffect = Content.Load<SoundEffect>("audio/collect");
 
-        // Start playing the background music
-        Audio.PlaySong(bgSong);
+        // Load the background theme music
+        Song theme = Content.Load<Song>("audio/theme");
+
+        // Ensure media player isn't already playing on device, if so, stop it
+        if(MediaPlayer.State == MediaState.Playing)
+        {
+            MediaPlayer.Stop();
+        }
+
+        // Play the background theme music
+        MediaPlayer.Play(theme);
 
         base.LoadContent();
     }
@@ -177,7 +183,7 @@ public class Game1 : Core
             _batVelocity = Vector2.Reflect(_batVelocity, normal);
 
             // Play the bounce sound effect
-            Audio.PlaySoundEffect(_bounceSoundEffect);
+            _bounceSoundEffect.Play();
         }
 
         _batPosition = newBatPosition;
@@ -201,7 +207,7 @@ public class Game1 : Core
             AssignRandomBatVelocity();
 
             // Play the collect sound effect
-            Audio.PlaySoundEffect(_collectSoundEffect);
+            _collectSoundEffect.Play();
         }
 
         base.Update(gameTime);
@@ -252,24 +258,6 @@ public class Game1 : Core
         if (Input.Keyboard.IsKeyDown(Keys.D) || Input.Keyboard.IsKeyDown(Keys.Right))
         {
             _slimePosition.X += speed;
-        }
-
-        // If the M key is pressed, toggle mute state for audio.
-        if (Input.Keyboard.WasKeyJustPressed(Keys.M))
-        {
-            Audio.ToggleMute();
-        }
-
-        // If the + button is pressed, increase the volume.
-        if (Input.Keyboard.WasKeyJustPressed(Keys.OemPlus))
-        {
-            Audio.IncreaseVolume(0.1f);
-        }
-
-        // If the - button was pressed, decrease the volume.
-        if (Input.Keyboard.WasKeyJustPressed(Keys.OemMinus))
-        {
-            Audio.DecreaseVolume(0.1f);
         }
     }
 
