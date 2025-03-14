@@ -38,6 +38,13 @@
 /processorParam:TextureFormat=Compressed
 /build:fonts/gameFont.spritefont
 
+#begin fonts/titleFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/titleFont.spritefont
+
 #begin images/atlas-definition.xml
 /copy:images/atlas-definition.xml
 
