@@ -69,6 +69,4 @@ public class Game1 : Core
 
         base.Draw(gameTime);
     }
-
-
 }

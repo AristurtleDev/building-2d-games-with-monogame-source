@@ -1,7 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLibrary;
@@ -70,14 +69,8 @@ public class GameScene : Scene
     {
         base.LoadContent();
 
-        // Get a reference to the global content manager.  For content that is
-        // used throughout the game in multiple scenes, we'll load with the
-        // global content manager.  For any content that is used on within this
-        // scene, we'll use the scene's specific content manager.
-        ContentManager globalContent = Core.Instance.Content;
-
         // Create the texture atlas from the XML configuration file
-        TextureAtlas atlas = TextureAtlas.FromFile(globalContent, "images/atlas-definition.xml");
+        TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/atlas-definition.xml");
 
         // Create the slime animated sprite from the atlas.
         _slime = atlas.CreateAnimatedSprite("slime-animation");
@@ -92,14 +85,11 @@ public class GameScene : Scene
         _collectSoundEffect = Content.Load<SoundEffect>("audio/collect");
 
         // Load the font
-        _font = globalContent.Load<SpriteFont>("fonts/gameFont");
+        _font = Core.Content.Load<SpriteFont>("fonts/gameFont");
     }
 
     public override void Update(GameTime gameTime)
     {
-        // Get a reference to the graphics device
-        GraphicsDevice graphicsDevice = Core.Instance.GraphicsDevice;
-
         // Update the slime animated sprite.
         _slime.Update(gameTime);
 
@@ -116,8 +106,8 @@ public class GameScene : Scene
         Rectangle screenBounds = new Rectangle(
             0,
             0,
-            graphicsDevice.PresentationParameters.BackBufferWidth,
-            graphicsDevice.PresentationParameters.BackBufferHeight
+            Core.GraphicsDevice.PresentationParameters.BackBufferWidth,
+            Core.GraphicsDevice.PresentationParameters.BackBufferHeight
         );
 
         // Creating a bounding circle for the slime
@@ -202,8 +192,8 @@ public class GameScene : Scene
         {
             // Divide the width  and height of the screen into equal columns and
             // rows based on the width and height of the bat.
-            int totalColumns = graphicsDevice.PresentationParameters.BackBufferWidth / (int)_bat.Width;
-            int totalRows = graphicsDevice.PresentationParameters.BackBufferHeight / (int)_bat.Height;
+            int totalColumns = Core.GraphicsDevice.PresentationParameters.BackBufferWidth / (int)_bat.Width;
+            int totalRows = Core.GraphicsDevice.PresentationParameters.BackBufferHeight / (int)_bat.Height;
 
             // Choose a random row and column based on the total number of each
             int column = Random.Shared.Next(0, totalColumns);
@@ -245,8 +235,8 @@ public class GameScene : Scene
         {
             Core.ChangeScene(
                 new TitleScene(),
-                new EvenOddTileSceneTransition(32, TimeSpan.FromSeconds(1), SceneTransitionKind.Out),
-                new EvenOddTileSceneTransition(32, TimeSpan.FromSeconds(1), SceneTransitionKind.In)
+                new EvenOddTileSceneTransition(128, TimeSpan.FromSeconds(1), SceneTransitionKind.Out),
+                new EvenOddTileSceneTransition(128, TimeSpan.FromSeconds(1), SceneTransitionKind.In)
             );
         }
 
@@ -355,13 +345,10 @@ public class GameScene : Scene
 
     public override void Draw(GameTime gameTime)
     {
-        // Get a reference to the graphics device
-        GraphicsDevice graphicsDevice = Core.Instance.GraphicsDevice;
-
-        graphicsDevice.SetRenderTarget(RenderTarget);
+        Core.GraphicsDevice.SetRenderTarget(RenderTarget);
 
         // Clear the back buffer.
-        graphicsDevice.Clear(Color.CornflowerBlue);
+        Core.GraphicsDevice.Clear(Color.CornflowerBlue);
 
         // Begin the sprite batch to prepare for rendering.
         Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
@@ -378,6 +365,6 @@ public class GameScene : Scene
         // Always end the sprite batch when finished.
         Core.SpriteBatch.End();
 
-        graphicsDevice.SetRenderTarget(null);
+        Core.GraphicsDevice.SetRenderTarget(null);
     }
 }

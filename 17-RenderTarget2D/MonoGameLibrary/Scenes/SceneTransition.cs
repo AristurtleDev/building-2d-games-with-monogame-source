@@ -54,13 +54,10 @@ public abstract class SceneTransition : IDisposable
 
     private void BeginRender(Color clearColor)
     {
-        // Get a reference to the graphics device
-        GraphicsDevice graphicsDevice = Core.Instance.GraphicsDevice;
-
         //  Prepare the graphics device.
-        graphicsDevice.SetRenderTarget(RenderTarget);
-        graphicsDevice.Viewport = new Viewport(RenderTarget.Bounds);
-        graphicsDevice.Clear(clearColor);
+        Core.GraphicsDevice.SetRenderTarget(RenderTarget);
+        Core.GraphicsDevice.Viewport = new Viewport(RenderTarget.Bounds);
+        Core.GraphicsDevice.Clear(clearColor);
 
         //  Begin the sprite batch.
         Core.SpriteBatch.Begin(blendState: BlendState.AlphaBlend,
@@ -75,19 +72,16 @@ public abstract class SceneTransition : IDisposable
         Core.SpriteBatch.End();
 
         // Unbind the render target.
-        Core.Instance.GraphicsDevice.SetRenderTarget(null);
+        Core.GraphicsDevice.SetRenderTarget(null);
     }
 
     protected virtual void GenerateRenderTarget()
     {
-        // Get a reference to the graphics device
-        GraphicsDevice graphicsDevice = Core.Instance.GraphicsDevice;
-
         // Determine the width of the render target based on the width of the back buffer.
-        int width = graphicsDevice.PresentationParameters.BackBufferWidth;
+        int width = Core.GraphicsDevice.PresentationParameters.BackBufferWidth;
 
         // Determine the height of the render target based on the height of the back buffer.
-        int height = graphicsDevice.PresentationParameters.BackBufferHeight;
+        int height = Core.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
         //  If the RenderTarget instance has already been created previously but has yet
         //  to be disposed of properly, dispose of the instance before setting a new one.
@@ -97,7 +91,7 @@ public abstract class SceneTransition : IDisposable
         }
 
         // Generate the RenderTarget
-        RenderTarget = new RenderTarget2D(graphicsDevice, width, height);
+        RenderTarget = new RenderTarget2D(Core.GraphicsDevice, width, height);
     }
 
     public void Dispose()

@@ -31,11 +31,11 @@ public abstract class Scene : IDisposable
     public Scene()
     {
         // Create a content manager for the scene
-        Content = new ContentManager(Core.Instance.Services);
+        Content = new ContentManager(Core.Content.ServiceProvider);
 
         // Set the root directory for content to the same as the root directory
         // for the game's content.
-        Content.RootDirectory = Core.Instance.Content.RootDirectory;
+        Content.RootDirectory = Core.Content.RootDirectory;
     }
 
     // Finalizer, called when object is cleaned up by garbage collector.
@@ -88,14 +88,11 @@ public abstract class Scene : IDisposable
     /// </summary>
     protected virtual void GenerateRenderTarget()
     {
-        // Get a reference to the graphics device
-        GraphicsDevice graphicsDevice = Core.Instance.GraphicsDevice;
-
         // Determine the width of the render target based on the width of the back buffer.
-        int width = graphicsDevice.PresentationParameters.BackBufferWidth;
+        int width = Core.GraphicsDevice.PresentationParameters.BackBufferWidth;
 
         // Determine the height of the render target based on the height of the back buffer.
-        int height = graphicsDevice.PresentationParameters.BackBufferHeight;
+        int height = Core.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
         //  If the RenderTarget instance has already been created previously but has yet
         //  to be disposed of properly, dispose of the instance before setting a new one.
@@ -105,8 +102,7 @@ public abstract class Scene : IDisposable
         }
 
         // Generate the RenderTarget
-        RenderTarget = new RenderTarget2D(graphicsDevice, width, height);
-
+        RenderTarget = new RenderTarget2D(Core.GraphicsDevice, width, height);
     }
 
     /// <summary>
@@ -137,7 +133,7 @@ public abstract class Scene : IDisposable
             UnloadContent();
             Content.Dispose();
 
-            if(RenderTarget != null && !RenderTarget.IsDisposed)
+            if (RenderTarget != null && !RenderTarget.IsDisposed)
             {
                 RenderTarget.Dispose();
             }

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using MonoGameLibrary.Scenes;
@@ -48,63 +47,47 @@ public class TitleScene : Scene
         // can close the game by pressing the escape key.
         Core.ExitOnEscape = true;
 
-        // Get a reference to the graphics device
-        GraphicsDevice graphicsDevice = Core.Instance.GraphicsDevice;
-
         // Precalculate the positions and origins for texts and the slime sprite
         // so we're not calculating it every draw frame.
         _titlePos = new Vector2(
-            graphicsDevice.PresentationParameters.BackBufferWidth * 0.5f,
+            Core.GraphicsDevice.PresentationParameters.BackBufferWidth * 0.5f,
             100);
 
         Vector2 titleSize = _titleFont.MeasureString(TITLE);
         _titleOrigin = titleSize * 0.5f;
 
         _pressEnterPos = new Vector2(
-            graphicsDevice.PresentationParameters.BackBufferWidth * 0.5f,
-            graphicsDevice.PresentationParameters.BackBufferHeight - 100
+            Core.GraphicsDevice.PresentationParameters.BackBufferWidth * 0.5f,
+            Core.GraphicsDevice.PresentationParameters.BackBufferHeight - 100
         );
 
         Vector2 pressEnterSize = _standardFont.MeasureString(PRESS_ENTER);
         _pressEnterOrigin = pressEnterSize * 0.5f;
 
         _slimePos = new Vector2(
-            graphicsDevice.PresentationParameters.BackBufferWidth,
-            graphicsDevice.PresentationParameters.BackBufferHeight
+            Core.GraphicsDevice.PresentationParameters.BackBufferWidth,
+            Core.GraphicsDevice.PresentationParameters.BackBufferHeight
         ) * 0.5f;
 
         _slime.CenterOrigin();
         _slime.Scale = new Vector2(5.0f, 5.0f);
-
     }
 
     public override void LoadContent()
     {
         base.LoadContent();
 
-        // Get a reference to the global content manager.  For content that is
-        // used throughout the game in multiple scenes, we'll load with the
-        // global content manager.  For any content that is used on within this
-        // scene, we'll use the scene's specific content manager.
-        ContentManager globalContent = Core.Instance.Content;
-
         // Load the font for the title text
         _titleFont = Content.Load<SpriteFont>("fonts/titleFont");
 
         // Load the font for the standard txt.
-        _standardFont = globalContent.Load<SpriteFont>("fonts/gameFont");
+        _standardFont = Core.Content.Load<SpriteFont>("fonts/gameFont");
 
         // Create a texture atlas from the XML configuration file.
-        TextureAtlas atlas = TextureAtlas.FromFile(globalContent, "images/atlas-definition.xml");
+        TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/atlas-definition.xml");
 
         // Create the slime animated sprite from the atlas.
         _slime = atlas.CreateAnimatedSprite("slime-animation");
-
-        // Load the background theme music
-        Song theme = globalContent.Load<Song>("audio/theme");
-
-        // Start playing the background music
-        Core.Audio.PlaySong(theme);
     }
 
     public override void Update(GameTime gameTime)
@@ -117,8 +100,8 @@ public class TitleScene : Scene
         {
             Core.ChangeScene(
                 new GameScene(),
-                new EvenOddTileSceneTransition(32, TimeSpan.FromSeconds(1), SceneTransitionKind.Out),
-                new EvenOddTileSceneTransition(32, TimeSpan.FromSeconds(1), SceneTransitionKind.In)
+                new EvenOddTileSceneTransition(128, TimeSpan.FromSeconds(1), SceneTransitionKind.Out),
+                new EvenOddTileSceneTransition(128, TimeSpan.FromSeconds(1), SceneTransitionKind.In)
             );
             Core.ChangeScene(new GameScene());
         }
@@ -126,12 +109,11 @@ public class TitleScene : Scene
 
     public override void Draw(GameTime gameTime)
     {
-        // Get a reference to the graphics device
-        GraphicsDevice graphicsDevice = Core.Instance.GraphicsDevice;
+        // Bind the scene's render target to the graphics device so it is what
+        // we render to.
+        Core.GraphicsDevice.SetRenderTarget(RenderTarget);
 
-        graphicsDevice.SetRenderTarget(RenderTarget);
-
-        graphicsDevice.Clear(new Color(32, 40, 78, 255));
+        Core.GraphicsDevice.Clear(new Color(32, 40, 78, 255));
 
         // Begin the sprite batch to prepare for rendering.
         Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
@@ -148,6 +130,7 @@ public class TitleScene : Scene
         // Always end the sprite batch when finished.
         Core.SpriteBatch.End();
 
-        graphicsDevice.SetRenderTarget(null);
+        // Always unbind the render target when finished.
+        Core.GraphicsDevice.SetRenderTarget(null);
     }
 }
