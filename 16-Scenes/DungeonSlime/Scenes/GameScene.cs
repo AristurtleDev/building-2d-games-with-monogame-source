@@ -63,7 +63,6 @@ public class GameScene : Scene
 
         // Assign the initial random velocity to the bat.
         AssignRandomBatVelocity();
-
     }
 
     public override void LoadContent()

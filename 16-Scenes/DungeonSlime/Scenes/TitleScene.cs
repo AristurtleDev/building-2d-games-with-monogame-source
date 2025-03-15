@@ -71,7 +71,6 @@ public class TitleScene : Scene
 
         _slime.CenterOrigin();
         _slime.Scale = new Vector2(5.0f, 5.0f);
-
     }
 
     public override void LoadContent()
