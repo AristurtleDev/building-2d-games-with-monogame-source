@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Media;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using MonoGameLibrary.Scenes;
+using MonoGameLibrary.UI;
 
 namespace DungeonSlime.Scenes;
 
@@ -37,6 +38,9 @@ public class TitleScene : Scene
 
     //  The position to draw the slime animation at.
     private Vector2 _slimePos;
+
+    private NineSlice _nineSlice;
+    private Rectangle _nineSliceDestination;
 
     public override void Initialize()
     {
@@ -71,6 +75,13 @@ public class TitleScene : Scene
 
         _slime.CenterOrigin();
         _slime.Scale = new Vector2(5.0f, 5.0f);
+
+        _nineSliceDestination = new Rectangle(
+            (int)(_pressEnterPos.X - pressEnterSize.X * 0.5f) - 20,
+            (int)(_pressEnterPos.Y - pressEnterSize.Y * 0.5f) - 20,
+             (int)pressEnterSize.X + 40,
+             (int)pressEnterSize.Y + 40
+        );
     }
 
     public override void LoadContent()
@@ -86,6 +97,9 @@ public class TitleScene : Scene
 
         // Create the slime animated sprite from the atlas.
         _slime = atlas.CreateAnimatedSprite("slime-animation");
+
+        TextureRegion panelRegion = atlas.GetRegion("panel-enabled");
+        _nineSlice = new NineSlice(panelRegion, 5);
     }
 
     public override void Update(GameTime gameTime)
@@ -107,11 +121,13 @@ public class TitleScene : Scene
         // Begin the sprite batch to prepare for rendering.
         Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
+        _nineSlice.Draw(Core.SpriteBatch, _nineSliceDestination, Color.White);
+
         // Draw that title text
         Core.SpriteBatch.DrawString(_titleFont, TITLE, _titlePos, Color.White, 0.0f, _titleOrigin, 1.0f, SpriteEffects.None, 0.0f);
 
         // Draw the press enter text
-        Core.SpriteBatch.DrawString(_standardFont, PRESS_ENTER, _pressEnterPos, Color.White, 0.0f, _pressEnterOrigin, 1.0f, SpriteEffects.None, 0.0f);
+        Core.SpriteBatch.DrawString(_standardFont, PRESS_ENTER, _pressEnterPos, new Color(32, 40, 78, 255), 0.0f, _pressEnterOrigin, 1.0f, SpriteEffects.None, 0.0f);
 
         // Draw the animated slime
         _slime.Draw(Core.SpriteBatch, _slimePos);

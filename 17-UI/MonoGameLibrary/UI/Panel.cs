@@ -1,36 +1,58 @@
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+// using System.Collections.Generic;
+// using Microsoft.Xna.Framework;
+// using Microsoft.Xna.Framework.Graphics;
+// using MonoGameLibrary.Graphics;
 
-namespace MonoGameLibrary.UI;
+// namespace MonoGameLibrary.UI
+// {
+//     /// <summary>
+//     /// A container with a background that uses NineSlice rendering for borders.
+//     /// </summary>
+//     public class Panel : UIElement
+//     {
+//         /// <summary>
+//         /// Gets or sets the nine-slice used for rendering the panel's border.
+//         /// </summary>
+//         public NineSlice NineSlice { get; set; }
 
-public class Panel : UIElement
-{
-    public Color BackgroundColor { get; set; }
-    public Color BorderColor { get; set; }
-    public int BorderThickness { get; set; }
-    public string Title { get; set; }
-    public Color TitleColor { get; set; }
-    public List<UIElement> Children { get; private set; }
+//         /// <summary>
+//         /// Gets or sets the color to tint the panel's nine-slice.
+//         /// </summary>
+//         public Color Color { get; set; }
 
-    public Panel(Vector2 position, Vector2 size) : base(position, size)
-    {
-        Children = new List<UIElement>();
-        BackgroundColor = new Color(0, 0, 0, 200);
-        BorderColor = Color.White;
-        BorderThickness = 2;
-        TitleColor = Color.White;
-    }
+//         /// <summary>
+//         /// Creates a new Panel with the specified dimensions and nine-slice border.
+//         /// </summary>
+//         /// <param name="width">The width of the panel.</param>
+//         /// <param name="height">The height of the panel.</param>
+//         /// <param name="borderNineSlice">The nine-slice to use for borders.</param>
+//         public Panel(int width, int height, NineSlice borderNineSlice)
+//         {
+//             Size = new Vector2(width, height);
+//             Color = Color.White;
+//             Enabled = true;
+//             Visible = true;
+//             NineSlice = borderNineSlice;
+//         }
 
-    public void AddChild(UIElement child)
-    {
-        Children.Add(child);
-    }
+//         /// <summary>
+//         /// Draws the panel and its children.
+//         /// </summary>
+//         /// <param name="spriteBatch">The sprite batch to use for drawing.</param>
+//         public override void Draw(SpriteBatch spriteBatch)
+//         {
+//             if (!Visible)
+//             {
+//                 return;
+//             }
 
-    public override void Update(GameTime gameTime)
-    {
-        foreach(UIElement child in Children)
-        {
-            child.Update(gameTime);
-        }
-    }
-}
+//             if (NineSlice != null)
+//             {
+//                 NineSlice.Draw(spriteBatch, AbsoluteBounds, Color);
+//             }
+
+//             // Draw all children
+//             base.Draw(spriteBatch);
+//         }
+//     }
+// }
