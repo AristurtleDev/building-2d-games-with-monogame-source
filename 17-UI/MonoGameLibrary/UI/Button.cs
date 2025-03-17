@@ -50,7 +50,7 @@ public class Button
     public Color TextColor { get; set; }
     public SpriteFont Font { get; }
     public NineSlice NormalBorder { get; set; }
-    public NineSlice PressedBorder { get; set; }
+    public NineSlice HoveredBorder { get; set; }
     public NineSlice ClickedBorder { get; set; }
     public Rectangle Bounds => new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
 
@@ -78,7 +78,7 @@ public class Button
         Height = height;
 
         NormalBorder = normalBorder;
-        PressedBorder = hoveredBorder;
+        HoveredBorder = hoveredBorder;
         ClickedBorder = clickedBorder;
     }
 
@@ -106,16 +106,16 @@ public class Button
     {
         if (IsHovered)
         {
-            PressedBorder.Draw(spriteBatch, Bounds, Color.White);
+            HoveredBorder.Draw(spriteBatch, Bounds, Color.White);
         }
         else if(IsPushed)
         {
             Push
         }
 
-        if ((IsFocused || IsHovered) && PressedBorder != null)
+        if ((IsFocused || IsHovered) && HoveredBorder != null)
         {
-            PressedBorder.Draw(spriteBatch, Bounds, Color.White);
+            HoveredBorder.Draw(spriteBatch, Bounds, Color.White);
         }
         else if (NormalBorder != null)
         {
