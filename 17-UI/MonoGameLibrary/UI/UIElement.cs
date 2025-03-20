@@ -40,7 +40,7 @@ public class UIElement
     /// <summary>
     /// Gets or Sets the size, in pixels, of this element.
     /// </summary>
-    public Point Size { get; set; }
+    public virtual Point Size { get; set; }
 
     /// <summary>
     /// Creates a new ui element.

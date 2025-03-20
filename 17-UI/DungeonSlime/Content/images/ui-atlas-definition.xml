@@ -2,23 +2,27 @@
 <TextureAtlas>
     <Texture>images/ui-atlas</Texture>
     <Regions>
-        <Region name="mode" x="0" y="0" width="156" height="35" />
-        <Region name="speed" x="156" y="0" width="193" height="35" />
-        <Region name="slow-disabled" x="349" y="0" width="208" height="43" />
-        <Region name="normal-disabled" x="557" y="0" width="208" height="43" />
-        <Region name="fast-disabled" x="765" y="0" width="208" height="43" />
-        <Region name="dark-disabled" x="973" y="0" width="208" height="43" />
-        <Region name="slow-selected-1" x="0" y="35" width="256" height="52" />
+        <Region name="slow" x="24" y="0" width="208" height="44" />
+        <Region name="normal" x="280" y="0" width="208" height="44" />
+        <Region name="fast" x="536" y="0" width="208" height="44" />
+        <Region name="dark" x="792" y="0" width="208" height="44" />
+
+        <Region name="slow-selected-1" x="0" y="44" width="256" height="52" />
         <Region name="normal-selected-1" x="256" y="44" width="256" height="52" />
         <Region name="fast-selected-1" x="512" y="44" width="256" height="52" />
         <Region name="dark-selected-1" x="768" y="44" width="256" height="52" />
-        <Region name="slow-selected-2" x="990" y="336" width="256" height="52" />
-        <Region name="normal-selected-2" x="0" y="96" width="256" height="52" />
-        <Region name="fast-selected-2" x="256" y="96" width="256" height="52" />
-        <Region name="dark-selected-2" x="512" y="96" width="256" height="52" />
-        <Region name="game-options" x="768" y="96" width="499" height="72" />
-        <Region name="panel" x="0" y="168" width="849" height="221" />
-        <Region name="background" x="849" y="168" width="164" height="164" />
+
+        <Region name="slow-selected-2" x="0" y="96" width="256" height="52" />
+        <Region name="normal-selected-2" x="256" y="96" width="256" height="52" />
+        <Region name="fast-selected-2" x="512" y="96" width="256" height="52" />
+        <Region name="dark-selected-2" x="768" y="96" width="256" height="52" />
+
+        <Region name="game-options" x="0" y="148" width="499" height="72" />
+
+        <Region name="mode" x="499" y="149" width="156" height="35" />
+        <Region name="speed" x="499" y="184" width="193" height="35" />
+
+        <Region name="panel" x="0" y="220" width="849" height="221" />
     </Regions>
     <Animations>
         <Animation name="slow-selected" delay="500">

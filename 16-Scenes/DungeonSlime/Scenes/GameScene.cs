@@ -1,7 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLibrary;
@@ -101,12 +100,7 @@ public class GameScene : Scene
         CheckGamePadInput();
 
         // Create a bounding rectangle for the screen
-        Rectangle screenBounds = new Rectangle(
-            0,
-            0,
-            Core.GraphicsDevice.PresentationParameters.BackBufferWidth,
-            Core.GraphicsDevice.PresentationParameters.BackBufferHeight
-        );
+        Rectangle screenBounds = Core.GraphicsDevice.PresentationParameters.Bounds;
 
         // Creating a bounding circle for the slime
         Circle slimeBounds = new Circle(
@@ -190,8 +184,8 @@ public class GameScene : Scene
         {
             // Divide the width  and height of the screen into equal columns and
             // rows based on the width and height of the bat.
-            int totalColumns = Core.GraphicsDevice.PresentationParameters.BackBufferWidth / (int)_bat.Width;
-            int totalRows = Core.GraphicsDevice.PresentationParameters.BackBufferHeight / (int)_bat.Height;
+            int totalColumns = screenBounds.Width / (int)_bat.Width;
+            int totalRows = screenBounds.Height / (int)_bat.Height;
 
             // Choose a random row and column based on the total number of each
             int column = Random.Shared.Next(0, totalColumns);
@@ -228,6 +222,9 @@ public class GameScene : Scene
 
     private void CheckKeyboardInput()
     {
+        // Get a reference to the keyboard inof
+        KeyboardInfo keyboard = Core.Input.Keyboard;
+
         // If the escape key is pressed, return to the title screen
         if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Escape))
         {
@@ -236,49 +233,49 @@ public class GameScene : Scene
 
         // If the space key is held down, the movement speed increases by 1.5
         float speed = MOVEMENT_SPEED;
-        if (Core.Input.Keyboard.IsKeyDown(Keys.Space))
+        if (keyboard.IsKeyDown(Keys.Space))
         {
             speed *= 1.5f;
         }
 
         // If the W or Up keys are down, move the slime up on the screen.
-        if (Core.Input.Keyboard.IsKeyDown(Keys.W) || Core.Input.Keyboard.IsKeyDown(Keys.Up))
+        if (keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up))
         {
             _slimePosition.Y -= speed;
         }
 
         // if the S or Down keys are down, move the slime down on the screen.
-        if (Core.Input.Keyboard.IsKeyDown(Keys.S) || Core.Input.Keyboard.IsKeyDown(Keys.Down))
+        if (keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down))
         {
             _slimePosition.Y += speed;
         }
 
         // If the A or Left keys are down, move the slime left on the screen.
-        if (Core.Input.Keyboard.IsKeyDown(Keys.A) || Core.Input.Keyboard.IsKeyDown(Keys.Left))
+        if (keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left))
         {
             _slimePosition.X -= speed;
         }
 
         // If the D or Right keys are down, move the slime right on the screen.
-        if (Core.Input.Keyboard.IsKeyDown(Keys.D) || Core.Input.Keyboard.IsKeyDown(Keys.Right))
+        if (keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right))
         {
             _slimePosition.X += speed;
         }
 
         // If the M key is pressed, toggle mute state for audio.
-        if (Core.Input.Keyboard.WasKeyJustPressed(Keys.M))
+        if (keyboard.WasKeyJustPressed(Keys.M))
         {
             Core.Audio.ToggleMute();
         }
 
         // If the + button is pressed, increase the volume.
-        if (Core.Input.Keyboard.WasKeyJustPressed(Keys.OemPlus))
+        if (keyboard.WasKeyJustPressed(Keys.OemPlus))
         {
             Core.Audio.IncreaseVolume(0.1f);
         }
 
         // If the - button was pressed, decrease the volume.
-        if (Core.Input.Keyboard.WasKeyJustPressed(Keys.OemMinus))
+        if (keyboard.WasKeyJustPressed(Keys.OemMinus))
         {
             Core.Audio.DecreaseVolume(0.1f);
         }
@@ -286,6 +283,7 @@ public class GameScene : Scene
 
     private void CheckGamePadInput()
     {
+        // Get the gamepad info for gamepad one.
         GamePadInfo gamePadOne = Core.Input.GamePads[(int)PlayerIndex.One];
 
         // If the A button is held down, the movement speed increases by 1.5
