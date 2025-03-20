@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+    <Texture>images/ui-atlas</Texture>
+    <Regions>
+        <Region name="mode" x="0" y="0" width="156" height="35" />
+        <Region name="speed" x="156" y="0" width="193" height="35" />
+        <Region name="slow-disabled" x="349" y="0" width="208" height="43" />
+        <Region name="normal-disabled" x="557" y="0" width="208" height="43" />
+        <Region name="fast-disabled" x="765" y="0" width="208" height="43" />
+        <Region name="dark-disabled" x="973" y="0" width="208" height="43" />
+        <Region name="slow-selected-1" x="0" y="35" width="256" height="52" />
+        <Region name="normal-selected-1" x="256" y="44" width="256" height="52" />
+        <Region name="fast-selected-1" x="512" y="44" width="256" height="52" />
+        <Region name="dark-selected-1" x="768" y="44" width="256" height="52" />
+        <Region name="slow-selected-2" x="990" y="336" width="256" height="52" />
+        <Region name="normal-selected-2" x="0" y="96" width="256" height="52" />
+        <Region name="fast-selected-2" x="256" y="96" width="256" height="52" />
+        <Region name="dark-selected-2" x="512" y="96" width="256" height="52" />
+        <Region name="game-options" x="768" y="96" width="499" height="72" />
+        <Region name="panel" x="0" y="168" width="849" height="221" />
+        <Region name="background" x="849" y="168" width="164" height="164" />
+    </Regions>
+    <Animations>
+        <Animation name="slow-selected" delay="500">
+            <Frame region="slow-selected-1" />
+            <Frame region="slow-selected-2" />
+        </Animation>
+        <Animation name="normal-selected" delay="500">
+            <Frame region="normal-selected-1" />
+            <Frame region="normal-selected-2" />
+        </Animation>
+        <Animation name="fast-selected" delay="500">
+            <Frame region="fast-selected-1" />
+            <Frame region="fast-selected-2" />
+        </Animation>
+        <Animation name="dark-selected" delay="500">
+            <Frame region="dark-selected-1" />
+            <Frame region="dark-selected-2" />
+        </Animation>
+    </Animations>
+</TextureAtlas>

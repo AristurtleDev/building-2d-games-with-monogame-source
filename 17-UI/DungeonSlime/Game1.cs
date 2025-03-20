@@ -19,7 +19,7 @@ public class Game1 : Core
         base.Initialize();
 
         // Start playing the background music
-        Audio.PlaySong(_themeSong);
+        // Audio.PlaySong(_themeSong);
 
         // Start the game with the title scene.
         ChangeScene(new OptionsScene());

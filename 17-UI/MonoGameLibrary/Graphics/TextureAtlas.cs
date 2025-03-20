@@ -203,7 +203,7 @@ public class TextureAtlas
                 //
                 // So we retrieve all of the <Animation> elements then loop through each one
                 // and generate a new Animation instance from it and add it to this atlas.
-                var animationElements = root.Element("Animations").Elements("Animation");
+                var animationElements = root.Element("Animations")?.Elements("Animation");
 
                 if (animationElements != null)
                 {
