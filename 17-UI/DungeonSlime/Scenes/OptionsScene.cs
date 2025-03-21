@@ -74,6 +74,9 @@ public class OptionsScene : Scene
     private Sprite _modeDarkButtonSprite;
     private AnimatedSprite _modeDarkButtonAnimatedSprite;
 
+    private AnimatedSprite _enterAnimatedSprite;
+    private AnimatedSprite _escapeAnimatedSprite;
+
 
     public override void Initialize()
     {
@@ -163,6 +166,14 @@ public class OptionsScene : Scene
 
         _modeDarkButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("dark-selected");
         _modeDarkButtonAnimatedSprite.CenterOrigin();
+
+        // Create the enter and exit animated sprites
+        _enterAnimatedSprite = uiAtlas.CreateAnimatedSprite("enter");
+        // _enterAnimatedSprite.Origin = new Vector2(0, _enterAnimatedSprite.Height);
+        // _enterAnimatedSprite.CenterOrigin();
+
+        _escapeAnimatedSprite = uiAtlas.CreateAnimatedSprite("escape");
+        // _escapeAnimatedSprite.CenterOrigin();
     }
 
     public override void Update(GameTime gameTime)
@@ -174,6 +185,10 @@ public class OptionsScene : Scene
         // Ensure that the offset doesn't go beyond the texture bounds so it's a seamless wrap
         _backgroundOffset.X %= _backgroundTexture.Width;
         _backgroundOffset.Y %= _backgroundTexture.Height;
+
+        // Update the enter and escape animated sprites
+        _enterAnimatedSprite.Update(gameTime);
+        _escapeAnimatedSprite.Update(gameTime);
 
         if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Down) || Core.Input.Keyboard.WasKeyJustPressed(Keys.Up))
         {
@@ -321,6 +336,10 @@ public class OptionsScene : Scene
         Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
         _gameOptionsSprite.Draw(Core.SpriteBatch, new Vector2(112, 20));
 
+        _enterAnimatedSprite.Draw(Core.SpriteBatch,new Vector2(750, 24));
+        _escapeAnimatedSprite.Draw(Core.SpriteBatch,new Vector2(950, 24));
+
+
         _speedPanel.Draw(Core.SpriteBatch, new Vector2(198, 139));
         _speedSprite.Draw(Core.SpriteBatch, new Vector2(240, 181));
 
@@ -330,19 +349,19 @@ public class OptionsScene : Scene
         switch (_selectedSpeed)
         {
             case Speed.Slow:
-                _speedSlowButtonAnimatedSprite.Draw(Core.SpriteBatch, new Vector2(338, 273));
+                _speedSlowButtonAnimatedSprite.Draw(Core.SpriteBatch, new Vector2(350, 273));
                 _speedNormalButtonSprite.Draw(Core.SpriteBatch, new Vector2(615, 273));
-                _speedFastButtonSprite.Draw(Core.SpriteBatch, new Vector2(890, 273));
+                _speedFastButtonSprite.Draw(Core.SpriteBatch, new Vector2(883, 273));
                 break;
             case Speed.Normal:
-                _speedSlowButtonSprite.Draw(Core.SpriteBatch, new Vector2(338, 273));
+                _speedSlowButtonSprite.Draw(Core.SpriteBatch, new Vector2(350, 273));
                 _speedNormalButtonAnimatedSprite.Draw(Core.SpriteBatch, new Vector2(615, 273));
-                _speedFastButtonSprite.Draw(Core.SpriteBatch, new Vector2(890, 273));
+                _speedFastButtonSprite.Draw(Core.SpriteBatch, new Vector2(883, 273));
                 break;
             case Speed.Fast:
-                _speedSlowButtonSprite.Draw(Core.SpriteBatch, new Vector2(338, 273));
+                _speedSlowButtonSprite.Draw(Core.SpriteBatch, new Vector2(350, 273));
                 _speedNormalButtonSprite.Draw(Core.SpriteBatch, new Vector2(615, 273));
-                _speedFastButtonAnimatedSprite.Draw(Core.SpriteBatch, new Vector2(890, 273));
+                _speedFastButtonAnimatedSprite.Draw(Core.SpriteBatch, new Vector2(883, 273));
                 break;
         }
 
