@@ -71,18 +71,18 @@ public class GameScene : Scene
 
         _slimes = new List<Slime>();
         Slime slime = new Slime();
-        slime.At = new Vector2(centerColumn, centerRow) * _tileMap.CellSize;
-        slime.To = slime.At + new Vector2(_tileMap.CellSize);
+        slime.At = new Vector2(centerColumn, centerRow) * _tileMap.TileSize;
+        slime.To = slime.At + new Vector2(_tileMap.TileSize);
         slime.Direction = Vector2.UnitX;
         _slimes.Add(slime);
 
         _nextDirection = slime.Direction;
 
         _roomBounds = new Rectangle();
-        _roomBounds.X = _tileMap.CellSize;
-        _roomBounds.Y = _tileMap.CellSize;
-        _roomBounds.Width = Core.GraphicsDevice.PresentationParameters.BackBufferWidth - _tileMap.CellSize * 2;
-        _roomBounds.Height = Core.GraphicsDevice.PresentationParameters.BackBufferHeight - _tileMap.CellSize * 2;
+        _roomBounds.X = _tileMap.TileSize;
+        _roomBounds.Y = _tileMap.TileSize;
+        _roomBounds.Width = Core.GraphicsDevice.PresentationParameters.BackBufferWidth - _tileMap.TileSize * 2;
+        _roomBounds.Height = Core.GraphicsDevice.PresentationParameters.BackBufferHeight - _tileMap.TileSize * 2;
 
         // Determine the height of the font
         float textHeight = _font.MeasureString("A").Y;
@@ -157,7 +157,7 @@ public class GameScene : Scene
         {
             Slime tail = _slimes[_slimes.Count - 1];
             Slime newTail = new Slime();
-            newTail.At = tail.At + tail.ReverseDirection * _tileMap.CellSize;
+            newTail.At = tail.At + tail.ReverseDirection * _tileMap.TileSize;
             newTail.To = tail.At;
             newTail.Direction = Vector2.Normalize(tail.At - newTail.At);
             _slimes.Add(newTail);
@@ -179,7 +179,7 @@ public class GameScene : Scene
             Slime newHead = new Slime();
             newHead.Direction = _nextDirection;
             newHead.At = previousHead.To;
-            newHead.To = newHead.At + newHead.Direction * _tileMap.CellSize;
+            newHead.To = newHead.At + newHead.Direction * _tileMap.TileSize;
 
             if (_roomBounds.Contains(newHead.To))
             {
@@ -246,7 +246,7 @@ public class GameScene : Scene
     {
         int x = Random.Shared.Next(0, _tileMap.Columns);
         int y = Random.Shared.Next(0, _tileMap.Rows);
-        _batPosition = new Vector2(x, y) * _tileMap.CellSize;
+        _batPosition = new Vector2(x, y) * _tileMap.TileSize;
     }
 
     private void AssignRandomBatVelocity()

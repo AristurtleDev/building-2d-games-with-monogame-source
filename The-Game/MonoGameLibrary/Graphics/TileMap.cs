@@ -15,36 +15,60 @@ public class TileMap
     private readonly Sprite[] _cells;
     public int Rows { get; }
     public int Columns { get; }
-    public int CellSize { get; }
+    public int TileSize { get; }
+
+    public TileMap(int rows, int columns, int tileSize)
+    {
+
+    }
 
 
     public TileMap(int rows, int columns, int cellSize, Sprite[] cells)
     {
         Rows = rows;
         Columns = columns;
-        CellSize = cellSize;
+        TileSize = cellSize;
         _cells = cells;
+    }
+
+    public void SetTile(Sprite sprite, int tileID)
+    {
+        _cells[tileID] = sprite;
+    }
+
+    public void SetTile(Sprite sprite, int row, int column)
+    {
+        int tileID = row * Columns + column;
+        SetTile(sprite, tileID);
+    }
+
+    public Sprite GetTile(int tileID)
+    {
+        return _cells[tileID];
+    }
+
+    public Sprite GetTile(int row, int column)
+    {
+        int tileID = row * Columns + column;
+        return GetTile(tileID);
     }
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        for(int i  = 0; i < _cells.Length; i++)
+        for (int i = 0; i < _cells.Length; i++)
         {
             Sprite cell = _cells[i];
 
-            if(cell != null)
+            if (cell != null)
             {
                 int x = i % Columns;
                 int y = i / Columns;
 
-                Vector2 position = new Vector2(x * CellSize, y * CellSize);
+                Vector2 position = new Vector2(x * TileSize, y * TileSize);
                 cell.Draw(spriteBatch, position);
             }
         }
     }
-
-
-
 
     public static TileMap FromFile(ContentManager content, string fileName)
     {
@@ -109,7 +133,7 @@ public class TileMap
                     }
 
                     // Process each cell in the row
-                    for(int x = 0; x < columnCount; x++)
+                    for (int x = 0; x < columnCount; x++)
                     {
                         // Calculate the index of the cell in the array
                         int index = y * columnCount + x;
