@@ -7,7 +7,7 @@
         <Region name="bat-1" x="320" y="160" width="80" height="80" />
         <Region name="bat-2" x="320" y="240" width="80" height="80" />
         <Region name="bat-3" x="400" y="0" width="80" height="80" />
-        <Region name="title-card" x="0" y="320" width="618" height="250" />
+        <Region name="title-card" x="0" y="320" width="751" height="240" />
     </Regions>
     <Animations>
         <Animation name="slime-animation" delay="200">
