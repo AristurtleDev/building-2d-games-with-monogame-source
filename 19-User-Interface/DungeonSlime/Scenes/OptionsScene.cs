@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Security.AccessControl;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using MonoGameLibrary.Scenes;
-using MonoGameLibrary.UI;
 
 namespace DungeonSlime.Scenes;
 
@@ -46,12 +43,6 @@ public class OptionsScene : Scene
     // The color tint to apply to the panel and its elements that are no active.
     private Color _disabledColor = new Color(70, 86, 130, 255);
 
-    // Repeatable background
-    private Texture2D _backgroundTexture;
-    private Rectangle _backgroundDestination;
-    private Vector2 _backgroundOffset;
-    private float _scrollSpeed = 50.0f;
-
     // The sprite that displays the text Game Options inside a stylized container.
     private Sprite _gameOptionsSprite;
 
@@ -74,8 +65,8 @@ public class OptionsScene : Scene
     private Sprite _modeDarkButtonSprite;
     private AnimatedSprite _modeDarkButtonAnimatedSprite;
 
-    private AnimatedSprite _enterAnimatedSprite;
-    private AnimatedSprite _escapeAnimatedSprite;
+    private Sprite _enterLabelSprite;
+    private Sprite _escapeLabelSprite;
 
 
     public override void Initialize()
@@ -86,14 +77,6 @@ public class OptionsScene : Scene
         // While on the title screen, we can enable exit on escape so the player
         // can close the game by pressing the escape key.
         Core.ExitOnEscape = false;
-
-        _backgroundOffset = Vector2.Zero;
-        _backgroundDestination = new Rectangle(
-            0,
-            0,
-            Core.GraphicsDevice.PresentationParameters.BackBufferWidth,
-            Core.GraphicsDevice.PresentationParameters.BackBufferHeight
-        );
 
         // Select the Speed panel by default
         _selectedPanel = Panel.Speed;
@@ -115,80 +98,69 @@ public class OptionsScene : Scene
 
     public override void LoadContent()
     {
-        TextureAtlas uiAtlas = TextureAtlas.FromFile(Content, "images/ui-atlas-definition.xml");
+        TextureAtlas uiAtlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
 
-        // Load the pattern used for the repeatable moving background
-        _backgroundTexture = Content.Load<Texture2D>("images/background");
-
-        _gameOptionsSprite = uiAtlas.CreateSprite("game-options");
+        _gameOptionsSprite = uiAtlas.CreateSprite("game-options-label");
 
         // Create a sprite for both the speed panel and mode panel based on the same region
         _speedPanel = uiAtlas.CreateSprite("panel");
         _modePanel = uiAtlas.CreateSprite("panel");
 
         // Create the sprite for the Speed panel label text
-        _speedSprite = uiAtlas.CreateSprite("speed");
+        _speedSprite = uiAtlas.CreateSprite("speed-label");
 
         // Create the sprite for the Mode panel label text
-        _modeSprite = uiAtlas.CreateSprite("mode");
+        _modeSprite = uiAtlas.CreateSprite("mode-label");
 
         // Create the sprite and animated sprite for the speed slow button
-        _speedSlowButtonSprite = uiAtlas.CreateSprite("slow");
+        _speedSlowButtonSprite = uiAtlas.CreateSprite("slow-button-not-selected");
         _speedSlowButtonSprite.CenterOrigin();
 
-        _speedSlowButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("slow-selected");
+        _speedSlowButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("slow-button-selected-animation");
         _speedSlowButtonAnimatedSprite.CenterOrigin();
 
         // Create the sprite and the animated sprite for the speed normal button;
-        _speedNormalButtonSprite = uiAtlas.CreateSprite("normal");
+        _speedNormalButtonSprite = uiAtlas.CreateSprite("normal-button-not-selected");
         _speedNormalButtonSprite.CenterOrigin();
 
-        _speedNormalButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("normal-selected");
+        _speedNormalButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("normal-button-selected-animation");
         _speedNormalButtonAnimatedSprite.CenterOrigin();
 
         // Create the sprite and the animated sprite for the speed fast button;
-        _speedFastButtonSprite = uiAtlas.CreateSprite("fast");
+        _speedFastButtonSprite = uiAtlas.CreateSprite("fast-button-not-selected");
         _speedFastButtonSprite.CenterOrigin();
 
-        _speedFastButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("fast-selected");
+        _speedFastButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("fast-button-selected-animation");
         _speedFastButtonAnimatedSprite.CenterOrigin();
 
         // Create the sprite and the animated sprite for the mode normal button;
-        _modeNormalButtonSprite = uiAtlas.CreateSprite("normal");
+        _modeNormalButtonSprite = uiAtlas.CreateSprite("normal-button-not-selected");
         _modeNormalButtonSprite.CenterOrigin();
 
-        _modeNormalButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("normal-selected");
+        _modeNormalButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("normal-button-selected-animation");
         _modeNormalButtonAnimatedSprite.CenterOrigin();
 
         // Create the sprite and the animated sprite for the mode dark button;
-        _modeDarkButtonSprite = uiAtlas.CreateSprite("dark");
+        _modeDarkButtonSprite = uiAtlas.CreateSprite("dark-button-not-selected");
         _modeDarkButtonSprite.CenterOrigin();
 
-        _modeDarkButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("dark-selected");
+        _modeDarkButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("dark-button-selected-animation");
         _modeDarkButtonAnimatedSprite.CenterOrigin();
 
         // Create the enter and exit animated sprites
-        _enterAnimatedSprite = uiAtlas.CreateAnimatedSprite("enter");
-        // _enterAnimatedSprite.Origin = new Vector2(0, _enterAnimatedSprite.Height);
-        // _enterAnimatedSprite.CenterOrigin();
 
-        _escapeAnimatedSprite = uiAtlas.CreateAnimatedSprite("escape");
-        // _escapeAnimatedSprite.CenterOrigin();
+        _enterLabelSprite = uiAtlas.CreateSprite("enter-label");
+
+        _escapeLabelSprite = uiAtlas.CreateSprite("escape-label");
     }
 
     public override void Update(GameTime gameTime)
     {
-        // Update the offsets for the background pattern wrapping
-        _backgroundOffset.X += _scrollSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        _backgroundOffset.Y -= _scrollSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-        // Ensure that the offset doesn't go beyond the texture bounds so it's a seamless wrap
-        _backgroundOffset.X %= _backgroundTexture.Width;
-        _backgroundOffset.Y %= _backgroundTexture.Height;
-
-        // Update the enter and escape animated sprites
-        _enterAnimatedSprite.Update(gameTime);
-        _escapeAnimatedSprite.Update(gameTime);
+        // If escape is pressed, go back to the title scene
+        if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Escape))
+        {
+            Core.ChangeScene(new TitleScene());
+        }
 
         if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Down) || Core.Input.Keyboard.WasKeyJustPressed(Keys.Up))
         {
@@ -327,12 +299,11 @@ public class OptionsScene : Scene
 
     public override void Draw(GameTime gameTime)
     {
-
         Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
         _gameOptionsSprite.Draw(Core.SpriteBatch, new Vector2(112, 20));
 
-        _enterAnimatedSprite.Draw(Core.SpriteBatch,new Vector2(750, 24));
-        _escapeAnimatedSprite.Draw(Core.SpriteBatch,new Vector2(950, 24));
+        _enterLabelSprite.Draw(Core.SpriteBatch, new Vector2(750, 24));
+        _escapeLabelSprite.Draw(Core.SpriteBatch, new Vector2(950, 24));
 
 
         _speedPanel.Draw(Core.SpriteBatch, new Vector2(198, 139));
