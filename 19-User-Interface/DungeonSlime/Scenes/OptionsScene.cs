@@ -4,29 +4,33 @@ using Microsoft.Xna.Framework.Input;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using MonoGameLibrary.Scenes;
+using MonoGameLibrary.UI;
 
 namespace DungeonSlime.Scenes;
 
 public class OptionsScene : Scene
 {
+    private GameOptions _options;
+
     private enum Panel
     {
         Speed,
         Mode
     }
 
-    private enum Speed
-    {
-        Slow,
-        Normal,
-        Fast
-    }
+    private UISprite _speedUIPanel;
+    private UISprite _modeUIPanel;
+    private UISprite _speedUILabel;
+    private UISprite _modeUILabel;
+    private UISprite _gameOptionsUILabel;
+    private UISprite _enterUILabel;
+    private UISprite _escapeUILabel;
+    private UIButton _speedSlowUIButton;
+    private UIButton _speedNormalUIButton;
+    private UIButton _speedFastUIButton;
+    private UIButton _modeNormalUIButton;
+    private UIButton _modeDarkUIButton;
 
-    private enum Mode
-    {
-        Normal,
-        Dark
-    }
 
     // Tracks which panel is the current active (selected) panel.
     private Panel _selectedPanel;
@@ -98,60 +102,52 @@ public class OptionsScene : Scene
 
     public override void LoadContent()
     {
-        TextureAtlas uiAtlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
+        TextureAtlas atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
 
-        _gameOptionsSprite = uiAtlas.CreateSprite("game-options-label");
+        // Get the sprites for the ui elements
+        Sprite panelSprite = atlas.CreateSprite("panel");
+        Sprite gameOptionsSprite = atlas.CreateSprite("game-options-label");
+        Sprite enterLabelSprite = atlas.CreateSprite("enter-label");
+        Sprite escapeLabelSprite = atlas.CreateSprite("escape-label");
+        Sprite speedLabelSprite = atlas.CreateSprite("speed-label");
+        Sprite modeLabelSprite = atlas.CreateSprite("mode-label");
+        Sprite slowSprite = atlas.CreateSprite("slow-button-not-selected");
+        Sprite normalSprite = atlas.CreateSprite("normal-button-not-selected");
+        Sprite fastSprite = atlas.CreateSprite("fast-button-not-selected");
+        Sprite darkSprite = atlas.CreateSprite("dark-button-not-selected");
+        AnimatedSprite slowSelectedSprite = atlas.CreateAnimatedSprite("slow-button-selected-animation");
+        AnimatedSprite normalSelectedSprite = atlas.CreateAnimatedSprite("normal-button-selected-animation");
+        AnimatedSprite fastSelectedSprite = atlas.CreateAnimatedSprite("fast-button-selected-animation");
+        AnimatedSprite darkSelectedSprite = atlas.CreateAnimatedSprite("dark-button-selected-animation");
 
-        // Create a sprite for both the speed panel and mode panel based on the same region
-        _speedPanel = uiAtlas.CreateSprite("panel");
-        _modePanel = uiAtlas.CreateSprite("panel");
+        // create the ui buttons
+        _speedSlowUIButton = new UIButton("Slow Speed", slowSprite, slowSelectedSprite, true);
+        _speedNormalUIButton = new UIButton("Normal Speed", normalSprite, normalSelectedSprite, true);
+        _speedFastUIButton = new UIButton("Fast Speed", fastSprite, fastSelectedSprite, true);
+        _modeNormalUIButton = new UIButton("Normal Mode", normalSprite, normalSelectedSprite, true);
+        _modeDarkUIButton = new UIButton("Dark Mode", darkSprite, darkSelectedSprite, true);
 
-        // Create the sprite for the Speed panel label text
-        _speedSprite = uiAtlas.CreateSprite("speed-label");
+        // Create the ui labels
+        _gameOptionsUILabel = new UISprite("Game Options", gameOptionsSprite);
+        _enterUILabel = new UISprite("Enter Ok", enterLabelSprite);
+        _escapeUILabel = new UISprite("Escape Cancel", escapeLabelSprite);
+        _modeUILabel = new UISprite("Mode", modeLabelSprite);
+        _speedUILabel = new UISprite("Speed", speedLabelSprite);
 
-        // Create the sprite for the Mode panel label text
-        _modeSprite = uiAtlas.CreateSprite("mode-label");
+        // Create the panels
+        _speedUIPanel = new UISprite("Speed Panel", panelSprite);
+        _modeUIPanel = new UISprite("Mode Panel", panelSprite);
 
-        // Create the sprite and animated sprite for the speed slow button
-        _speedSlowButtonSprite = uiAtlas.CreateSprite("slow-button-not-selected");
-        _speedSlowButtonSprite.CenterOrigin();
+        // Add the children of the speed ui panel
+        _speedUIPanel.AddChild(_speedUILabel);
+        _speedUIPanel.AddChild(_speedSlowUIButton);
+        _speedUIPanel.AddChild(_speedNormalUIButton);
+        _speedUIPanel.AddChild(_speedFastUIButton);
 
-        _speedSlowButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("slow-button-selected-animation");
-        _speedSlowButtonAnimatedSprite.CenterOrigin();
-
-        // Create the sprite and the animated sprite for the speed normal button;
-        _speedNormalButtonSprite = uiAtlas.CreateSprite("normal-button-not-selected");
-        _speedNormalButtonSprite.CenterOrigin();
-
-        _speedNormalButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("normal-button-selected-animation");
-        _speedNormalButtonAnimatedSprite.CenterOrigin();
-
-        // Create the sprite and the animated sprite for the speed fast button;
-        _speedFastButtonSprite = uiAtlas.CreateSprite("fast-button-not-selected");
-        _speedFastButtonSprite.CenterOrigin();
-
-        _speedFastButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("fast-button-selected-animation");
-        _speedFastButtonAnimatedSprite.CenterOrigin();
-
-        // Create the sprite and the animated sprite for the mode normal button;
-        _modeNormalButtonSprite = uiAtlas.CreateSprite("normal-button-not-selected");
-        _modeNormalButtonSprite.CenterOrigin();
-
-        _modeNormalButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("normal-button-selected-animation");
-        _modeNormalButtonAnimatedSprite.CenterOrigin();
-
-        // Create the sprite and the animated sprite for the mode dark button;
-        _modeDarkButtonSprite = uiAtlas.CreateSprite("dark-button-not-selected");
-        _modeDarkButtonSprite.CenterOrigin();
-
-        _modeDarkButtonAnimatedSprite = uiAtlas.CreateAnimatedSprite("dark-button-selected-animation");
-        _modeDarkButtonAnimatedSprite.CenterOrigin();
-
-        // Create the enter and exit animated sprites
-
-        _enterLabelSprite = uiAtlas.CreateSprite("enter-label");
-
-        _escapeLabelSprite = uiAtlas.CreateSprite("escape-label");
+        // Add the children of the mode ui panel
+        _modeUIPanel.AddChild(_modeUILabel);
+        _modeUIPanel.AddChild(_modeNormalUIButton);
+        _modeUIPanel.AddChild(_modeDarkUIButton);
     }
 
     public override void Update(GameTime gameTime)

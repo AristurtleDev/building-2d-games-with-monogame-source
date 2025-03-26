@@ -1,42 +1,49 @@
-using System;
 using Microsoft.Xna.Framework;
 using MonoGameLibrary.Graphics;
 
 namespace MonoGameLibrary.UI;
 
-public class UIButton
+public class UIButton : UISprite
 {
-    private Sprite _currentSprite;
+    private Sprite _normalSprite;
+    private Sprite _selectedSprite;
 
-    public Sprite NormalSprite { get; set; }
-    public Sprite SelectedSprite { get; set; }
-
-    public Action MoveUp { get; set; }
-    public Action MoveDown { get; set; }
-    public Action MoveLeft { get; set; }
-    public Action MoveRight { get; set; }
-    public Action Action { get; set; }
     public bool IsSelected { get; set; }
 
-    public UIButton()
+    public UIButton(string name, Sprite normalSprite, Sprite selectedSprite, bool centerOrigin)
+        : base(name, normalSprite, centerOrigin)
     {
+        _normalSprite = normalSprite;
+        _selectedSprite = selectedSprite;
 
-    }
-
-    public void Update(GameTime gameTime)
-    {
-
-        if(IsSelected)
+        if (centerOrigin)
         {
-            if(SelectedSprite is AnimatedSprite animatedSprite)
-            {
-                animatedSprite.Update(gameTime);
-            }
-
-            if()
+            CenterOrigin();
         }
-
     }
 
+    public UIButton(string name, UIElement parent, Sprite normalSprite, Sprite selectedSprite, bool centerOrigin)
+        : base(name, normalSprite, parent, centerOrigin)
+    {
+        _normalSprite = normalSprite;
+        _selectedSprite = selectedSprite;
 
+        if (centerOrigin)
+        {
+            CenterOrigin();
+        }
+    }
+
+    public override void CenterOrigin()
+    {
+        _normalSprite.CenterOrigin();
+        _selectedSprite.CenterOrigin();
+    }
+
+    public override void Update(GameTime gameTime)
+    {
+        Sprite = IsSelected ? _selectedSprite : _normalSprite;
+
+        base.Update(gameTime);
+    }
 }

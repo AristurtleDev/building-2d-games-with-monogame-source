@@ -4,30 +4,15 @@ using Microsoft.Xna.Framework.Input;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using MonoGameLibrary.Scenes;
+using MonoGameLibrary.UI;
 
 namespace DungeonSlime.Scenes;
 
 public class TitleScene : Scene
 {
-    // The font to use to render normal text.
-    private SpriteFont _font;
-
-    // The sprite to draw for the stylized title
-    private Sprite _titleSprite;
-
-    // The position to draw the title sprite at.
-    private Vector2 _titlePos;
-
-    private Sprite _startButtonSprite;
-
-    private AnimatedSprite _startButtonSelectedAnimatedSprite;
-    private bool _startButtonSelected;
-    private Vector2 _startButtonPos;
-
-    private Sprite _optionsButtonSprite;
-    private AnimatedSprite _optionsButtonAnimatedSprite;
-    private Vector2 _optionsButtonPos;
-
+    private UISprite _titleUISprite;
+    private UIButton _startUIButton;
+    private UIButton _optionsUIButton;
 
     public override void Initialize()
     {
@@ -41,58 +26,75 @@ public class TitleScene : Scene
         // Get the bounds of the screen for position calculations
         Rectangle screenBounds = Core.GraphicsDevice.PresentationParameters.Bounds;
 
-        // Precalculate the positions and origins for texts and the slime sprite
-        // so we're not calculating it every draw frame.
-        _titlePos = new Vector2(
-            screenBounds.Width * 0.5f,
-            80 + _titleSprite.Height * 0.5f);
-
-        // Center the origin of the title sprite.
-        _titleSprite.CenterOrigin();
+        // Precalculate the position of the title ui sprite so we don't have to
+        // calculate it each frame.
+        _titleUISprite.Position = new Point(screenBounds.Center.X, 80 + (int)(_titleUISprite.Sprite.Height * 0.5f));
 
         // Precalculate the position of the start button
-        _startButtonPos = new Vector2(screenBounds.Center.X - _startButtonSelectedAnimatedSprite.Width, screenBounds.Bottom - 100);
-
-        // Center the origin of the start button
-        _startButtonSprite.CenterOrigin();
-        _startButtonSelectedAnimatedSprite.CenterOrigin();
+        _startUIButton.Position = new Point(screenBounds.Center.X - (int)_startUIButton.Sprite.Width, screenBounds.Bottom - 100);
 
         // Precalculate the position of the options button
-        _optionsButtonPos = new Vector2(screenBounds.Center.X + _optionsButtonAnimatedSprite.Width, screenBounds.Bottom - 100);
+        _optionsUIButton.Position = new Point(screenBounds.Center.X + (int)_optionsUIButton.Sprite.Width, screenBounds.Bottom - 100);
 
-        // Center the origin of the options button.
-        _optionsButtonSprite.CenterOrigin();
-        _optionsButtonAnimatedSprite.CenterOrigin();
+        // Set the start button as the initial selected button
+        _startUIButton.IsSelected = true;
     }
 
     public override void LoadContent()
     {
-        // Load the font for the standard txt.
-        _font = Core.Content.Load<SpriteFont>("fonts/gameFont");
-
         // Create a texture atlas from the XML configuration file.
         TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/atlas-definition.xml");
 
-        _titleSprite = atlas.CreateSprite("title-card");
+        // Get the sprite for the title ui sprite.
+        Sprite titleSprite = atlas.CreateSprite("title-card");
 
-        _startButtonSprite = atlas.CreateSprite("start-button-not-selected");
-        _startButtonSelectedAnimatedSprite = atlas.CreateAnimatedSprite("start-button-selected-animation");
+        // Center the origin of sprite for the title ui sprite.
+        titleSprite.CenterOrigin();
 
-        _optionsButtonSprite = atlas.CreateSprite("options-button-not-selected");
-        _optionsButtonAnimatedSprite = atlas.CreateAnimatedSprite("options-button-selected-animation");
+        // Create the title ui sprite.
+        _titleUISprite = new UISprite("Title", titleSprite);
+
+        // Get the sprites for the start ui button
+        Sprite startButtonNormalSprite = atlas.CreateSprite("start-button-not-selected");
+        AnimatedSprite startButtonSelectedSprite = atlas.CreateAnimatedSprite("start-button-selected-animation");
+
+        // Create the start ui button
+        _startUIButton = new UIButton("Start Button", startButtonNormalSprite, startButtonSelectedSprite, true);
+
+        // Get the sprites for the options ui button
+        Sprite optionsButtonNormalSprite = atlas.CreateSprite("options-button-not-selected");
+        AnimatedSprite optionsButtonSelectedSprite = atlas.CreateAnimatedSprite("options-button-selected-animation");
+
+        // Create the options button
+        _optionsUIButton = new UIButton("Options Button", optionsButtonNormalSprite, optionsButtonSelectedSprite, true);
     }
 
     public override void Update(GameTime gameTime)
     {
-        // If the user presses enter, switch to the game scene.
-        if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Enter))
+        _startUIButton.Update(gameTime);
+        _optionsUIButton.Update(gameTime);
+
+        if (_startUIButton.IsSelected && Core.Input.Keyboard.WasKeyJustPressed(Keys.Right))
         {
-            Core.ChangeScene(new OptionsScene());
+            _startUIButton.IsSelected = false;
+            _optionsUIButton.IsSelected = true;
+        }
+        else if (_optionsUIButton.IsSelected && Core.Input.Keyboard.WasKeyJustPressed(Keys.Left))
+        {
+            _startUIButton.IsSelected = true;
+            _optionsUIButton.IsSelected = false;
         }
 
-        if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Left) || Core.Input.Keyboard.WasKeyJustPressed(Keys.Right))
+        if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Enter))
         {
-            _startButtonSelected = !_startButtonSelected;
+            if (_startUIButton.IsSelected)
+            {
+                Core.ChangeScene(new GameScene());
+            }
+            else if (_optionsUIButton.IsSelected)
+            {
+                Core.ChangeScene(new OptionsScene());
+            }
         }
     }
 
@@ -101,19 +103,14 @@ public class TitleScene : Scene
         // Begin the sprite batch to prepare for rendering.
         Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-        _titleSprite.Draw(Core.SpriteBatch, _titlePos);
+        // Draw the title sprite.
+        _titleUISprite.Draw(Core.SpriteBatch);
 
         // Draw the start button
-        if (_startButtonSelected)
-        {
-            _startButtonSelectedAnimatedSprite.Draw(Core.SpriteBatch, _startButtonPos);
-            _optionsButtonSprite.Draw(Core.SpriteBatch, _optionsButtonPos);
-        }
-        else
-        {
-            _startButtonSprite.Draw(Core.SpriteBatch, _startButtonPos);
-            _optionsButtonAnimatedSprite.Draw(Core.SpriteBatch, _optionsButtonPos);
-        }
+        _startUIButton.Draw(Core.SpriteBatch);
+
+        // Draw the options button
+        _optionsUIButton.Draw(Core.SpriteBatch);
 
         // Always end the sprite batch when finished.
         Core.SpriteBatch.End();
