@@ -9,8 +9,6 @@ namespace DungeonSlime.Scenes;
 
 public class TitleScene : Scene
 {
-    private const string PRESS_ENTER = "Press Enter To Start";
-
     // The font to use to render normal text.
     private SpriteFont _font;
 
@@ -20,11 +18,16 @@ public class TitleScene : Scene
     // The position to draw the title sprite at.
     private Vector2 _titlePos;
 
-    // The position to draw the press enter text at.
-    private Vector2 _pressEnterPos;
+    private Sprite _startButtonSprite;
 
-    // The origin to set for the press enter text when drawing it.
-    private Vector2 _pressEnterOrigin;
+    private AnimatedSprite _startButtonSelectedAnimatedSprite;
+    private bool _startButtonSelected;
+    private Vector2 _startButtonPos;
+
+    private Sprite _optionsButtonSprite;
+    private AnimatedSprite _optionsButtonAnimatedSprite;
+    private Vector2 _optionsButtonPos;
+
 
     public override void Initialize()
     {
@@ -47,17 +50,19 @@ public class TitleScene : Scene
         // Center the origin of the title sprite.
         _titleSprite.CenterOrigin();
 
-        // Precalculate the position of for the press enter text so that it is
-        // centered horizontally and place 100 pixels above the bottom of the
-        // screen.
-        _pressEnterPos = new Vector2(
-            screenBounds.Width * 0.5f,
-            screenBounds.Height - 100
-        );
+        // Precalculate the position of the start button
+        _startButtonPos = new Vector2(screenBounds.Center.X - _startButtonSelectedAnimatedSprite.Width, screenBounds.Bottom - 100);
 
-        // Precalculate the center origin of the press enter text.
-        Vector2 pressEnterSize = _font.MeasureString(PRESS_ENTER);
-        _pressEnterOrigin = pressEnterSize * 0.5f;
+        // Center the origin of the start button
+        _startButtonSprite.CenterOrigin();
+        _startButtonSelectedAnimatedSprite.CenterOrigin();
+
+        // Precalculate the position of the options button
+        _optionsButtonPos = new Vector2(screenBounds.Center.X + _optionsButtonAnimatedSprite.Width, screenBounds.Bottom - 100);
+
+        // Center the origin of the options button.
+        _optionsButtonSprite.CenterOrigin();
+        _optionsButtonAnimatedSprite.CenterOrigin();
     }
 
     public override void LoadContent()
@@ -69,6 +74,12 @@ public class TitleScene : Scene
         TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/atlas-definition.xml");
 
         _titleSprite = atlas.CreateSprite("title-card");
+
+        _startButtonSprite = atlas.CreateSprite("start-button-not-selected");
+        _startButtonSelectedAnimatedSprite = atlas.CreateAnimatedSprite("start-button-selected-animation");
+
+        _optionsButtonSprite = atlas.CreateSprite("options-button-not-selected");
+        _optionsButtonAnimatedSprite = atlas.CreateAnimatedSprite("options-button-selected-animation");
     }
 
     public override void Update(GameTime gameTime)
@@ -77,6 +88,11 @@ public class TitleScene : Scene
         if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Enter))
         {
             Core.ChangeScene(new OptionsScene());
+        }
+
+        if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Left) || Core.Input.Keyboard.WasKeyJustPressed(Keys.Right))
+        {
+            _startButtonSelected = !_startButtonSelected;
         }
     }
 
@@ -87,8 +103,17 @@ public class TitleScene : Scene
 
         _titleSprite.Draw(Core.SpriteBatch, _titlePos);
 
-        // Draw the press enter text
-        Core.SpriteBatch.DrawString(_font, PRESS_ENTER, _pressEnterPos, Color.White, 0.0f, _pressEnterOrigin, 1.0f, SpriteEffects.None, 0.0f);
+        // Draw the start button
+        if (_startButtonSelected)
+        {
+            _startButtonSelectedAnimatedSprite.Draw(Core.SpriteBatch, _startButtonPos);
+            _optionsButtonSprite.Draw(Core.SpriteBatch, _optionsButtonPos);
+        }
+        else
+        {
+            _startButtonSprite.Draw(Core.SpriteBatch, _startButtonPos);
+            _optionsButtonAnimatedSprite.Draw(Core.SpriteBatch, _optionsButtonPos);
+        }
 
         // Always end the sprite batch when finished.
         Core.SpriteBatch.End();
