@@ -36,6 +36,9 @@ public class TitleScene : Scene
         // Precalculate the position of the options button
         _optionsUIButton.Position = new Point(screenBounds.Center.X + (int)_optionsUIButton.Sprite.Width, screenBounds.Bottom - 100);
 
+        _startUIButton.CenterOrigin();
+        _optionsUIButton.CenterOrigin();
+
         // Set the start button as the initial selected button
         _startUIButton.IsSelected = true;
     }
@@ -52,21 +55,21 @@ public class TitleScene : Scene
         titleSprite.CenterOrigin();
 
         // Create the title ui sprite.
-        _titleUISprite = new UISprite("Title", titleSprite);
+        _titleUISprite = new UISprite(titleSprite);
 
         // Get the sprites for the start ui button
-        Sprite startButtonNormalSprite = atlas.CreateSprite("start-button-not-selected");
-        AnimatedSprite startButtonSelectedSprite = atlas.CreateAnimatedSprite("start-button-selected-animation");
+        Sprite startButtonNormalSprite = atlas.CreateSprite("start-button");
+        AnimatedSprite startButtonSelectedSprite = atlas.CreateAnimatedSprite("start-button-animation");
 
         // Create the start ui button
-        _startUIButton = new UIButton("Start Button", startButtonNormalSprite, startButtonSelectedSprite, true);
+        _startUIButton = new UIButton(startButtonNormalSprite, startButtonSelectedSprite);
 
         // Get the sprites for the options ui button
-        Sprite optionsButtonNormalSprite = atlas.CreateSprite("options-button-not-selected");
-        AnimatedSprite optionsButtonSelectedSprite = atlas.CreateAnimatedSprite("options-button-selected-animation");
+        Sprite optionsButtonNormalSprite = atlas.CreateSprite("options-button");
+        AnimatedSprite optionsButtonSelectedSprite = atlas.CreateAnimatedSprite("options-button-animation");
 
         // Create the options button
-        _optionsUIButton = new UIButton("Options Button", optionsButtonNormalSprite, optionsButtonSelectedSprite, true);
+        _optionsUIButton = new UIButton(optionsButtonNormalSprite, optionsButtonSelectedSprite);
     }
 
     public override void Update(GameTime gameTime)

@@ -8,47 +8,35 @@
     <Region name="bat-2" x="320" y="240" width="80" height="80" />
     <Region name="bat-3" x="400" y="0" width="80" height="80" />
     <Region name="title-card" x="0" y="770" width="751" height="240" />
-
-    <Region name="slow-button-not-selected" x="504" y="0" width="208" height="43" />
+    <Region name="slow-button" x="504" y="0" width="208" height="43" />
     <Region name="slow-button-selected-in" x="480" y="44" width="256" height="52" />
     <Region name="slow-button-selected-out" x="480" y="96" width="256" height="52" />
-
-    <Region name="normal-button-not-selected" x="764" y="0" width="208" height="43" />
+    <Region name="normal-button" x="764" y="0" width="208" height="43" />
     <Region name="normal-button-selected-in" x="740" y="44" width="256" height="52" />
     <Region name="normal-button-selected-out" x="740" y="96" width="256" height="52" />
-
-    <Region name="fast-button-not-selected" x="504" y="160" width="208" height="43" />
+    <Region name="fast-button" x="504" y="160" width="208" height="43" />
     <Region name="fast-button-selected-in" x="480" y="204" width="256" height="52" />
     <Region name="fast-button-selected-out" x="480" y="256" width="256" height="52" />
-
-    <Region name="dark-button-not-selected" x="764" y="160" width="208" height="43" />
+    <Region name="dark-button" x="764" y="160" width="208" height="43" />
     <Region name="dark-button-selected-in" x="740" y="204" width="256" height="52" />
     <Region name="dark-button-selected-out" x="740" y="256" width="256" height="52" />
-
-    <Region name="accept-button-not-selected" x="24" y="324" width="208" height="43" />
+    <Region name="accept-button" x="24" y="324" width="208" height="43" />
     <Region name="accept-button-selected-in" x="0" y="368" width="256" height="52" />
     <Region name="accept-button-selected-out" x="0" y="420" width="256" height="52" />
-
-    <Region name="cancel-button-not-selected" x="280" y="324" width="208" height="43" />
+    <Region name="cancel-button" x="280" y="324" width="208" height="43" />
     <Region name="cancel-button-selected-in" x="256" y="368" width="256" height="52" />
     <Region name="cancel-button-selected-out" x="256" y="420" width="256" height="52" />
-
-    <Region name="start-button-not-selected" x="536" y="324" width="208" height="43" />
+    <Region name="start-button" x="536" y="324" width="208" height="43" />
     <Region name="start-button-selected-in" x="512" y="368" width="256" height="52" />
     <Region name="start-button-selected-out" x="512" y="420" width="256" height="52" />
-
-    <Region name="options-button-not-selected" x="792" y="324" width="208" height="43" />
+    <Region name="options-button" x="792" y="324" width="208" height="43" />
     <Region name="options-button-selected-in" x="768" y="368" width="256" height="52" />
     <Region name="options-button-selected-out" x="768" y="420" width="256" height="52" />
-
     <Region name="game-options-label" x="0" y="473" width="499" height="72" />
-
     <Region name="enter-label" x="503" y="478" width="149" height="28" />
     <Region name="escape-label" x="656" y="478" width="219" height="28" />
-
     <Region name="mode-label" x="503" y="510" width="156" height="35" />
     <Region name="speed-label" x="663" y="510" width="193" height="35" />
-
     <Region name="panel" x="0" y="549" width="849" height="221" />
   </Regions>
   <Animations>
@@ -62,42 +50,35 @@
       <Frame region="bat-1" />
       <Frame region="bat-3" />
     </Animation>
-    <Animation name="slow-button-selected-animation" delay="300">
+    <Animation name="slow-button-animation" delay="300">
       <Frame region="slow-button-selected-in" />
       <Frame region="slow-button-selected-out" />
     </Animation>
-
-    <Animation name="normal-button-selected-animation" delay="300">
+    <Animation name="normal-button-animation" delay="300">
       <Frame region="normal-button-selected-in" />
       <Frame region="normal-button-selected-out" />
     </Animation>
-
-    <Animation name="fast-button-selected-animation" delay="300">
+    <Animation name="fast-button-animation" delay="300">
       <Frame region="fast-button-selected-in" />
       <Frame region="fast-button-selected-out" />
     </Animation>
-
-    <Animation name="dark-button-selected-animation" delay="300">
+    <Animation name="dark-button-animation" delay="300">
       <Frame region="dark-button-selected-in" />
       <Frame region="dark-button-selected-out" />
     </Animation>
-
-    <Animation name="accept-button-selected-animation" delay="300">
+    <Animation name="accept-button-animation" delay="300">
       <Frame region="accept-button-selected-in" />
       <Frame region="accept-button-selected-out" />
     </Animation>
-
-    <Animation name="cancel-button-selected-animation" delay="300">
+    <Animation name="cancel-button-animation" delay="300">
       <Frame region="cancel-button-selected-in" />
       <Frame region="cancel-button-selected-out" />
     </Animation>
-
-    <Animation name="start-button-selected-animation" delay="300">
+    <Animation name="start-button-animation" delay="300">
       <Frame region="start-button-selected-in" />
       <Frame region="start-button-selected-out" />
     </Animation>
-
-    <Animation name="options-button-selected-animation" delay="300">
+    <Animation name="options-button-animation" delay="300">
       <Frame region="options-button-selected-in" />
       <Frame region="options-button-selected-out" />
     </Animation>
