@@ -83,7 +83,7 @@ public class UIElement : IEnumerable<UIElement>
             }
 
             // otherwise, there is a parent, and the parent is not visible, so
-            // all of the parent's children are also disabled.
+            // all of the parent's children are also invisible.
             return false;
         }
         set => _visible = value;
@@ -98,7 +98,11 @@ public class UIElement : IEnumerable<UIElement>
         _children = new List<UIElement>();
         Enabled = true;
         Visible = true;
-        Parent = parent;
+
+        if(parent != null)
+        {
+            Parent.AddChild(this);
+        }
     }
 
     /// <summary>
