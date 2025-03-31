@@ -25,11 +25,11 @@
 /processorParam:Quality=Best
 /build:audio/collect.wav
 
-#begin audio/menu.wav
+#begin audio/ui.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/menu.wav
+/build:audio/ui.wav
 
 #begin audio/theme.ogg
 /importer:OggImporter

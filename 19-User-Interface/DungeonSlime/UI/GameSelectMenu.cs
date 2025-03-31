@@ -1,317 +1,286 @@
-using System;
+using DungeonSlime.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
+using MonoGameLibrary.UI;
 
 namespace DungeonSlime.UI;
 
-public class GameSelectMenu
+public class GameSelectMenu : UIElement
 {
     private GameOptions _options;
 
-    // The select label
-    private Sprite _selectLabelSprite;
-    private Vector2 _selectSpritePosition;
+    private UISprite _speedPanel;
+    private UISprite _modePanel;
+    private UIButton _slowSpeedButton;
+    private UIButton _normalSpeedButton;
+    private UIButton _fastSpeedButton;
+    private UIButton _normalModeButton;
+    private UIButton _darkModeButton;
+    private UIButton _acceptButton;
+    private UIButton _cancelButton;
 
-    // The enter label
-    private Sprite _enterLabelSprite;
-    private Vector2 _enterLabelSpritePosition;
+    // The sound effect to play when a UI action is performed.
+    private SoundEffect _uiSoundEffect;
 
-    // The escape label
-    private Sprite _escapeLabelSprite;
-    private Vector2 _escapeLabelSpritePosition;
-
-    // The speed panel
-    private Sprite _speedPanelSprite;
-    private Vector2 _speedPanelSpritePosition;
-
-    // The speed panel label
-    private Sprite _speedPanelLabelSprite;
-    private Vector2 _speedPanelLabelSpritePosition;
-
-    // The slow speed button
-    private Sprite _slowSpeedButtonSprite;
-    private AnimatedSprite _slowSpeedButtonSelectedSprite;
-    private Vector2 _slowSpeedButtonPosition;
-    private bool _isSlowSpeedButtonSelected;
-
-    // The normal speed button
-    private Sprite _normalSpeedButtonSprite;
-    private AnimatedSprite _normalSpeedButtonSelectedSprite;
-    private Vector2 _normalSpeedButtonPosition;
-    private bool _isNormalSpeedButtonSelected;
-
-    // The fast speed button
-    private Sprite _fastSpeedButtonSprite;
-    private AnimatedSprite _fastSpeedButtonSelectedSprite;
-    private Vector2 _fastSpeedButtonPosition;
-    private bool _isFastSpeedButtonSelected;
-
-    // The mode panel
-    private Sprite _modePanelSprite;
-    private Vector2 _modePanelSpritePosition;
-
-    // The mode panel label
-    private Sprite _modePanelLabelSprite;
-    private Vector2 _modePanelLabelSpritePosition;
-
-    // The normal mode button
-    private Sprite _normalModeButtonSprite;
-    private AnimatedSprite _normalModeButtonSelectedSprite;
-    private Vector2 _normalModeButtonPosition;
-    private bool _isNormalModeButtonSelected;
-
-    // The dark mode button
-    private Sprite _darkModeButtonSprite;
-    private AnimatedSprite _darkModeButtonSelectedSprite;
-    private Vector2 _darkModeButtonPosition;
-    private bool _isDarkModeButtonSelected;
-
-    // The accept button
-    private Sprite _acceptButtonSprite;
-    private AnimatedSprite _acceptButtonSelectedSprite;
-    private Vector2 _acceptButtonPosition;
-    private bool _isAcceptButtonSelected;
-
-    // The cancel button
-    private Sprite _cancelButtonSprite;
-    private AnimatedSprite _cancelButtonSelectedSprite;
-    private Vector2 _cancelButtonPosition;
-    private bool _isCancelButtonSelected;
-
-    // The color to use for elements that are enabled
-    private Color _enabledColor = Color.White;
-
-    // The color to use for elements that are disabled
-    private Color _disabledColor = new Color(70, 86, 130, 255);
-
-    // Raised when the accept button is clicked
-    public event EventHandler Accepted;
-
-    // Raised when the cancel button is clicked
-    public event EventHandler Cancelled;
-
-    public void Initialize()
+    public GameSelectMenu()
     {
-        Rectangle screenBounds = Core.GraphicsDevice.PresentationParameters.Bounds;
-
-        // Position the select label sprite
-        _selectSpritePosition = new Vector2(112, 20);
-
-        // Position the enter label sprite
-        _enterLabelSpritePosition = new Vector2(640, 52);
-
-        // Position the escape label sprite
-        _escapeLabelSpritePosition = new Vector2(804, 52);
-
-        // Position the speed panel sprite
-        _speedPanelSpritePosition = new Vector2(198, 139);
-
-        // Position the speed label sprite
-        _speedPanelLabelSpritePosition = new Vector2(240, 181);
-
-        // Position the slow speed button
-        _slowSpeedButtonPosition = new Vector2(238, 272);
-        _slowSpeedButtonSprite.CenterOrigin();
-        _slowSpeedButtonSelectedSprite.CenterOrigin();
-
-        // Position the normal speed button
-        _normalSpeedButtonPosition = new Vector2(511, 272);
-        _normalSpeedButtonSprite.CenterOrigin();
-        _normalSpeedButtonSelectedSprite.CenterOrigin();
-
-        // Position the fast speed button
-        _fastSpeedButtonPosition = new Vector2(511, 272);
-        _fastSpeedButtonSprite.CenterOrigin();
-        _fastSpeedButtonSelectedSprite.CenterOrigin();
-
-        // Position the mode panel sprite
-        _modePanelSpritePosition = new Vector2(198, 406);
-
-        // Position the model label sprite
-        _modePanelLabelSpritePosition = new Vector2(240, 448);
-
-        // Position the normal mode button sprite
-        _normalModeButtonPosition = new Vector2(395, 535);
-        _normalModeButtonSprite.CenterOrigin();
-        _normalModeButtonSelectedSprite.CenterOrigin();
-
-        // Position the fast mode button sprite
-        _darkModeButtonPosition = new Vector2(684, 535);
-        _darkModeButtonSprite.CenterOrigin();
-        _darkModeButtonSelectedSprite.CenterOrigin();
-
-        // Position the accept button
-        _acceptButtonPosition = new Vector2(screenBounds.Center.X - _acceptButtonSprite.Width, screenBounds.Bottom - 50);
-        _acceptButtonSprite.CenterOrigin();
-        _acceptButtonSelectedSprite.CenterOrigin();
-
-        // Position the cancel button
-        _cancelButtonPosition = new Vector2(screenBounds.Center.X + _cancelButtonSprite.Width, screenBounds.Bottom - 50);
-        _cancelButtonSprite.CenterOrigin();
-        _cancelButtonSelectedSprite.CenterOrigin();
-
+        _options = new GameOptions();
+        CreateChildren();
     }
 
-    public void LoadContent()
+    private void CreateChildren()
     {
-        // Load the ui texture atlas from the XML configuration file
+        // Load the ui texture atlas from the XML configuration file.
         TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/ui-atlas-definition.xml");
 
-        // Create the select label
-        _selectLabelSprite = atlas.CreateSprite("select-label");
+        // Create the select label as a child of this menu.
+        UISprite selectLabel = AddChild<UISprite>();
+        selectLabel.Sprite = atlas.CreateSprite("select-label");
+        selectLabel.Position = new Vector2(112, 20);
 
-        // Create the enter label
-        _enterLabelSprite = atlas.CreateSprite("enter-label");
+        // Create the enter label as a child of this menu.
+        UISprite enterLabel = AddChild<UISprite>();
+        enterLabel.Sprite = atlas.CreateSprite("enter-label");
+        enterLabel.Position = new Vector2(640, 52);
 
-        // Create the escape label
-        _escapeLabelSprite = atlas.CreateSprite("escape-label");
+        // Create the escape label as a child of this menu.
+        UISprite escapeLabel = AddChild<UISprite>();
+        escapeLabel.Sprite = atlas.CreateSprite("escape-label");
+        escapeLabel.Position = new Vector2(804, 52);
 
-        // Create the speed panel
-        _speedPanelSprite = atlas.CreateSprite("panel");
+        // Create the speed panel as a child of this menu.
+        _speedPanel = AddChild<UISprite>();
+        _speedPanel.Sprite = atlas.CreateSprite("panel");
+        _speedPanel.Position = new Vector2(198, 139);
 
-        // Create the speed panel label
-        _speedPanelLabelSprite = atlas.CreateSprite("speed-label");
+        // Create the mode panel as a child of this menu.
+        _modePanel = AddChild<UISprite>();
+        _modePanel.Sprite = atlas.CreateSprite("panel");
+        _modePanel.Position = new Vector2(198, 406);
 
-        // Create the slow speed button
-        _slowSpeedButtonSprite = atlas.CreateSprite("slow-button");
-        _slowSpeedButtonSelectedSprite = atlas.CreateAnimatedSprite("slow-button-selected");
+        // Create the accept button as a child of this menu
+        _acceptButton = AddChild<UIButton>();
+        _acceptButton.NotSelectedSprite = atlas.CreateSprite("accept-button");
+        _acceptButton.NotSelectedSprite.CenterOrigin();
+        _acceptButton.SelectedSprite = atlas.CreateAnimatedSprite("accept-button-selected");
+        _acceptButton.SelectedSprite.CenterOrigin();
+        _acceptButton.Position = new Vector2(432, 670);
 
-        // Create the normal speed button
-        _normalSpeedButtonSprite = atlas.CreateSprite("normal-button");
-        _normalSpeedButtonSelectedSprite = atlas.CreateAnimatedSprite("normal-button-selected");
+        // Create the cancel button as a child of this menu
+        _cancelButton = AddChild<UIButton>();
+        _cancelButton.NotSelectedSprite = atlas.CreateSprite("cancel-button");
+        _cancelButton.NotSelectedSprite.CenterOrigin();
+        _cancelButton.SelectedSprite = atlas.CreateAnimatedSprite("cancel-button-selected");
+        _cancelButton.SelectedSprite.CenterOrigin();
+        _cancelButton.Position = new Vector2(848, 670);
 
-        // Create the fast speed button
-        _fastSpeedButtonSprite = atlas.CreateSprite("fast-button");
-        _fastSpeedButtonSelectedSprite = atlas.CreateAnimatedSprite("fast-button-selected");
+        // Create the speed panel label as a child of the speed panel.
+        UISprite speedLabel = _speedPanel.AddChild<UISprite>();
+        speedLabel.Sprite = atlas.CreateSprite("speed-label");
+        speedLabel.Position = new Vector2(42, 42);
 
-        // Create the mode panel
-        _modePanelSprite = atlas.CreateSprite("panel");
+        // Create the slow speed button as a child of the speed panel.
+        _slowSpeedButton = _speedPanel.AddChild<UIButton>();
+        _slowSpeedButton.NotSelectedSprite = atlas.CreateSprite("slow-button");
+        _slowSpeedButton.NotSelectedSprite.CenterOrigin();
+        _slowSpeedButton.SelectedSprite = atlas.CreateAnimatedSprite("slow-button-selected");
+        _slowSpeedButton.SelectedSprite.CenterOrigin();
+        _slowSpeedButton.Position = new Vector2(148, 148);
 
-        // Create the speed panel label
-        _modePanelLabelSprite = atlas.CreateSprite("mode-label");
+        // Create the normal speed button as a child of the speed panel.
+        _normalSpeedButton = _speedPanel.AddChild<UIButton>();
+        _normalSpeedButton.NotSelectedSprite = atlas.CreateSprite("normal-button");
+        _normalSpeedButton.NotSelectedSprite.CenterOrigin();
+        _normalSpeedButton.SelectedSprite = atlas.CreateAnimatedSprite("normal-button-selected");
+        _normalSpeedButton.SelectedSprite.CenterOrigin();
+        _normalSpeedButton.Position = new Vector2(420, 148);
 
-        // Create the normal mode button
-        _normalModeButtonSprite = atlas.CreateSprite("normal-button");
-        _normalModeButtonSelectedSprite = atlas.CreateAnimatedSprite("normal-button-selected");
+        // Create the fast speed button as a child of the speed panel.
+        _fastSpeedButton = _speedPanel.AddChild<UIButton>();
+        _fastSpeedButton.NotSelectedSprite = atlas.CreateSprite("fast-button");
+        _fastSpeedButton.NotSelectedSprite.CenterOrigin();
+        _fastSpeedButton.SelectedSprite = atlas.CreateAnimatedSprite("fast-button-selected");
+        _fastSpeedButton.SelectedSprite.CenterOrigin();
+        _fastSpeedButton.Position = new Vector2(691, 148);
 
-        // Create the dark mode button
-        _darkModeButtonSprite = atlas.CreateSprite("dark-button");
-        _darkModeButtonSelectedSprite = atlas.CreateAnimatedSprite("dark-button-selected");
 
-        // Create the accept button
-        _acceptButtonSprite = atlas.CreateSprite("accept-button");
-        _acceptButtonSelectedSprite = atlas.CreateAnimatedSprite("accept-button-selected");
+        // Create the mode panel label as a child of the mode panel.
+        UISprite modeLabel = _modePanel.AddChild<UISprite>();
+        modeLabel.Sprite = atlas.CreateSprite("mode-label");
+        modeLabel.Position = new Vector2(42, 42);
 
-        // Create the cancel button
-        _cancelButtonSprite = atlas.CreateSprite("cancel-button");
-        _cancelButtonSelectedSprite = atlas.CreateAnimatedSprite("cancel-button-selected");
+        // Create the normal mode button as a child of the mode panel.
+        _normalModeButton = _modePanel.AddChild<UIButton>();
+        _normalModeButton.NotSelectedSprite = atlas.CreateSprite("normal-button");
+        _normalModeButton.NotSelectedSprite.CenterOrigin();
+        _normalModeButton.SelectedSprite = atlas.CreateAnimatedSprite("normal-button-selected");
+        _normalModeButton.SelectedSprite.CenterOrigin();
+        _normalModeButton.Position = new Vector2(148, 148);
 
+        // Create the dark mode button as a child of the mode panel.
+        _darkModeButton = _modePanel.AddChild<UIButton>();
+        _darkModeButton.NotSelectedSprite = atlas.CreateSprite("dark-button");
+        _darkModeButton.NotSelectedSprite.CenterOrigin();
+        _darkModeButton.SelectedSprite = atlas.CreateAnimatedSprite("dark-button-selected");
+        _darkModeButton.SelectedSprite.CenterOrigin();
+        _darkModeButton.Position = new Vector2(691, 148);
+
+        // Speed panel is default selected
+        _speedPanel.IsEnabled = true;
+        _modePanel.IsEnabled = false;
+        _acceptButton.IsSelected = false;
+        _cancelButton.IsSelected = false;
+
+        // Set the disabled color for this menu. This will propagate the value
+        // down through all children.
+        DisabledColor = new Color(70, 86, 130, 255);
+
+        // Load the sound effect to play when ui actions occur.
+        _uiSoundEffect = Core.Content.Load<SoundEffect>("audio/ui");
     }
 
-    public void Update(GameTime gameTime)
+    public override void Update(GameTime gameTime)
     {
-        if(_isSpeedPanelSelected)
+        if (_speedPanel.IsEnabled)
         {
             UpdateSpeedPanel();
         }
-        else if(_isModePanelSelected)
+        else if (_modePanel.IsEnabled)
         {
             UpdateModePanel();
         }
-        else if(_isAcceptButtonSelected)
+        else if (_acceptButton.IsSelected)
         {
             UpdateAcceptButton(gameTime);
         }
-        else if(_isCancelButtonSelected)
+        else if (_cancelButton.IsSelected)
         {
             UpdateCancelButton(gameTime);
         }
+
+        UpdateButtonStates();
+
+        base.Update(gameTime);
     }
 
-    public void SetSpeedPanelState(bool selected)
+    private void UpdateSpeedPanel()
     {
-        // Determine the color based on the selected state of the panel
-        Color color = selected ? _enabledColor : _disabledColor;
+        if (InputProfile.MenuDown() || InputProfile.MenuAccept())
+        {
+            _speedPanel.IsEnabled = false;
+            _modePanel.IsEnabled = true;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
+        else if (InputProfile.MenuLeft())
+        {
+            if (_options.Speed == GameOptions.SlimeSpeed.Normal)
+            {
+                _options.Speed = GameOptions.SlimeSpeed.Slow;
+            }
+            else if (_options.Speed == GameOptions.SlimeSpeed.Fast)
+            {
+                _options.Speed = GameOptions.SlimeSpeed.Normal;
+            }
 
-        // Set the color of each element for this panel to that color.
-        _speedPanelSprite.Color = color;
-        _speedPanelLabelSprite.Color = color;
-        _slowSpeedButtonSprite.Color = color;
-        _slowSpeedButtonSelectedSprite.Color = color;
-        _normalSpeedButtonSprite.Color = color;
-        _normalSpeedButtonSelectedSprite.Color = color;
-        _fastSpeedButtonSprite.Color = color;
-        _fastSpeedButtonSelectedSprite.Color = color;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
+        else if (InputProfile.MenuRight())
+        {
+            if (_options.Speed == GameOptions.SlimeSpeed.Slow)
+            {
+                _options.Speed = GameOptions.SlimeSpeed.Normal;
+            }
+            else if (_options.Speed == GameOptions.SlimeSpeed.Normal)
+            {
+                _options.Speed = GameOptions.SlimeSpeed.Fast;
+            }
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
     }
 
-    public void SetModePanelState(bool selected)
+    private void UpdateModePanel()
     {
-        // Determine the color based on the selected state of the panel
-        Color color = selected ? _enabledColor : _disabledColor;
+        if (InputProfile.MenuUp() || InputProfile.MenuCancel())
+        {
+            _speedPanel.IsEnabled = true;
+            _modePanel.IsEnabled = false;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
+        else if (InputProfile.MenuDown() || InputProfile.MenuAccept())
+        {
+            _modePanel.IsEnabled = false;
+            _acceptButton.IsSelected = true;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
+        else if (InputProfile.MenuLeft())
+        {
+            if (_options.Mode == GameOptions.GameMode.Dark)
+            {
+                _options.Mode = GameOptions.GameMode.Normal;
+            }
 
-        // Set the color of each element for this panel to that color
-        _modePanelSprite.Color = color;
-        _modePanelLabelSprite.Color = color;
-        _normalModeButtonSprite.Color = color;
-        _normalModeButtonSelectedSprite.Color = color;
-        _darkModeButtonSprite.Color = color;
-        _darkModeButtonSelectedSprite.Color = color;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
+        else if (InputProfile.MenuRight())
+        {
+            if (_options.Mode == GameOptions.GameMode.Normal)
+            {
+                _options.Mode = GameOptions.GameMode.Dark;
+            }
+
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    private void UpdateAcceptButton(GameTime gameTime)
     {
-        // Draw the select label sprite
-        _selectLabelSprite.Draw(spriteBatch, _selectSpritePosition);
+        if (InputProfile.MenuUp() || InputProfile.MenuCancel())
+        {
+            _acceptButton.IsSelected = false;
+            _modePanel.IsEnabled = true;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
+        else if (InputProfile.MenuRight())
+        {
+            _acceptButton.IsSelected = false;
+            _cancelButton.IsSelected = true;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
+        else if (InputProfile.MenuAccept())
+        {
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+            Core.ChangeScene(new GameScene(_options));
+        }
+    }
 
-        // Draw the enter label sprite
-        _enterLabelSprite.Draw(spriteBatch, _enterLabelSpritePosition);
+    private void UpdateCancelButton(GameTime gameTime)
+    {
+        if (InputProfile.MenuUp() || InputProfile.MenuCancel())
+        {
+            _cancelButton.IsSelected = false;
+            _modePanel.IsEnabled = true;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
+        else if (InputProfile.MenuLeft())
+        {
+            _cancelButton.IsSelected = false;
+            _acceptButton.IsSelected = true;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+        }
+        else if (InputProfile.MenuAccept())
+        {
+            Core.ChangeScene(new MenuScene<TitleMenu>());
+        }
+    }
 
-        // Draw the escape label sprite
-        _escapeLabelSprite.Draw(spriteBatch, _escapeLabelSpritePosition);
-
-        // Draw the speed panel sprite
-        _speedPanelSprite.Draw(spriteBatch, _speedPanelSpritePosition);
-
-        // Draw the speed panel label spaire
-        _speedPanelLabelSprite.Draw(spriteBatch, _speedPanelLabelSpritePosition);
-
-        // Choose which version of the slow, normal, and fast speed button
-        // sprites to draw based on if they are currently selected.
-        Sprite slowSpeedButton = _isSlowSpeedButtonSelected ? _slowSpeedButtonSelectedSprite : _slowSpeedButtonSprite;
-        Sprite normalSpeedButton = _isNormalSpeedButtonSelected ? _normalSpeedButtonSelectedSprite : _normalSpeedButtonSprite;
-        Sprite fastSpeedButton = _isFastSpeedButtonSelected ? _fastSpeedButtonSelectedSprite : _fastSpeedButtonSprite;
-
-        // Draw the slow, normal, and fast speed buttons.
-        slowSpeedButton.Draw(spriteBatch, _slowSpeedButtonPosition);
-        normalSpeedButton.Draw(spriteBatch, _normalSpeedButtonPosition);
-        fastSpeedButton.Draw(spriteBatch, _fastSpeedButtonPosition);
-
-        // Draw the mode panel sprite
-        _modePanelSprite.Draw(spriteBatch, _modePanelSpritePosition);
-
-        // Draw the mode panel label sprite
-        _modePanelLabelSprite.Draw(spriteBatch, _modePanelLabelSpritePosition);
-
-        // Choose which version of the normal and dark mode button sprites to
-        // draw based on if they are currently selected.
-        Sprite normalModeButton = _isNormalModeButtonSelected ? _normalModeButtonSelectedSprite : _normalModeButtonSprite;
-        Sprite darkModeButton = _isDarkModeButtonSelected ? _darkModeButtonSelectedSprite : _darkModeButtonSprite;
-
-        // Draw the normal and dark mode button sprites.
-        normalModeButton.Draw(spriteBatch, _normalModeButtonPosition);
-        darkModeButton.Draw(spriteBatch, _darkModeButtonPosition);
-
-        // Choose which version of the accept and cancel button sprites to draw
-        // based on if they are currently selected.
-        Sprite acceptButton = _isAcceptButtonSelected ? _acceptButtonSelectedSprite : _acceptButtonSprite;
-        Sprite cancelButton = _isCancelButtonSelected ? _cancelButtonSelectedSprite : _cancelButtonSprite;
-
-        // Draw the accept and cancel button sprites
-        acceptButton.Draw(spriteBatch, _acceptButtonPosition);
-        cancelButton.Draw(spriteBatch, _cancelButtonPosition);
+    private void UpdateButtonStates()
+    {
+        _slowSpeedButton.IsSelected = _options.Speed == GameOptions.SlimeSpeed.Slow;
+        _normalSpeedButton.IsSelected = _options.Speed == GameOptions.SlimeSpeed.Normal;
+        _fastSpeedButton.IsSelected = _options.Speed == GameOptions.SlimeSpeed.Fast;
+        _normalModeButton.IsSelected = _options.Mode == GameOptions.GameMode.Normal;
+        _darkModeButton.IsSelected = _options.Mode == GameOptions.GameMode.Dark;
     }
 }
-

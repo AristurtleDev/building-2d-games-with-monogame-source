@@ -1,4 +1,5 @@
 ﻿using DungeonSlime.Scenes;
+using DungeonSlime.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
@@ -44,7 +45,7 @@ public class Game1 : Core
         Audio.PlaySong(_themeSong);
 
         // Start the game with the title scene.
-        ChangeScene(new TitleScene());
+        ChangeScene(new MenuScene<TitleMenu>());
     }
 
     protected override void LoadContent()

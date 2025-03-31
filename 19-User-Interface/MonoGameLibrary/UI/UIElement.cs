@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGameLibrary.UI;
 
-public class UIElement : IEnumerable<UIElement>
+public abstract class UIElement : IEnumerable<UIElement>
 {
     private List<UIElement> _children;
-    private bool _enabled;
-    private bool _visible;
+    private bool _isEnabled;
+    private bool _isVisible;
+    private Color _enabledColor;
+    private Color _disabledColor;
 
     /// <summary>
     /// Gets the ui element that is the parent of this ui element, or null of there is no parent.
@@ -41,52 +44,120 @@ public class UIElement : IEnumerable<UIElement>
     }
 
     /// <summary>
-    /// Gets or Sets a value that indicates whether this ui element is enabled.
+    /// Gets or Sets a value that indicates whether this UI ELement is enabled.
     /// </summary>
     /// <remarks>
-    /// If this ui element isa child of another ui element, and the parent is not enabled, this will return false.
+    /// If this UI element is a child of another UI element, and that parent is
+    /// not enabled, this this will return false.
     /// </remarks>
-    public bool Enabled
+    public bool IsEnabled
     {
         get
         {
-            // If there is no parent element or if there is and the parent is
-            // enabled, return this elements enabled value.
-            if (Parent == null || Parent.Enabled)
+            // If there is a parent element, and if that parent element is not
+            // enabled, then return false automatically since all children of
+            // a disabled parent are also disabled.
+            if (Parent is UIElement parent && !parent.IsEnabled)
             {
-                return _enabled;
+                return false;
             }
 
-            // otherwise, there is a parent, and the parent is disabled, so
-            // all of the parent's children are also disabled.
-            return false;
+            // Otherwise, there is either no parent element or the parent element
+            // is enabled, in which case we just return back the enabled state
+            // of this element
+            return _isEnabled;
 
         }
-        set => _enabled = value;
+        set => _isEnabled = value;
     }
 
     /// <summary>
-    /// Gets or Sets a value that indicates whether this ui element is visible.
+    /// Gets or Sets a value that indicates whether this UI element is visible.
     /// </summary>
     /// <remarks>
-    /// If this ui element is a child of another ui element, and the parent is not visible, this will return false.
+    /// If this UI element is a child of another UI element, and that parent is
+    /// not visible, then this will return false.
     /// </remarks>
-    public bool Visible
+    public bool IsVisible
     {
         get
         {
-            // If there is no parent element or if there is and the parent is
-            // visible, return this element's visible value.
-            if (Parent == null || Parent.Visible)
+            // If there is a parent element, and if that parent element is not
+            // visible, then return false automatically since all children of
+            // a non-visible parent are also not visible.
+            if (Parent is UIElement parent && !parent.IsVisible)
             {
-                return _visible;
+                return false;
             }
 
-            // otherwise, there is a parent, and the parent is not visible, so
-            // all of the parent's children are also invisible.
-            return false;
+            // Otherwise, there is either no parent element or the parent element
+            // is visible, in which case, we just return back the visual state
+            // of this element
+            return _isVisible;
         }
-        set => _visible = value;
+        set => _isVisible = true;
+    }
+
+    /// <summary>
+    /// Gets or Sets the color mask to apply to this element and all its children
+    //  when it is enabled.
+    /// </summary>
+    /// <remarks>
+    /// Default value is Color.White.
+    /// </remarks>
+    public Color EnabledColor
+    {
+        get => _enabledColor;
+        set
+        {
+            // If the color being set is the same color that is already set,
+            // short circuit and return early so we don't waste time cycling
+            // through all children.
+            if (_enabledColor == value)
+            {
+                return;
+            }
+
+            _enabledColor = value;
+
+            // Update enabled color of each child ui element to match
+            // for visual consistency.
+            foreach (UIElement child in this)
+            {
+                child.EnabledColor = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or Sets the color mask to apply to this element and all its children
+    //  when it is disabled.
+    /// </summary>
+    /// <remarks>
+    /// Default value is Color.White.
+    /// </remarks>
+    public Color DisabledColor
+    {
+        get => _disabledColor;
+        set
+        {
+            // If the color being set is the same color that is already set,
+            // short circuit and return early so we don't waste time cycling
+            // through all children.
+            if (_disabledColor == value)
+            {
+                return;
+            }
+
+            _disabledColor = value;
+
+            // Update the disabled color of each child ui element to match
+            // for visual consistency.
+            foreach (UIElement child in this)
+            {
+                child.DisabledColor = value;
+            }
+        }
     }
 
     /// <summary>
@@ -95,8 +166,10 @@ public class UIElement : IEnumerable<UIElement>
     public UIElement()
     {
         _children = new List<UIElement>();
-        Enabled = true;
-        Visible = true;
+        IsEnabled = true;
+        IsVisible = true;
+        EnabledColor = Color.White;
+        DisabledColor = Color.White;
     }
 
     /// <summary>
@@ -129,9 +202,7 @@ public class UIElement : IEnumerable<UIElement>
     /// Updates this ui element.
     /// </summary>
     /// <param name="gameTime">A snapshot of the timing values for the current update cycle.</param>
-    public virtual void Update(GameTime gameTime) => UpdateChildren(gameTime);
-
-    protected void UpdateChildren(GameTime gameTime)
+    public virtual void Update(GameTime gameTime)
     {
         foreach (UIElement child in _children)
         {
@@ -142,12 +213,10 @@ public class UIElement : IEnumerable<UIElement>
     /// <summary>
     /// Draws this ui element.
     /// </summary>
-    /// <param name="spriteBatch">The sprite batch used for drawing.</param>
-    public virtual void Draw(SpriteBatch spriteBatch) => DrawChildren(spriteBatch);
-
-    protected void DrawChildren(SpriteBatch spriteBatch)
+    /// <param name="spriteBatch">The sprite batch used to draw.</param>
+    public virtual void Draw(SpriteBatch spriteBatch)
     {
-        // Draw each child of this element
+        // Draw each child element of this element that is also a visual element.
         foreach (UIElement child in _children)
         {
             child.Draw(spriteBatch);

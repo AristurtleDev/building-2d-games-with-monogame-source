@@ -15,28 +15,25 @@ public class OptionsMenu : UIElement
     private UISprite _musicPanel;
     private UISprite _soundEffectPanel;
     private UISlider<float> _musicVolumeSlider;
-    private UISlider<float> _soundVolumeSlider;
+    private UISlider<float> _soundEffectVolumeSlider;
     private UIButton _acceptButton;
     private UIButton _cancelButton;
 
-    // The color to set UI elements when they are enabled.
-    private Color _enabledColor = Color.White;
+    // The sound effect to play when a UI action is performed.
+    private SoundEffect _uiSoundEffect;
 
-    // The color to set UI elements when they are disabled.
-    private Color _disabledColor = new Color(70, 86, 130, 255);
-
-    private SoundEffect _soundEffect;
-
-    public OptionsMenu(TextureAtlas atlas, SoundEffect soundEffect)
+    public OptionsMenu()
     {
-        _soundEffect = soundEffect;
         _previousSongVolume = Core.Audio.SongVolume;
         _previousSoundEffectVolume = Core.Audio.SoundEffectVolume;
-        CreateChildren(atlas);
+        CreateChildren();
     }
 
-    private void CreateChildren(TextureAtlas atlas)
+    private void CreateChildren()
     {
+        // Load the ui texture atlas from the XML configuration file.
+        TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/ui-atlas-definition.xml");
+
         // Create the options label as a child of this menu.
         UISprite optionsLabel = AddChild<UISprite>();
         optionsLabel.Sprite = atlas.CreateSprite("options-label");
@@ -53,73 +50,85 @@ public class OptionsMenu : UIElement
         escapeLabel.Position = new Vector2(804, 52);
 
         // Create the music panel as a child of this menu.
-        UISprite musicPanel = AddChild<UISprite>();
-        musicPanel.Sprite = atlas.CreateSprite("panel");
-        musicPanel.Position = new Vector2(198, 139);
+        _musicPanel = AddChild<UISprite>();
+        _musicPanel.Sprite = atlas.CreateSprite("panel");
+        _musicPanel.Position = new Vector2(198, 139);
 
         // Create the sound effect panel as a child of this menu.
-        UISprite soundEffectPanel = AddChild<UISprite>();
-        soundEffectPanel.Sprite = atlas.CreateSprite("panel");
-        soundEffectPanel.Position = new Vector2(198, 406);
+        _soundEffectPanel = AddChild<UISprite>();
+        _soundEffectPanel.Sprite = atlas.CreateSprite("panel");
+        _soundEffectPanel.Position = new Vector2(198, 406);
 
         // Create the accept button as a child of this menu
-        UIButton acceptButton = AddChild<UIButton>();
-        acceptButton.NotSelectedSprite = atlas.CreateSprite("accept-button");
-        acceptButton.SelectedSprite = atlas.CreateAnimatedSprite("accept-button-selected");
-        acceptButton.Position = new Vector2(432, 670);
+        _acceptButton = AddChild<UIButton>();
+        _acceptButton.NotSelectedSprite = atlas.CreateSprite("accept-button");
+        _acceptButton.NotSelectedSprite.CenterOrigin();
+        _acceptButton.SelectedSprite = atlas.CreateAnimatedSprite("accept-button-selected");
+        _acceptButton.SelectedSprite.CenterOrigin();
+        _acceptButton.Position = new Vector2(432, 670);
 
         // Create the cancel button as a child of this menu
-        UIButton cancelButton = AddChild<UIButton>();
-        cancelButton.NotSelectedSprite = atlas.CreateSprite("cancel-button");
-        cancelButton.SelectedSprite = atlas.CreateAnimatedSprite("cancel-button-selected");
-        cancelButton.Position = new Vector2(848, 670);
+        _cancelButton = AddChild<UIButton>();
+        _cancelButton.NotSelectedSprite = atlas.CreateSprite("cancel-button");
+        _cancelButton.NotSelectedSprite.CenterOrigin();
+        _cancelButton.SelectedSprite = atlas.CreateAnimatedSprite("cancel-button-selected");
+        _cancelButton.SelectedSprite.CenterOrigin();
+        _cancelButton.Position = new Vector2(848, 670);
 
         // Create the music volume panel label as a child of the music panel.
-        UISprite musicLabel = musicPanel.AddChild<UISprite>();
+        UISprite musicLabel = _musicPanel.AddChild<UISprite>();
         musicLabel.Sprite = atlas.CreateSprite("music-label");
         musicLabel.Position = new Vector2(42, 42);
 
         // Create the music volume slider as a child of the music panel.
-        UISlider<float> musicVolumeSlider = musicPanel.AddChild<UISlider<float>>();
-        musicVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
-        musicVolumeSlider.FillSprite = atlas.CreateSprite("slider-fill");
-        musicVolumeSlider.FillBounds = new Rectangle(108, 4, 566, 36);
-        musicVolumeSlider.Value = Core.Audio.SongVolume;
-        musicVolumeSlider.MinValue = 0.0f;
-        musicVolumeSlider.MaxValue = 1.0f;
-        musicVolumeSlider.Step = 0.1f;
+        _musicVolumeSlider = _musicPanel.AddChild<UISlider<float>>();
+        _musicVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
+        _musicVolumeSlider.FillSprite = atlas.CreateSprite("slider-fill");
+        _musicVolumeSlider.FillBounds = new Rectangle(108, 4, 566, 36);
+        _musicVolumeSlider.Value = Core.Audio.SongVolume;
+        _musicVolumeSlider.MinValue = 0.0f;
+        _musicVolumeSlider.MaxValue = 1.0f;
+        _musicVolumeSlider.Step = 0.1f;
+        _musicVolumeSlider.Position = new Vector2(27, 117);
 
         // Create the sound effect volume panel label as a child of the music panel.
-        UISprite soundLabel = musicPanel.AddChild<UISprite>();
+        UISprite soundLabel = _soundEffectPanel.AddChild<UISprite>();
         soundLabel.Sprite = atlas.CreateSprite("sound-label");
         soundLabel.Position = new Vector2(42, 42);
 
         // Create the sound effect volume slider as a child of the sound effect panel.
-        UISlider<float> soundEffectVolumeSlider = soundEffectPanel.AddChild<UISlider<float>>();
-        soundEffectVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
-        soundEffectVolumeSlider.FillSprite = atlas.CreateSprite("slider-fill");
-        soundEffectVolumeSlider.FillBounds = new Rectangle(108, 4, 566, 36);
-        soundEffectVolumeSlider.Value = Core.Audio.SoundEffectVolume;
-        soundEffectVolumeSlider.MinValue = 0.0f;
-        soundEffectVolumeSlider.MaxValue = 1.0f;
-        soundEffectVolumeSlider.Step = 0.1f;
+        _soundEffectVolumeSlider = _soundEffectPanel.AddChild<UISlider<float>>();
+        _soundEffectVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
+        _soundEffectVolumeSlider.FillSprite = atlas.CreateSprite("slider-fill");
+        _soundEffectVolumeSlider.FillBounds = new Rectangle(108, 4, 566, 36);
+        _soundEffectVolumeSlider.Value = Core.Audio.SoundEffectVolume;
+        _soundEffectVolumeSlider.MinValue = 0.0f;
+        _soundEffectVolumeSlider.MaxValue = 1.0f;
+        _soundEffectVolumeSlider.Step = 0.1f;
+        _soundEffectVolumeSlider.Position = new Vector2(27, 117);
 
-        this._enabledColor // this is borked.
 
         // Music panel is default selected
-        _musicPanel.Enabled = true;
-        _soundEffectPanel.Enabled = false;
+        _musicPanel.IsEnabled = true;
+        _soundEffectPanel.IsEnabled = false;
         _acceptButton.IsSelected = false;
         _cancelButton.IsSelected = false;
+
+        // Set the disabled color for this menu. This will propagate the value
+        // down through all children.
+        DisabledColor = new Color(70, 86, 130, 255);
+
+        // Load the sound effect to play when ui actions occur.
+        _uiSoundEffect = Core.Content.Load<SoundEffect>("audio/ui");
     }
 
-    public void Update(GameTime gameTime)
+    public override void Update(GameTime gameTime)
     {
-        if (_musicPanel.Enabled)
+        if (_musicPanel.IsEnabled)
         {
             UpdateMusicPanel();
         }
-        else if (_soundEffectPanel.Enabled)
+        else if (_soundEffectPanel.IsEnabled)
         {
             UpdateSFXPanel();
         }
@@ -131,27 +140,29 @@ public class OptionsMenu : UIElement
         {
             UpdateCancelButton(gameTime);
         }
+
+        base.Update(gameTime);
     }
 
     private void UpdateMusicPanel()
     {
         if (InputProfile.MenuDown() || InputProfile.MenuAccept())
         {
-            _musicPanel.Enabled = false;
-            _soundEffectPanel.Enabled = true;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            _musicPanel.IsEnabled = false;
+            _soundEffectPanel.IsEnabled = true;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
         else if (InputProfile.MenuLeft())
         {
             _musicVolumeSlider.StepDown();
             Core.Audio.SongVolume = _musicVolumeSlider.Value;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
         else if (InputProfile.MenuRight())
         {
             _musicVolumeSlider.StepUp();
             Core.Audio.SongVolume = _musicVolumeSlider.Value;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
     }
 
@@ -159,27 +170,27 @@ public class OptionsMenu : UIElement
     {
         if (InputProfile.MenuUp() || InputProfile.MenuCancel())
         {
-            _musicPanel.Enabled = true;
-            _soundEffectPanel.Enabled = false;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            _musicPanel.IsEnabled = true;
+            _soundEffectPanel.IsEnabled = false;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
         else if (InputProfile.MenuDown() || InputProfile.MenuAccept())
         {
-            _soundEffectPanel.Enabled = false;
+            _soundEffectPanel.IsEnabled = false;
             _acceptButton.IsSelected = true;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
         else if (InputProfile.MenuLeft())
         {
-            _soundVolumeSlider.StepDown();
-            Core.Audio.SoundEffectVolume = _soundVolumeSlider.Value;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            _soundEffectVolumeSlider.StepDown();
+            Core.Audio.SoundEffectVolume = _soundEffectVolumeSlider.Value;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
         else if (InputProfile.MenuRight())
         {
-            _soundVolumeSlider.StepUp();
-            Core.Audio.SoundEffectVolume = _soundVolumeSlider.Value;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            _soundEffectVolumeSlider.StepUp();
+            Core.Audio.SoundEffectVolume = _soundEffectVolumeSlider.Value;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
     }
 
@@ -188,19 +199,19 @@ public class OptionsMenu : UIElement
         if (InputProfile.MenuUp() || InputProfile.MenuCancel())
         {
             _acceptButton.IsSelected = false;
-            _soundEffectPanel.Enabled = true;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            _soundEffectPanel.IsEnabled = true;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
         else if (InputProfile.MenuRight())
         {
             _acceptButton.IsSelected = false;
             _cancelButton.IsSelected = true;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
         else if (InputProfile.MenuAccept())
         {
-            Core.Audio.PlaySoundEffect(_soundEffect);
-            Core.ChangeScene(new TitleScene());
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+            Core.ChangeScene(new MenuScene<TitleMenu>());
         }
     }
 
@@ -209,21 +220,21 @@ public class OptionsMenu : UIElement
         if (InputProfile.MenuUp() || InputProfile.MenuCancel())
         {
             _cancelButton.IsSelected = false;
-            _soundEffectPanel.Enabled = true;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            _soundEffectPanel.IsEnabled = true;
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
         else if (InputProfile.MenuLeft())
         {
             _cancelButton.IsSelected = false;
             _acceptButton.IsSelected = true;
-            Core.Audio.PlaySoundEffect(_soundEffect);
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
         }
         else if (InputProfile.MenuAccept())
         {
             Core.Audio.SongVolume = _previousSongVolume;
             Core.Audio.SoundEffectVolume = _previousSoundEffectVolume;
-            Core.Audio.PlaySoundEffect(_soundEffect);
-            Core.ChangeScene(new TitleScene());
+            Core.Audio.PlaySoundEffect(_uiSoundEffect);
+            Core.ChangeScene(new MenuScene<TitleMenu>());
         }
     }
 }

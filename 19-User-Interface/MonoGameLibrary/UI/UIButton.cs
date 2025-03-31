@@ -19,7 +19,7 @@ public class UIButton : UIElement
     /// <summary>
     /// Gets or Sets a value that indicates whether this ui button is selected.
     /// </summary>
-    public bool IsSelected {get; set;}
+    public bool IsSelected { get; set; }
 
     /// <summary>
     /// Creates a new ui button.
@@ -28,12 +28,12 @@ public class UIButton : UIElement
 
     public override void Update(GameTime gameTime)
     {
-        if(NotSelectedSprite is AnimatedSprite notSelectedSprite)
+        if (NotSelectedSprite is AnimatedSprite notSelectedSprite)
         {
             notSelectedSprite.Update(gameTime);
         }
 
-        if(SelectedSprite is AnimatedSprite selectedSprite)
+        if (SelectedSprite is AnimatedSprite selectedSprite)
         {
             selectedSprite.Update(gameTime);
         }
@@ -43,15 +43,31 @@ public class UIButton : UIElement
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        if(IsSelected)
+        // If not visual, short circuit and return back early.
+        if (!IsVisible)
         {
+            return;
+        }
+
+        // Draw the selected or not selected sprite based on the selected property.
+        if (IsSelected)
+        {
+            // Set the color of the selected sprite based on the enabled property.
+            SelectedSprite.Color = IsEnabled ? EnabledColor : DisabledColor;
+
+            // Draw the selected sprite.
             SelectedSprite.Draw(spriteBatch, AbsolutePosition);
         }
         else
         {
+            // Set the color of the not selected sprite based on the enabled property.
+            NotSelectedSprite.Color = IsEnabled ? EnabledColor : DisabledColor;
+
+            // Draw the not selected sprite.
             NotSelectedSprite.Draw(spriteBatch, AbsolutePosition);
         }
 
+        // Call base draw so that child elements are drawn.
         base.Draw(spriteBatch);
     }
 }

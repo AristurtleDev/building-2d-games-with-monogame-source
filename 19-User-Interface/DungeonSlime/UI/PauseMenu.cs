@@ -7,7 +7,7 @@ using MonoGameLibrary.UI;
 
 namespace DungeonSlime.UI;
 
-public class TitleMenu : UIElement
+public class PauseMenu : UIElement
 {
     // The UI button used to start gameplay
     private UIButton _startButton;
@@ -18,7 +18,7 @@ public class TitleMenu : UIElement
     // The sound effect to play when a UI action is performed.
     private SoundEffect _uiSoundEffect;
 
-    public TitleMenu()
+    public PauseMenu()
     {
         CreateChildren();
     }
@@ -89,7 +89,7 @@ public class TitleMenu : UIElement
         else if (InputProfile.MenuAccept())
         {
             Core.Audio.PlaySoundEffect(_uiSoundEffect);
-            Core.ChangeScene(new MenuScene<GameSelectMenu>());
+            Core.ReturnToCachedScene();
         }
     }
 
@@ -104,7 +104,7 @@ public class TitleMenu : UIElement
         else if (InputProfile.MenuAccept())
         {
             Core.Audio.PlaySoundEffect(_uiSoundEffect);
-            Core.ChangeScene(new MenuScene<OptionsMenu>());
+            Core.ChangeScene(new MenuScene<TitleMenu>());
         }
     }
 }

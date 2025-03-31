@@ -1,4 +1,5 @@
 using System;
+using DungeonSlime.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +13,8 @@ namespace DungeonSlime.Scenes;
 
 public class GameScene : Scene
 {
+    private GameOptions _options;
+
     // Defines the slime animated sprite.
     private AnimatedSprite _slime;
 
@@ -20,6 +23,8 @@ public class GameScene : Scene
 
     // Tracks the position of the slime.
     private Vector2 _slimePosition;
+
+    private float _speedMultiplier;
 
     // Speed multiplier when moving.
     private const float MOVEMENT_SPEED = 5.0f;
@@ -53,6 +58,11 @@ public class GameScene : Scene
 
     // Defines the origin used when drawing the score text.
     private Vector2 _scoreTextOrigin;
+
+    public GameScene(GameOptions options) : base()
+    {
+        _options = options;
+    }
 
     public override void Initialize()
     {
@@ -90,6 +100,20 @@ public class GameScene : Scene
 
         // Assign the initial random velocity to the bat.
         AssignRandomBatVelocity();
+
+        // Set the speed multiplier based on the options
+        switch (_options.Speed)
+        {
+            case GameOptions.SlimeSpeed.Slow:
+                _speedMultiplier = 0.75f;
+                break;
+            case GameOptions.SlimeSpeed.Normal:
+                _speedMultiplier = 1.0f;
+                break;
+            case GameOptions.SlimeSpeed.Fast:
+                _speedMultiplier = 1.25f;
+                break;
+        }
     }
 
     public override void LoadContent()
@@ -245,21 +269,17 @@ public class GameScene : Scene
 
     private void CheckKeyboardInput()
     {
-        // Get a reference to the keyboard inof
+        // Get a reference to the keyboard info
         KeyboardInfo keyboard = Core.Input.Keyboard;
 
         // If the escape key is pressed, return to the title screen
         if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Escape))
         {
-            Core.ChangeScene(new TitleScene());
+            Core.ChangeScene(new MenuScene<PauseMenu>(), true);
         }
 
         // If the space key is held down, the movement speed increases by 1.5
-        float speed = MOVEMENT_SPEED;
-        if (keyboard.IsKeyDown(Keys.Space))
-        {
-            speed *= 1.5f;
-        }
+        float speed = MOVEMENT_SPEED * _speedMultiplier;
 
         // If the W or Up keys are down, move the slime up on the screen.
         if (keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up))
