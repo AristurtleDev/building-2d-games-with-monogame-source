@@ -22,12 +22,12 @@ public class UIElement : IEnumerable<UIElement>
     /// <remarks>
     /// If this element is a child element, this position is relative to the position of the parent.
     /// </remarks>
-    public Point Position { get; set; }
+    public Vector2 Position { get; set; }
 
     /// <summary>
     /// Gets the position of this element relative to the game screen.
     /// </summary>
-    public Point AbsolutePosition
+    public Vector2 AbsolutePosition
     {
         get
         {
@@ -92,36 +92,23 @@ public class UIElement : IEnumerable<UIElement>
     /// <summary>
     /// Creates a new ui element with an optional parent.
     /// </summary>
-    /// <param name="parent">(Optional) The ui element that is the parent of this ui element.</param>
-    public UIElement(UIElement parent = null)
+    public UIElement()
     {
         _children = new List<UIElement>();
         Enabled = true;
         Visible = true;
-
-        if(parent != null)
-        {
-            Parent.AddChild(this);
-        }
     }
 
     /// <summary>
     /// Adds the given ui element as a child of this ui element.
     /// </summary>
     /// <param name="child">The ui element to add as a child of this ui element.</param>
-    public void AddChild(UIElement child)
+    public T AddChild<T>() where T : UIElement, new()
     {
-        // If the child has a parent, remove it
-        if (child.Parent != null)
-        {
-            child.Parent.RemoveChild(child);
-        }
-
-        // Add it to this element's child collection
+        T child = new T();
         _children.Add(child);
-
-        // Set the parent of the child to this element
         child.Parent = this;
+        return child;
     }
 
     /// <summary>
@@ -142,9 +129,10 @@ public class UIElement : IEnumerable<UIElement>
     /// Updates this ui element.
     /// </summary>
     /// <param name="gameTime">A snapshot of the timing values for the current update cycle.</param>
-    public virtual void Update(GameTime gameTime)
+    public virtual void Update(GameTime gameTime) => UpdateChildren(gameTime);
+
+    protected void UpdateChildren(GameTime gameTime)
     {
-        // Update each child of this element.
         foreach (UIElement child in _children)
         {
             child.Update(gameTime);
@@ -155,27 +143,22 @@ public class UIElement : IEnumerable<UIElement>
     /// Draws this ui element.
     /// </summary>
     /// <param name="spriteBatch">The sprite batch used for drawing.</param>
-    public virtual void Draw(SpriteBatch spriteBatch)
+    public virtual void Draw(SpriteBatch spriteBatch) => DrawChildren(spriteBatch);
+
+    protected void DrawChildren(SpriteBatch spriteBatch)
     {
         // Draw each child of this element
         foreach (UIElement child in _children)
         {
             child.Draw(spriteBatch);
         }
-
     }
 
     /// <summary>
     /// Returns an enumerator that iterates through each child element in this ui element.
     /// </summary>
     /// <returns>An enumerator that iterates through each child element in this ui element.</returns>
-    public IEnumerator<UIElement> GetEnumerator()
-    {
-        foreach (UIElement child in _children)
-        {
-            yield return child;
-        }
-    }
+    public IEnumerator<UIElement> GetEnumerator() => _children.GetEnumerator();
 
     /// <summary>
     /// Returns an enumerator that iterates through each child element in this ui element.

@@ -10,9 +10,9 @@ public class UISprite : UIElement
     private Color _disabledColor;
 
     /// <summary>
-    /// Gets the sprite represented by this ui element.
+    /// Gets or Sets the sprite represented by this ui element.
     /// </summary>
-    public Sprite Sprite { get; protected set; }
+    public Sprite Sprite { get; set; }
 
     /// <summary>
     /// Gets or Sets the color mask to apply to this ui sprite when it is enabled.
@@ -73,32 +73,10 @@ public class UISprite : UIElement
     /// <summary>
     /// Creates a new ui sprite.
     /// </summary>
-    /// <param name="sprite">The sprite to draw when rendering this ui sprite.</param>
-    public UISprite(Sprite sprite) : base()
+    public UISprite() : base()
     {
-        Sprite = sprite;
         EnabledColor = Color.White;
         DisabledColor = Color.White;
-    }
-
-    /// <summary>
-    /// Creates a new ui sprite as a child of the given ui element.
-    /// </summary>
-    /// <param name="parent">The ui element to set as the parent of this ui sprite.</param>
-    /// <param name="sprite">The sprite to draw when rendering this ui sprite.</param>
-    public UISprite(UIElement parent, Sprite sprite) : base(parent)
-    {
-        Sprite = sprite;
-        EnabledColor = Color.White;
-        DisabledColor = Color.White;
-    }
-
-    /// <summary>
-    /// Centers the origin of the sprite rendered for this ui sprite.
-    /// </summary>
-    public virtual void CenterOrigin()
-    {
-        Sprite.CenterOrigin();
     }
 
     /// <summary>
@@ -135,11 +113,15 @@ public class UISprite : UIElement
             return;
         }
 
-        // Set the color based on if this ui sprite is enabled or disabled.
-        Sprite.Color = Enabled ? EnabledColor : DisabledColor;
+        // Only draw the sprite if there is a sprite to draw
+        if (Sprite != null)
+        {
+            // Set the color of the sprite based on the enabled property
+            Sprite.Color = Enabled ? EnabledColor : DisabledColor;
 
-        // Draw this sprite.
-        Sprite.Draw(spriteBatch, AbsolutePosition.ToVector2());
+            // Draw the sprite
+            Sprite.Draw(spriteBatch, AbsolutePosition);
+        }
 
         // Call base draw so that child elements are drawn.
         base.Draw(spriteBatch);

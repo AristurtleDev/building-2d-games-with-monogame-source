@@ -26,6 +26,18 @@ public class AudioController : IDisposable
     /// </summary>
     public bool IsDisposed { get; private set; }
 
+    public float SongVolume
+    {
+        get => MediaPlayer.Volume;
+        set => MediaPlayer.Volume = Math.Clamp(value, 0.0f, 1.0f);
+    }
+
+    public float SoundEffectVolume
+    {
+        get => SoundEffect.MasterVolume;
+        set => SoundEffect.MasterVolume = Math.Clamp(value, 0.0f, 1.0f);
+    }
+
     /// <summary>
     /// Creates a new audio controller instance.
     /// </summary>
@@ -72,7 +84,7 @@ public class AudioController : IDisposable
     /// <param name="disposing">Indicates whether managed resources should be disposed.</param>
     protected void Dispose(bool disposing)
     {
-        if(IsDisposed)
+        if (IsDisposed)
         {
             return;
         }
@@ -217,6 +229,22 @@ public class AudioController : IDisposable
         else
         {
             MuteAudio();
+        }
+    }
+
+    public void AdjustSongVolume(float amount)
+    {
+        if (!IsMuted)
+        {
+            MediaPlayer.Volume = Math.Clamp(MediaPlayer.Volume + amount, 0.0f, 1.0f);
+        }
+    }
+
+    public void AdjustSoundEffectVolume(float amount)
+    {
+        if (!IsMuted)
+        {
+            SoundEffect.MasterVolume = Math.Clamp(SoundEffect.MasterVolume + amount, 0.0f, 1.0f);
         }
     }
 

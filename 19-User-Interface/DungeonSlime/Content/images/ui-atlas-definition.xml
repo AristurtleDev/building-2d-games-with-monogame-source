@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+  <Texture>images/ui-atlas</Texture>
+  <Regions>
+    <Region name="title-card" x="0" y="0" width="751" height="240" />
+    <Region name="mode-text" x="758" y="0" width="156" height="35" />
+    <Region name="speed-text" x="758" y="35" width="193" height="35" />
+    <Region name="music-text" x="758" y="70" width="178" height="35" />
+    <Region name="sfx-text" x="758" y="105" width="114" height="35" />
+    <Region name="escape-label" x="755" y="140" width="219" height="28" />
+    <Region name="enter-label" x="755" y="168" width="149" height="28" />
+    <Region name="panel" x="0" y="240" width="849" height="221" />
+    <Region name="slow-button" x="24" y="461" width="208" height="43" />
+    <Region name="slow-button-selected-1" x="0" y="505" width="256" height="52" />
+    <Region name="slow-button-selected-2" x="0" y="557" width="256" height="52" />
+    <Region name="normal-button" x="764" y="461" width="208" height="43" />
+    <Region name="normal-button-selected-1" x="256" y="505" width="256" height="52" />
+    <Region name="normal-button-selected-2" x="256" y="557" width="256" height="52" />
+    <Region name="fast-button" x="504" y="461" width="208" height="43" />
+    <Region name="fast-button-selected-1" x="512" y="505" width="256" height="52" />
+    <Region name="fast-button-selected-2" x="512" y="557" width="256" height="52" />
+    <Region name="dark-button" x="764" y="461" width="208" height="43" />
+    <Region name="dark-button-selected-1" x="768" y="505" width="256" height="52" />
+    <Region name="dark-button-selected-2" x="768" y="557" width="256" height="52" />
+    <Region name="start-button" x="24" y="609" width="208" height="43" />
+    <Region name="start-button-selected-1" x="0" y="653" width="256" height="52" />
+    <Region name="start-button-selected-2" x="0" y="705" width="256" height="52" />
+    <Region name="options-button" x="280" y="609" width="208" height="43" />
+    <Region name="options-button-selected-1" x="256" y="653" width="256" height="52" />
+    <Region name="options-button-selected-2" x="256" y="705" width="256" height="52" />
+    <Region name="accept-button" x="537" y="609" width="208" height="43" />
+    <Region name="accept-button-selected-1" x="512" y="653" width="256" height="52" />
+    <Region name="accept-button-selected-2" x="512" y="705" width="256" height="52" />
+    <Region name="cancel-button" x="792" y="609" width="208" height="43" />
+    <Region name="cancel-button-selected-1" x="768" y="653" width="256" height="52" />
+    <Region name="cancel-button-selected-2" x="768" y="705" width="256" height="52" />
+    <Region name="resume-button" x="24" y="757" width="208" height="43" />
+    <Region name="resume-button-selected-1" x="0" y="801" width="256" height="52" />
+    <Region name="resume-button-selected-2" x="0" y="853" width="256" height="52" />
+    <Region name="quit-button" x="764" y="757" width="208" height="43" />
+    <Region name="quit-button-selected-1" x="256" y="801" width="256" height="52" />
+    <Region name="quit-button-selected-2" x="256" y="853" width="256" height="52" />
+    <Region name="select-label" x="512" y="757" width="290" height="72" />
+    <Region name="options-label" x="512" y="829" width="315" height="72" />
+    <Region name="off-label" x="0" y="908" width="104" height="44" />
+    <Region name="slider-container" x="104" y="908" width="574" height="44" />
+    <Region name="max-label" x="678" y="908" width="104" height="44" />
+    <Region name="slider-fill-rect" x="782" y="912" width="1" height="36" />
+  </Regions>
+  <Animations>
+    <Animation name="slow-button-selected" delay="300">
+      <Frame region="slow-button-selected-1" />
+      <Frame region="slow-button-selected-2" />
+    </Animation>
+    <Animation name="normal-button-selected" delay="300">
+      <Frame region="normal-button-selected-1" />
+      <Frame region="normal-button-selected-2" />
+    </Animation>
+    <Animation name="fast-button-selected" delay="300">
+      <Frame region="fast-button-selected-1" />
+      <Frame region="fast-button-selected-2" />
+    </Animation>
+    <Animation name="dark-button-selected" delay="300">
+      <Frame region="dark-button-selected-1" />
+      <Frame region="dark-button-selected-2" />
+    </Animation>
+    <Animation name="accept-button-selected" delay="300">
+      <Frame region="accept-button-selected-1" />
+      <Frame region="accept-button-selected-2" />
+    </Animation>
+    <Animation name="cancel-button-selected" delay="300">
+      <Frame region="cancel-button-selected-1" />
+      <Frame region="cancel-button-selected-2" />
+    </Animation>
+    <Animation name="start-button-selected" delay="300">
+      <Frame region="start-button-selected-1" />
+      <Frame region="start-button-selected-2" />
+    </Animation>
+    <Animation name="options-button-selected" delay="300">
+      <Frame region="options-button-selected-1" />
+      <Frame region="options-button-selected-2" />
+    </Animation>
+    <Animation name="resume-button-selected" delay="300">
+      <Frame region="resume-button-selected-1" />
+      <Frame region="resume-button-selected-2" />
+    </Animation>
+    <Animation name="quit-button-selected" delay="300">
+      <Frame region="quit-button-selected-1" />
+      <Frame region="quit-button-selected-2" />
+    </Animation>
+  </Animations>
+</TextureAtlas>

@@ -25,6 +25,12 @@
 /processorParam:Quality=Best
 /build:audio/collect.wav
 
+#begin audio/menu.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/menu.wav
+
 #begin audio/theme.ogg
 /importer:OggImporter
 /processor:SongProcessor
@@ -86,4 +92,19 @@
 
 #begin images/tilemap-definition.xml
 /copy:images/tilemap-definition.xml
+
+#begin images/ui-atlas-definition.xml
+/copy:images/ui-atlas-definition.xml
+
+#begin images/ui-atlas.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:images/ui-atlas.png
 
