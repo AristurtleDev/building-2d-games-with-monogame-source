@@ -12,6 +12,8 @@ public class UIElement : IEnumerable<UIElement>
     private List<UIElement> _children;
     private bool _isEnabled;
     private bool _isVisible;
+    private bool _isSelected;
+    private bool _wasSelectedThisFrame;
     private Color _enabledColor;
     private Color _disabledColor;
 
@@ -164,7 +166,15 @@ public class UIElement : IEnumerable<UIElement>
     /// <summary>
     /// Gets or Sets a value that indicates if this ui element is currently selected.
     /// </summary>
-    public bool IsSelected { get; set; }
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            _isSelected = value;
+            _wasSelectedThisFrame = value;
+        }
+    }
 
     /// <summary>
     /// Gets or Sets the action to perform when this ui element is selected and
@@ -237,10 +247,12 @@ public class UIElement : IEnumerable<UIElement>
     /// <param name="gameTime">A snapshot of the timing values for the current update cycle.</param>
     public virtual void Update(GameTime gameTime)
     {
-        if (IsSelected && Controller != null)
+        if (IsSelected && Controller != null && !_wasSelectedThisFrame)
         {
             HandleNavigation();
         }
+
+        _wasSelectedThisFrame = false;
 
         foreach (UIElement child in _children)
         {

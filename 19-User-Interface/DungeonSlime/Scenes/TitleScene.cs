@@ -16,14 +16,6 @@ public class TitleScene : Scene
 
     public TitleScene() : base() { }
 
-    public override void Initialize()
-    {
-        base.Initialize();
-
-        // Disable the options menu so only the title menu is shown at first.
-        _optionsMenu.IsEnabled = _optionsMenu.IsVisible = false;
-    }
-
     public override void LoadContent()
     {
         // Load the ui texture atlas from the XML configuration file.
@@ -40,9 +32,6 @@ public class TitleScene : Scene
 
         // Create the options menu
         CreateOptionsMenu(atlas, uiSoundEffect, controller);
-
-        _titleMenu.IsEnabled = _titleMenu.IsVisible = true;
-        _optionsMenu.IsEnabled = _optionsMenu.IsVisible = false;
     }
 
     private void CreateTileMenu(TextureAtlas atlas, SoundEffect soundEffect, UIElementController controller)
@@ -50,6 +39,8 @@ public class TitleScene : Scene
         // Create the title menu
         _titleMenu = new UISprite();
         _titleMenu.Position = Vector2.Zero;
+        _titleMenu.Controller = controller;
+        _titleMenu.IsSelected = true;
 
         UISprite titleSprite = _titleMenu.CreateChild<UISprite>();
         titleSprite.Sprite = atlas.CreateSprite("title");
@@ -73,38 +64,42 @@ public class TitleScene : Scene
         optionsButton.Position = new Vector2(848, 670);
         optionsButton.Controller = controller;
 
-        startButton.RightAction = () =>
+        _titleMenu.RightAction = () =>
         {
             Core.Audio.PlaySoundEffect(soundEffect);
             startButton.IsSelected = false;
             optionsButton.IsSelected = true;
         };
 
-        startButton.ConfirmAction = () =>
-        {
-            Core.Audio.PlaySoundEffect(soundEffect);
-            // Core.ChangeScene()
-        };
-
-        optionsButton.LeftAction = () =>
+        _titleMenu.LeftAction = () =>
         {
             Core.Audio.PlaySoundEffect(soundEffect);
             startButton.IsSelected = true;
             optionsButton.IsSelected = false;
         };
 
-        optionsButton.ConfirmAction = () =>
+        _titleMenu.ConfirmAction = () =>
         {
-            _titleMenu.IsEnabled = false;
-            _titleMenu.IsVisible = false;
-            _optionsMenu.IsEnabled = true;
-            _optionsMenu.IsVisible = true;
+            if (startButton.IsSelected)
+            {
+                Core.Audio.PlaySoundEffect(soundEffect);
+                Core.ChangeScene(new GameSelectScene());
+            }
+            else if (optionsButton.IsSelected)
+            {
+                Core.Audio.PlaySoundEffect(soundEffect);
+                _titleMenu.IsEnabled = false;
+                _titleMenu.IsVisible = false;
+                _optionsMenu.IsEnabled = true;
+                _optionsMenu.IsVisible = true;
+            }
         };
     }
 
     private void CreateOptionsMenu(TextureAtlas atlas, SoundEffect soundEffect, UIElementController controller)
     {
         _optionsMenu = new UIElement();
+        _optionsMenu.Controller = controller;
 
         UISprite optionsLabel = _optionsMenu.CreateChild<UISprite>();
         optionsLabel.Sprite = atlas.CreateSprite("options-label");
@@ -174,109 +169,151 @@ public class TitleScene : Scene
         soundEffectVolumeSlider.Position = new Vector2(27, 117);
         soundEffectVolumeSlider.Controller = controller;
 
-        musicVolumeSlider.LeftAction = () =>
+        _optionsMenu.UpAction = () =>
         {
-            Core.Audio.SongVolume = musicVolumeSlider.StepDown();
-            Core.Audio.PlaySoundEffect(soundEffect);
+            if (soundEffectPanel.IsSelected)
+            {
+                Core.Audio.PlaySoundEffect(soundEffect);
+                soundEffectPanel.IsSelected = false;
+                soundEffectPanel.IsEnabled = false;
+                musicPanel.IsSelected = true;
+                musicPanel.IsEnabled = true;
+            }
+            else if (acceptButton.IsSelected)
+            {
+                Core.Audio.PlaySoundEffect(soundEffect);
+                acceptButton.IsSelected = false;
+                soundEffectPanel.IsSelected = true;
+                soundEffectPanel.IsEnabled = true;
+            }
+            else if (cancelButton.IsSelected)
+            {
+                Core.Audio.PlaySoundEffect(soundEffect);
+                cancelButton.IsSelected = false;
+                soundEffectPanel.IsSelected = true;
+                soundEffectPanel.IsEnabled = true;
+            }
         };
 
-        musicVolumeSlider.RightAction = () =>
+        _optionsMenu.DownAction = () =>
         {
-            Core.Audio.SongVolume = musicVolumeSlider.StepUp();
-            Core.Audio.PlaySoundEffect(soundEffect);
+            if (musicPanel.IsSelected)
+            {
+                Core.Audio.PlaySoundEffect(soundEffect);
+                musicPanel.IsSelected = false;
+                musicPanel.IsEnabled = false;
+                soundEffectPanel.IsSelected = true;
+                soundEffectPanel.IsEnabled = true;
+            }
+            else if (soundEffectPanel.IsSelected)
+            {
+                Core.Audio.PlaySoundEffect(soundEffect);
+                soundEffectPanel.IsSelected = false;
+                soundEffectPanel.IsEnabled = false;
+                acceptButton.IsSelected = true;
+            }
         };
 
-        musicVolumeSlider.DownAction = () =>
+        _optionsMenu.LeftAction = () =>
         {
-            musicVolumeSlider.IsSelected = false;
-            soundEffectVolumeSlider.IsSelected = true;
-            musicPanel.IsEnabled = false;
-            soundEffectPanel.IsEnabled = true;
+            if (musicPanel.IsSelected)
+            {
+                Core.Audio.PlaySoundEffect(soundEffect);
+                Core.Audio.SongVolume = musicVolumeSlider.StepDown();
+            }
+            else if (soundEffectPanel.IsSelected)
+            {
+                Core.Audio.SoundEffectVolume = soundEffectVolumeSlider.StepDown();
+                Core.Audio.PlaySoundEffect(soundEffect);
+            }
+            else if (cancelButton.IsSelected)
+            {
+                cancelButton.IsSelected = false;
+                acceptButton.IsSelected = true;
+            }
         };
 
-        soundEffectVolumeSlider.LeftAction = () =>
+        _optionsMenu.RightAction = () =>
         {
-            Core.Audio.SoundEffectVolume = soundEffectVolumeSlider.StepDown();
-            Core.Audio.PlaySoundEffect(soundEffect);
+            if (musicPanel.IsSelected)
+            {
+                Core.Audio.PlaySoundEffect(soundEffect);
+                Core.Audio.SongVolume = musicVolumeSlider.StepUp(0;)
+            }
+            else if (soundEffectPanel.IsSelected)
+            {
+                Core.Audio.SoundEffectVolume = soundEffectVolumeSlider.StepUp();
+                Core.Audio.PlaySoundEffect(soundEffect);
+            }
+            else if (acceptButton.IsSelected)
+            {
+                acceptButton.IsSelected = false;
+                cancelButton.IsSelected = true;
+            }
         };
 
-        soundEffectVolumeSlider.RightAction = () =>
+        _optionsMenu.ConfirmAction = () =>
         {
-            Core.Audio.SoundEffectVolume = soundEffectVolumeSlider.StepUp();
-            Core.Audio.PlaySoundEffect(soundEffect);
+            if (musicPanel.IsSelected)
+            {
+                musicPanel.IsSelected = false;
+                musicPanel.IsEnabled = false;
+                soundEffectPanel.IsSelected = true;
+                soundEffectPanel.IsEnabled = true;
+            }
+            else if (soundEffectPanel.IsSelected)
+            {
+                soundEffectPanel.IsSelected = false;
+                soundEffectPanel.IsEnabled = false;
+                acceptButton.IsSelected = true;
+            }
+            else if (acceptButton.IsSelected)
+            {
+                musicVolumeSlider.IsSelected = true;
+                soundEffectVolumeSlider.IsSelected = false;
+                acceptButton.IsSelected = false;
+                cancelButton.IsSelected = false;
+                musicPanel.IsEnabled = true;
+                soundEffectPanel.IsEnabled = false;
+                _titleMenu.IsEnabled = true;
+                _titleMenu.IsVisible = true;
+            }
+            else if (cancelButton.IsSelected)
+            {
+                musicVolumeSlider.IsSelected = true;
+                soundEffectVolumeSlider.IsSelected = false;
+                acceptButton.IsSelected = false;
+                cancelButton.IsSelected = false;
+                musicPanel.IsEnabled = true;
+                soundEffectPanel.IsEnabled = false;
+                _titleMenu.IsEnabled = true;
+                _titleMenu.IsVisible = true;
+            }
         };
 
-        soundEffectVolumeSlider.UpAction = () =>
+        _optionsMenu.CancelAction = () =>
         {
-            musicVolumeSlider.IsSelected = true;
-            soundEffectVolumeSlider.IsSelected = false;
-            musicPanel.IsEnabled = true;
-            soundEffectPanel.IsEnabled = false;
+            if (soundEffectPanel.IsSelected)
+            {
+                soundEffectPanel.IsSelected = false;
+                soundEffectPanel.IsEnabled = false;
+                musicPanel.IsSelected = true;
+                musicPanel.IsEnabled = true;
+            }
+            else if (acceptButton.IsSelected)
+            {
+                soundEffectPanel.IsSelected = true;
+                soundEffectPanel.IsEnabled = true;
+                acceptButton.IsSelected = false;
+            }
+            else if (cancelButton.IsSelected)
+            {
+                soundEffectPanel.IsSelected = true;
+                soundEffectPanel.IsEnabled = true;
+                cancelButton.IsSelected = false;
+            }
         };
 
-        soundEffectVolumeSlider.DownAction = () =>
-        {
-            soundEffectVolumeSlider.IsSelected = false;
-            soundEffectPanel.IsEnabled = false;
-            acceptButton.IsSelected = true;
-        };
-
-        acceptButton.UpAction = () =>
-        {
-            soundEffectVolumeSlider.IsSelected = true;
-            soundEffectPanel.IsEnabled = true;
-            acceptButton.IsSelected = false;
-        };
-
-        acceptButton.RightAction = () =>
-        {
-            acceptButton.IsSelected = false;
-            cancelButton.IsSelected = true;
-        };
-
-        acceptButton.ConfirmAction = () =>
-        {
-            musicVolumeSlider.IsSelected = true;
-            soundEffectVolumeSlider.IsSelected = false;
-            acceptButton.IsSelected = false;
-            cancelButton.IsSelected = false;
-            musicPanel.IsEnabled = true;
-            soundEffectPanel.IsEnabled = false;
-            _titleMenu.IsEnabled = true;
-            _titleMenu.IsVisible = true;
-        };
-
-        cancelButton.UpAction = () =>
-        {
-            soundEffectVolumeSlider.IsSelected = true;
-            soundEffectPanel.IsEnabled = true;
-            cancelButton.IsSelected = false;
-        };
-
-        cancelButton.LeftAction = () =>
-        {
-            acceptButton.IsSelected = true;
-            cancelButton.IsSelected = false;
-        };
-
-        cancelButton.ConfirmAction = () =>
-        {
-            musicVolumeSlider.IsSelected = true;
-            soundEffectVolumeSlider.IsSelected = false;
-            acceptButton.IsSelected = false;
-            cancelButton.IsSelected = false;
-            musicPanel.IsEnabled = true;
-            soundEffectPanel.IsEnabled = false;
-            _titleMenu.IsEnabled = true;
-            _titleMenu.IsVisible = true;
-            _optionsMenu.IsEnabled = false;
-            _optionsMenu.IsVisible = false;
-        };
-
-        musicPanel.DisabledColor = new Color(70, 86, 130, 255);
-        soundEffectPanel.DisabledColor = new Color(70, 86, 130, 255);
-        musicPanel.IsEnabled = true;
-        soundEffectPanel.IsEnabled = false;
     }
 
     public override void Update(GameTime gameTime)
