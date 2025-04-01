@@ -36,32 +36,32 @@ public class GameSelectMenu : UIElement
         TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/ui-atlas-definition.xml");
 
         // Create the select label as a child of this menu.
-        UISprite selectLabel = AddChild<UISprite>();
+        UISprite selectLabel = CreateChild<UISprite>();
         selectLabel.Sprite = atlas.CreateSprite("select-label");
         selectLabel.Position = new Vector2(112, 20);
 
         // Create the enter label as a child of this menu.
-        UISprite enterLabel = AddChild<UISprite>();
+        UISprite enterLabel = CreateChild<UISprite>();
         enterLabel.Sprite = atlas.CreateSprite("enter-label");
         enterLabel.Position = new Vector2(640, 52);
 
         // Create the escape label as a child of this menu.
-        UISprite escapeLabel = AddChild<UISprite>();
+        UISprite escapeLabel = CreateChild<UISprite>();
         escapeLabel.Sprite = atlas.CreateSprite("escape-label");
         escapeLabel.Position = new Vector2(804, 52);
 
         // Create the speed panel as a child of this menu.
-        _speedPanel = AddChild<UISprite>();
+        _speedPanel = CreateChild<UISprite>();
         _speedPanel.Sprite = atlas.CreateSprite("panel");
         _speedPanel.Position = new Vector2(198, 139);
 
         // Create the mode panel as a child of this menu.
-        _modePanel = AddChild<UISprite>();
+        _modePanel = CreateChild<UISprite>();
         _modePanel.Sprite = atlas.CreateSprite("panel");
         _modePanel.Position = new Vector2(198, 406);
 
         // Create the accept button as a child of this menu
-        _acceptButton = AddChild<UIButton>();
+        _acceptButton = CreateChild<UIButton>();
         _acceptButton.NotSelectedSprite = atlas.CreateSprite("accept-button");
         _acceptButton.NotSelectedSprite.CenterOrigin();
         _acceptButton.SelectedSprite = atlas.CreateAnimatedSprite("accept-button-selected");
@@ -69,7 +69,7 @@ public class GameSelectMenu : UIElement
         _acceptButton.Position = new Vector2(432, 670);
 
         // Create the cancel button as a child of this menu
-        _cancelButton = AddChild<UIButton>();
+        _cancelButton = CreateChild<UIButton>();
         _cancelButton.NotSelectedSprite = atlas.CreateSprite("cancel-button");
         _cancelButton.NotSelectedSprite.CenterOrigin();
         _cancelButton.SelectedSprite = atlas.CreateAnimatedSprite("cancel-button-selected");
@@ -77,12 +77,12 @@ public class GameSelectMenu : UIElement
         _cancelButton.Position = new Vector2(848, 670);
 
         // Create the speed panel label as a child of the speed panel.
-        UISprite speedLabel = _speedPanel.AddChild<UISprite>();
+        UISprite speedLabel = _speedPanel.CreateChild<UISprite>();
         speedLabel.Sprite = atlas.CreateSprite("speed-label");
         speedLabel.Position = new Vector2(42, 42);
 
         // Create the slow speed button as a child of the speed panel.
-        _slowSpeedButton = _speedPanel.AddChild<UIButton>();
+        _slowSpeedButton = _speedPanel.CreateChild<UIButton>();
         _slowSpeedButton.NotSelectedSprite = atlas.CreateSprite("slow-button");
         _slowSpeedButton.NotSelectedSprite.CenterOrigin();
         _slowSpeedButton.SelectedSprite = atlas.CreateAnimatedSprite("slow-button-selected");
@@ -90,7 +90,7 @@ public class GameSelectMenu : UIElement
         _slowSpeedButton.Position = new Vector2(148, 148);
 
         // Create the normal speed button as a child of the speed panel.
-        _normalSpeedButton = _speedPanel.AddChild<UIButton>();
+        _normalSpeedButton = _speedPanel.CreateChild<UIButton>();
         _normalSpeedButton.NotSelectedSprite = atlas.CreateSprite("normal-button");
         _normalSpeedButton.NotSelectedSprite.CenterOrigin();
         _normalSpeedButton.SelectedSprite = atlas.CreateAnimatedSprite("normal-button-selected");
@@ -98,7 +98,7 @@ public class GameSelectMenu : UIElement
         _normalSpeedButton.Position = new Vector2(420, 148);
 
         // Create the fast speed button as a child of the speed panel.
-        _fastSpeedButton = _speedPanel.AddChild<UIButton>();
+        _fastSpeedButton = _speedPanel.CreateChild<UIButton>();
         _fastSpeedButton.NotSelectedSprite = atlas.CreateSprite("fast-button");
         _fastSpeedButton.NotSelectedSprite.CenterOrigin();
         _fastSpeedButton.SelectedSprite = atlas.CreateAnimatedSprite("fast-button-selected");
@@ -107,12 +107,12 @@ public class GameSelectMenu : UIElement
 
 
         // Create the mode panel label as a child of the mode panel.
-        UISprite modeLabel = _modePanel.AddChild<UISprite>();
+        UISprite modeLabel = _modePanel.CreateChild<UISprite>();
         modeLabel.Sprite = atlas.CreateSprite("mode-label");
         modeLabel.Position = new Vector2(42, 42);
 
         // Create the normal mode button as a child of the mode panel.
-        _normalModeButton = _modePanel.AddChild<UIButton>();
+        _normalModeButton = _modePanel.CreateChild<UIButton>();
         _normalModeButton.NotSelectedSprite = atlas.CreateSprite("normal-button");
         _normalModeButton.NotSelectedSprite.CenterOrigin();
         _normalModeButton.SelectedSprite = atlas.CreateAnimatedSprite("normal-button-selected");
@@ -120,7 +120,7 @@ public class GameSelectMenu : UIElement
         _normalModeButton.Position = new Vector2(148, 148);
 
         // Create the dark mode button as a child of the mode panel.
-        _darkModeButton = _modePanel.AddChild<UIButton>();
+        _darkModeButton = _modePanel.CreateChild<UIButton>();
         _darkModeButton.NotSelectedSprite = atlas.CreateSprite("dark-button");
         _darkModeButton.NotSelectedSprite.CenterOrigin();
         _darkModeButton.SelectedSprite = atlas.CreateAnimatedSprite("dark-button-selected");

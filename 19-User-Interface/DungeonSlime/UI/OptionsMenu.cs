@@ -35,32 +35,32 @@ public class OptionsMenu : UIElement
         TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/ui-atlas-definition.xml");
 
         // Create the options label as a child of this menu.
-        UISprite optionsLabel = AddChild<UISprite>();
+        UISprite optionsLabel = CreateChild<UISprite>();
         optionsLabel.Sprite = atlas.CreateSprite("options-label");
         optionsLabel.Position = new Vector2(112, 20);
 
         // Create the enter label as a child of this menu.
-        UISprite enterLabel = AddChild<UISprite>();
+        UISprite enterLabel = CreateChild<UISprite>();
         enterLabel.Sprite = atlas.CreateSprite("enter-label");
         enterLabel.Position = new Vector2(640, 52);
 
         // Create the escape label as a child of this menu.
-        UISprite escapeLabel = AddChild<UISprite>();
+        UISprite escapeLabel = CreateChild<UISprite>();
         escapeLabel.Sprite = atlas.CreateSprite("escape-label");
         escapeLabel.Position = new Vector2(804, 52);
 
         // Create the music panel as a child of this menu.
-        _musicPanel = AddChild<UISprite>();
+        _musicPanel = CreateChild<UISprite>();
         _musicPanel.Sprite = atlas.CreateSprite("panel");
         _musicPanel.Position = new Vector2(198, 139);
 
         // Create the sound effect panel as a child of this menu.
-        _soundEffectPanel = AddChild<UISprite>();
+        _soundEffectPanel = CreateChild<UISprite>();
         _soundEffectPanel.Sprite = atlas.CreateSprite("panel");
         _soundEffectPanel.Position = new Vector2(198, 406);
 
         // Create the accept button as a child of this menu
-        _acceptButton = AddChild<UIButton>();
+        _acceptButton = CreateChild<UIButton>();
         _acceptButton.NotSelectedSprite = atlas.CreateSprite("accept-button");
         _acceptButton.NotSelectedSprite.CenterOrigin();
         _acceptButton.SelectedSprite = atlas.CreateAnimatedSprite("accept-button-selected");
@@ -68,7 +68,7 @@ public class OptionsMenu : UIElement
         _acceptButton.Position = new Vector2(432, 670);
 
         // Create the cancel button as a child of this menu
-        _cancelButton = AddChild<UIButton>();
+        _cancelButton = CreateChild<UIButton>();
         _cancelButton.NotSelectedSprite = atlas.CreateSprite("cancel-button");
         _cancelButton.NotSelectedSprite.CenterOrigin();
         _cancelButton.SelectedSprite = atlas.CreateAnimatedSprite("cancel-button-selected");
@@ -76,12 +76,12 @@ public class OptionsMenu : UIElement
         _cancelButton.Position = new Vector2(848, 670);
 
         // Create the music volume panel label as a child of the music panel.
-        UISprite musicLabel = _musicPanel.AddChild<UISprite>();
+        UISprite musicLabel = _musicPanel.CreateChild<UISprite>();
         musicLabel.Sprite = atlas.CreateSprite("music-label");
         musicLabel.Position = new Vector2(42, 42);
 
         // Create the music volume slider as a child of the music panel.
-        _musicVolumeSlider = _musicPanel.AddChild<UISlider<float>>();
+        _musicVolumeSlider = _musicPanel.CreateChild<UISlider<float>>();
         _musicVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
         _musicVolumeSlider.FillSprite = atlas.CreateSprite("slider-fill");
         _musicVolumeSlider.FillBounds = new Rectangle(108, 4, 566, 36);
@@ -92,12 +92,12 @@ public class OptionsMenu : UIElement
         _musicVolumeSlider.Position = new Vector2(27, 117);
 
         // Create the sound effect volume panel label as a child of the music panel.
-        UISprite soundLabel = _soundEffectPanel.AddChild<UISprite>();
+        UISprite soundLabel = _soundEffectPanel.CreateChild<UISprite>();
         soundLabel.Sprite = atlas.CreateSprite("sound-label");
         soundLabel.Position = new Vector2(42, 42);
 
         // Create the sound effect volume slider as a child of the sound effect panel.
-        _soundEffectVolumeSlider = _soundEffectPanel.AddChild<UISlider<float>>();
+        _soundEffectVolumeSlider = _soundEffectPanel.CreateChild<UISlider<float>>();
         _soundEffectVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
         _soundEffectVolumeSlider.FillSprite = atlas.CreateSprite("slider-fill");
         _soundEffectVolumeSlider.FillBounds = new Rectangle(108, 4, 566, 36);

@@ -45,7 +45,7 @@ public class Game1 : Core
         Audio.PlaySong(_themeSong);
 
         // Start the game with the title scene.
-        ChangeScene(new MenuScene<TitleMenu>());
+        ChangeScene(new TitleScene());
     }
 
     protected override void LoadContent()

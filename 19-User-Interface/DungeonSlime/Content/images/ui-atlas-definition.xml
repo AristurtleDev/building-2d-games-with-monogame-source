@@ -37,13 +37,15 @@
     <Region name="resume-button" x="24" y="757" width="208" height="43" />
     <Region name="resume-button-selected-1" x="0" y="801" width="256" height="52" />
     <Region name="resume-button-selected-2" x="0" y="853" width="256" height="52" />
-    <Region name="quit-button" x="764" y="757" width="208" height="43" />
+    <Region name="quit-button" x="280" y="757" width="208" height="43" />
     <Region name="quit-button-selected-1" x="256" y="801" width="256" height="52" />
     <Region name="quit-button-selected-2" x="256" y="853" width="256" height="52" />
     <Region name="select-label" x="512" y="757" width="290" height="72" />
     <Region name="options-label" x="512" y="829" width="315" height="72" />
-    <Region name="slider" x="0" y="908" width="782" height="44" />
-    <Region name="slider-fill" x="782" y="912" width="1" height="36" />
+    <Region name="paused-label" x="0" y="905" width="283" height="72" />
+    <Region name="gameover-label" x="283" y="905" width="416" height="72" />
+    <Region name="slider" x="0" y="980" width="782" height="44" />
+    <Region name="slider-fill" x="782" y="984" width="1" height="36" />
   </Regions>
   <Animations>
     <Animation name="slow-button-selected" delay="300">

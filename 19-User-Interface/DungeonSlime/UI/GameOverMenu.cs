@@ -7,7 +7,7 @@ using MonoGameLibrary.UI;
 
 namespace DungeonSlime.UI;
 
-public class PauseMenu : UIElement
+public class GameOverMenu : UIElement
 {
     // The UI button used to resume gameplay.
     private UIButton _resumeButton;
@@ -18,7 +18,7 @@ public class PauseMenu : UIElement
     // The sound effect to play when a UI action is performed.
     private SoundEffect _uiSoundEffect;
 
-    public PauseMenu()
+    public GameOverMenu()
     {
         CreateChildren();
     }

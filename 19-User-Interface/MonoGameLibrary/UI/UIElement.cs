@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -6,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGameLibrary.UI;
 
-public abstract class UIElement : IEnumerable<UIElement>
+public class UIElement : IEnumerable<UIElement>
 {
     private List<UIElement> _children;
     private bool _isEnabled;
@@ -95,7 +96,7 @@ public abstract class UIElement : IEnumerable<UIElement>
             // of this element
             return _isVisible;
         }
-        set => _isVisible = true;
+        set => _isVisible = value;
     }
 
     /// <summary>
@@ -161,6 +162,52 @@ public abstract class UIElement : IEnumerable<UIElement>
     }
 
     /// <summary>
+    /// Gets or Sets a value that indicates if this ui element is currently selected.
+    /// </summary>
+    public bool IsSelected { get; set; }
+
+    /// <summary>
+    /// Gets or Sets the action to perform when this ui element is selected and
+    /// the up menu input is pressed.
+    /// </summary>
+    public Action UpAction { get; set; }
+
+    /// <summary>
+    /// Gets or Sets the action to perform when this ui element is selected and
+    /// the down menu input is pressed.
+    /// </summary>
+    public Action DownAction { get; set; }
+
+    /// <summary>
+    /// Gets or Sets the action to perform when this ui element is selected and
+    /// the left menu input is pressed.
+    /// </summary>
+    public Action LeftAction { get; set; }
+
+    /// <summary>
+    /// Gets or Sets the action to perform when this ui element is selected and
+    /// the right menu input is pressed.
+    /// </summary>
+    public Action RightAction { get; set; }
+
+    /// <summary>
+    /// Gets or Sets the action to perform when this ui element is selected and
+    /// the confirm menu input is pressed.
+    /// </summary>
+    public Action ConfirmAction { get; set; }
+
+    /// <summary>
+    /// Gets or Sets the action to perform when this ui element is selected and
+    /// the cancel menu input in pressed.
+    /// </summary>
+    public Action CancelAction { get; set; }
+
+    /// <summary>
+    /// Gets or Sets the UI Element controller used for navigation input for this UI element.
+    /// </summary>
+    public IUIElementController Controller { get; set; }
+
+    /// <summary>
     /// Creates a new ui element with an optional parent.
     /// </summary>
     public UIElement()
@@ -176,7 +223,7 @@ public abstract class UIElement : IEnumerable<UIElement>
     /// Adds the given ui element as a child of this ui element.
     /// </summary>
     /// <param name="child">The ui element to add as a child of this ui element.</param>
-    public T AddChild<T>() where T : UIElement, new()
+    public T CreateChild<T>() where T : UIElement, new()
     {
         T child = new T();
         _children.Add(child);
@@ -185,28 +232,47 @@ public abstract class UIElement : IEnumerable<UIElement>
     }
 
     /// <summary>
-    /// Removes the given ui element from the children of this ui element.
-    /// </summary>
-    /// <param name="child">The child element to remove.</param>
-    public void RemoveChild(UIElement child)
-    {
-        // Remove the child from this element's child collection, and if it
-        // successful, orphan the child.
-        if (_children.Remove(child))
-        {
-            child.Parent = null;
-        }
-    }
-
-    /// <summary>
     /// Updates this ui element.
     /// </summary>
     /// <param name="gameTime">A snapshot of the timing values for the current update cycle.</param>
     public virtual void Update(GameTime gameTime)
     {
+        if (IsSelected && Controller != null)
+        {
+            HandleNavigation();
+        }
+
         foreach (UIElement child in _children)
         {
             child.Update(gameTime);
+        }
+    }
+
+    private void HandleNavigation()
+    {
+        if (Controller.NavigateUp() && UpAction != null)
+        {
+            UpAction();
+        }
+        else if (Controller.NavigateDown() && DownAction != null)
+        {
+            DownAction();
+        }
+        else if (Controller.NavigateLeft() && LeftAction != null)
+        {
+            LeftAction();
+        }
+        else if (Controller.NavigateRight() && RightAction != null)
+        {
+            RightAction();
+        }
+        else if (Controller.Confirm() && ConfirmAction != null)
+        {
+            ConfirmAction();
+        }
+        else if (Controller.Cancel() && CancelAction != null)
+        {
+            CancelAction();
         }
     }
 

@@ -1,6 +1,8 @@
+using System;
 using DungeonSlime.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using MonoGameLibrary.UI;
@@ -18,24 +20,31 @@ public class TitleMenu : UIElement
     // The sound effect to play when a UI action is performed.
     private SoundEffect _uiSoundEffect;
 
-    public TitleMenu()
-    {
-        CreateChildren();
-    }
+    /// <summary>
+    /// Raised when the start button is clicked.
+    /// </summary>
+    public event EventHandler<EventArgs> StartClicked;
 
-    private void CreateChildren()
+    /// <summary>
+    /// Raised when the options button is clicked.
+    /// </summary>
+    public event EventHandler<EventArgs> OptionsClicked;
+
+    public TitleMenu() { }
+
+    private void LoadContent(ContentManager content)
     {
         // Load the ui texture atlas from the XML configuration file.
-        TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/ui-atlas-definition.xml");
+        TextureAtlas atlas = TextureAtlas.FromFile(content, "images/ui-atlas-definition.xml");
 
         // Create the game title sprite as a child of this menu.
-        UISprite titleSprite = AddChild<UISprite>();
+        UISprite titleSprite = CreateChild<UISprite>();
         titleSprite.Sprite = atlas.CreateSprite("title");
         titleSprite.Sprite.CenterOrigin();
         titleSprite.Position = new Vector2(640, 220);
 
         // Create the start button as a child of this menu.
-        _startButton = AddChild<UIButton>();
+        _startButton = CreateChild<UIButton>();
         _startButton.NotSelectedSprite = atlas.CreateSprite("start-button");
         _startButton.NotSelectedSprite.CenterOrigin();
         _startButton.SelectedSprite = atlas.CreateAnimatedSprite("start-button-selected");
@@ -44,7 +53,7 @@ public class TitleMenu : UIElement
 
 
         // Create the options button as a child of this menu.
-        _optionsButton = AddChild<UIButton>();
+        _optionsButton = CreateChild<UIButton>();
         _optionsButton.NotSelectedSprite = atlas.CreateSprite("options-button");
         _optionsButton.NotSelectedSprite.CenterOrigin();
         _optionsButton.SelectedSprite = atlas.CreateAnimatedSprite("options-button-selected");

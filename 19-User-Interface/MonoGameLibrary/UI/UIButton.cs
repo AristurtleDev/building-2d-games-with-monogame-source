@@ -17,11 +17,6 @@ public class UIButton : UIElement
     public Sprite SelectedSprite { get; set; }
 
     /// <summary>
-    /// Gets or Sets a value that indicates whether this ui button is selected.
-    /// </summary>
-    public bool IsSelected { get; set; }
-
-    /// <summary>
     /// Creates a new ui button.
     /// </summary>
     public UIButton() : base() { }
