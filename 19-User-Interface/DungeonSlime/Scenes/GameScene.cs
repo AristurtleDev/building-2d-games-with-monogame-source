@@ -8,12 +8,15 @@ using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using MonoGameLibrary.Input;
 using MonoGameLibrary.Scenes;
+using MonoGameLibrary.UI;
 
 namespace DungeonSlime.Scenes;
 
 public class GameScene : Scene
 {
     private GameOptions _options;
+    private UISprite _pauseMenu;
+    private UISprite _gameOverMenu;
 
     // Defines the slime animated sprite.
     private AnimatedSprite _slime;
@@ -138,9 +141,237 @@ public class GameScene : Scene
 
         // Load the font
         _font = Core.Content.Load<SpriteFont>("fonts/gameFont");
+
+        // Create the ui texture atlas from the XML configuration file.
+        TextureAtlas uiAtlas = TextureAtlas.FromFile(Core.Content, "images/ui-atlas-definition.xml");
+
+        // Load the sound effect to play when ui actions occur.
+        SoundEffect uiSoundEffect = Core.Content.Load<SoundEffect>("audio/ui");
+
+        // Create the UI Controller
+        UIElementController controller = new UIElementController();
+
+        // Create the pause menu.
+        CreatePauseMenu(uiAtlas, uiSoundEffect, controller);
+
+        // Create the game over menu.
+        CreateGameOverMenu(uiAtlas, uiSoundEffect, controller);
+    }
+
+    private void CreatePauseMenu(TextureAtlas atlas, SoundEffect soundEffect, UIElementController controller)
+    {
+        // Create the root container for the paused menu.
+        _pauseMenu = new UISprite();
+        _pauseMenu.Sprite = atlas.CreateSprite("overlay");
+        _pauseMenu.Sprite.Scale = Core.GraphicsDevice.PresentationParameters.Bounds.Size.ToVector2();
+        _pauseMenu.Controller = controller;
+        _pauseMenu.IsSelected = true;
+        _pauseMenu.IsEnabled = false;
+        _pauseMenu.IsVisible = false;
+
+        // Create the paused panel as a child of the paused menu.
+        UISprite pausePanel = _pauseMenu.CreateChild<UISprite>();
+        pausePanel.Sprite = atlas.CreateSprite("panel");
+        pausePanel.Position = new Vector2(215, 249);
+
+        // Create the paused text as a child of the paused panel.
+        UISprite pausedText = pausePanel.CreateChild<UISprite>();
+        pausedText.Sprite = atlas.CreateSprite("paused-text");
+        pausedText.Position = new Vector2(42, 42);
+
+        // Create the resume button as a child of the paused panel.
+        UIButton resumeButton = pausePanel.CreateChild<UIButton>();
+        resumeButton.NotSelectedSprite = atlas.CreateSprite("resume-button");
+        resumeButton.NotSelectedSprite.CenterOrigin();
+        resumeButton.SelectedSprite = atlas.CreateAnimatedSprite("resume-button-selected");
+        resumeButton.SelectedSprite.CenterOrigin();
+        resumeButton.Position = new Vector2(148, 148);
+
+        // Create the quite button as a child of the paused panel.
+        UIButton quitButton = pausePanel.CreateChild<UIButton>();
+        quitButton.NotSelectedSprite = atlas.CreateSprite("quit-button");
+        quitButton.NotSelectedSprite.CenterOrigin();
+        quitButton.SelectedSprite = atlas.CreateAnimatedSprite("quit-button-selected");
+        quitButton.SelectedSprite.CenterOrigin();
+        quitButton.Position = new Vector2(691, 148);
+
+        // Wire up the actions to perform when the Right action is triggered
+        // for the menu.
+        _pauseMenu.LeftAction = () =>
+        {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
+            if (quitButton.IsSelected)
+            {
+                // The quit button is selected and the left action was
+                // performed, so deselect the quit button and select the resume
+                // button.
+                quitButton.IsSelected = false;
+                resumeButton.IsSelected = true;
+            }
+        };
+
+        // Wire up the actions to perform when the Right action is triggered
+        // for the menu.
+        _pauseMenu.RightAction = () =>
+        {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
+            if (resumeButton.IsSelected)
+            {
+                // The resume button is selected and the right action was
+                // performed, so deselect the resume button and select the quit
+                // button
+                resumeButton.IsSelected = false;
+                quitButton.IsSelected = true;
+            }
+        };
+
+        // Wire up the actions to perform when the Confirm action is triggered
+        // for the menu.
+        _pauseMenu.ConfirmAction = () =>
+        {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
+            if (resumeButton.IsSelected)
+            {
+                // The resume button is selected and the confirm action was
+                // performed, so unpause the game by disabling the pause menu.
+                _pauseMenu.IsEnabled = _pauseMenu.IsVisible = _pauseMenu.IsSelected = false;
+            }
+            else if (quitButton.IsSelected)
+            {
+                // The quit button is selected and the confirm action was
+                // performed, so quit the game by changing the scene back to the
+                // title scene.
+                Core.ChangeScene(new TitleScene());
+            }
+        };
+
+        // Wire up the actions to perform when the Cancel action is triggered
+        // for the menu.
+        _pauseMenu.CancelAction = () =>
+        {
+            // Play the sound effect.
+            Core.Audio.PlaySoundEffect(soundEffect);
+
+            // Unpause the game by disabling the paused menu.
+            _pauseMenu.IsEnabled = _pauseMenu.IsVisible = _pauseMenu.IsSelected = false;
+        };
+    }
+
+    private void CreateGameOverMenu(TextureAtlas atlas, SoundEffect soundEffect, UIElementController controller)
+    {
+        // Create the root container for the game over menu.
+        _gameOverMenu = new UISprite();
+        _gameOverMenu.Sprite = atlas.CreateSprite("overlay");
+        _gameOverMenu.Sprite.Scale = Core.GraphicsDevice.PresentationParameters.Bounds.Size.ToVector2();
+        _gameOverMenu.Controller = controller;
+        _gameOverMenu.IsSelected = true;
+        _gameOverMenu.IsEnabled = _gameOverMenu.IsVisible = false;
+
+        // Create the game over panel as a child of the game over menu.
+        UISprite gameOverPanel = _gameOverMenu.CreateChild<UISprite>();
+        gameOverPanel.Sprite = atlas.CreateSprite("panel");
+        gameOverPanel.Position = new Vector2(215, 249);
+
+        // Create the game over text as a child of the game over panel.
+        UISprite gameOverText = gameOverPanel.CreateChild<UISprite>();
+        gameOverText.Sprite = atlas.CreateSprite("paused-text");
+        gameOverText.Position = new Vector2(42, 42);
+
+        // Create the retry button as a child of the game over panel.
+        UIButton retryButton = gameOverPanel.CreateChild<UIButton>();
+        retryButton.NotSelectedSprite = atlas.CreateSprite("retry-button");
+        retryButton.NotSelectedSprite.CenterOrigin();
+        retryButton.SelectedSprite = atlas.CreateAnimatedSprite("retry-button-selected");
+        retryButton.SelectedSprite.CenterOrigin();
+        retryButton.Position = new Vector2(148, 148);
+
+        // Create the quit button as a child of the game over panel.
+        UIButton quitButton = gameOverPanel.CreateChild<UIButton>();
+        quitButton.NotSelectedSprite = atlas.CreateSprite("quit-button");
+        quitButton.NotSelectedSprite.CenterOrigin();
+        quitButton.SelectedSprite = atlas.CreateAnimatedSprite("quit-button-selected");
+        quitButton.SelectedSprite.CenterOrigin();
+        quitButton.Position = new Vector2(691, 148);
+
+        // Wire up the actions to perform when the Right action is triggered
+        // for the menu.
+        _gameOverMenu.LeftAction = () =>
+        {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
+            if (quitButton.IsSelected)
+            {
+                // The quit button is selected and the left action was
+                // performed, so deselect the quit button and select the retry
+                // button.
+                quitButton.IsSelected = false;
+                retryButton.IsSelected = true;
+            }
+        };
+
+        // Wire up the actions to perform when the Right action is triggered
+        // for the menu.
+        _gameOverMenu.RightAction = () =>
+        {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
+            if (retryButton.IsSelected)
+            {
+                // The retry button is selected and the right action was
+                // performed, so deselect the retry button and select the quit
+                // button.
+                retryButton.IsSelected = false;
+                quitButton.IsSelected = true;
+            }
+        };
+
+        // Wire up the actions to perform when the Confirm action is triggered
+        // for the menu.
+        _gameOverMenu.ConfirmAction = () =>
+        {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
+            if (retryButton.IsSelected)
+            {
+                // The retry button is selected and the confirm action was
+                // performed, so deselect the game over menu.
+                _gameOverMenu.IsEnabled = _gameOverMenu.IsVisible = _gameOverMenu.IsSelected = false;
+            }
+            else if (quitButton.IsSelected)
+            {
+                // The quite button is selected and the confirm action was
+                // performed, so change the scene back to the title scene.
+                Core.ChangeScene(new TitleScene());
+            }
+        };
     }
 
     public override void Update(GameTime gameTime)
+    {
+        if (_pauseMenu.IsEnabled)
+        {
+            _pauseMenu.Update(gameTime);
+        }
+        else if (_gameOverMenu.IsEnabled)
+        {
+            _gameOverMenu.Update(gameTime);
+        }
+        else
+        {
+            UpdateGame(gameTime);
+        }
+    }
+
+    private void UpdateGame(GameTime gameTime)
     {
         // Update the slime animated sprite.
         _slime.Update(gameTime);
@@ -275,7 +506,8 @@ public class GameScene : Scene
         // If the escape key is pressed, return to the title screen
         if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Escape))
         {
-            Core.ChangeScene(new MenuScene<PauseMenu>(), true);
+            _pauseMenu.IsEnabled = true;
+            _pauseMenu.IsVisible = true;
         }
 
         // If the space key is held down, the movement speed increases by 1.5
@@ -381,7 +613,7 @@ public class GameScene : Scene
     public override void Draw(GameTime gameTime)
     {
         // Clear the back buffer.
-        Core.GraphicsDevice.Clear(Color.CornflowerBlue);
+        Core.GraphicsDevice.Clear(new Color(32, 40, 78, 255));
 
         // Begin the sprite batch to prepare for rendering.
         Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
@@ -407,6 +639,15 @@ public class GameScene : Scene
             SpriteEffects.None, // effects
             0.0f                // layerDepth
         );
+
+        if (_pauseMenu.IsVisible)
+        {
+            _pauseMenu.Draw(Core.SpriteBatch);
+        }
+        else if (_gameOverMenu.IsVisible)
+        {
+            _gameOverMenu.Draw(Core.SpriteBatch);
+        }
 
         // Always end the sprite batch when finished.
         Core.SpriteBatch.End();

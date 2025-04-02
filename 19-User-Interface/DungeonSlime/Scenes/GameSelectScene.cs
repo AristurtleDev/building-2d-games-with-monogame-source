@@ -11,17 +11,13 @@ namespace DungeonSlime.Scenes;
 
 public class GameSelectScene : Scene
 {
+    // Tracks the ui element that represent the game select menu.
     private UIElement _menu;
+
+    // The game options that are configured through the menu.
     private GameOptions _options;
 
     public GameSelectScene() : base() { }
-
-    public override void Initialize()
-    {
-        _options = new GameOptions();
-
-        base.Initialize();
-    }
 
     public override void LoadContent()
     {
@@ -40,7 +36,7 @@ public class GameSelectScene : Scene
 
     private void CreateGameSelectMenu(TextureAtlas atlas, SoundEffect soundEffect, UIElementController controller)
     {
-        // Create the root UI element for the menu.
+        // Create the root container for the game select menu.
         _menu = new UIElement();
         _menu.Controller = controller;
         _menu.IsSelected = true;
@@ -89,9 +85,9 @@ public class GameSelectScene : Scene
         cancelButton.Position = new Vector2(848, 670);
 
         // Create the speed panel label as a child of the speed panel.
-        UISprite speedLabel = speedPanel.CreateChild<UISprite>();
-        speedLabel.Sprite = atlas.CreateSprite("speed-label");
-        speedLabel.Position = new Vector2(42, 42);
+        UISprite speedText = speedPanel.CreateChild<UISprite>();
+        speedText.Sprite = atlas.CreateSprite("speed-text");
+        speedText.Position = new Vector2(42, 42);
 
         // Create the slow speed button as a child of the speed panel.
         UIButton slowSpeedButton = speedPanel.CreateChild<UIButton>();
@@ -119,9 +115,9 @@ public class GameSelectScene : Scene
         fastSpeedButton.Position = new Vector2(691, 148);
 
         // Create the mode panel label as a child of the mode panel.
-        UISprite modeLabel = modePanel.CreateChild<UISprite>();
-        modeLabel.Sprite = atlas.CreateSprite("mode-label");
-        modeLabel.Position = new Vector2(42, 42);
+        UISprite modeText = modePanel.CreateChild<UISprite>();
+        modeText.Sprite = atlas.CreateSprite("mode-text");
+        modeText.Position = new Vector2(42, 42);
 
         // Create the normal mode button as a child of the mode panel.
         UIButton normalModeButton = modePanel.CreateChild<UIButton>();
@@ -140,52 +136,77 @@ public class GameSelectScene : Scene
         darkModeButton.SelectedSprite.CenterOrigin();
         darkModeButton.Position = new Vector2(691, 148);
 
+        // By setting the disabled color of the root game select menu, it
+        // will propagate the value to all child elements
         _menu.DisabledColor = new Color(70, 86, 130, 255);
 
+        // Wire up the actions to perform when the Up Action is triggered
+        // for the menu.
         _menu.UpAction = () =>
         {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (modePanel.IsSelected)
             {
-                modePanel.IsSelected = false;
-                modePanel.IsEnabled = false;
-                speedPanel.IsSelected = true;
-                speedPanel.IsEnabled = true;
+                // The mode panel is selected and the up action was performed,
+                // so deselect the mode panel and move the navigation up to the
+                // speed panel.
+                modePanel.IsEnabled = modePanel.IsSelected = false;
+                speedPanel.IsEnabled = speedPanel.IsSelected = true;
             }
             else if (acceptButton.IsSelected)
             {
+                // The accept button is selected and the up action was
+                // performed, so deselect the accept button and move the
+                // navigation up to the mode panel.
                 acceptButton.IsSelected = false;
-                modePanel.IsSelected = true;
-                modePanel.IsEnabled = true;
+                modePanel.IsEnabled = modePanel.IsSelected = true;
             }
             else if (cancelButton.IsSelected)
             {
+                // The cancel button is selected and the up action was
+                // performed, so deselect the cancel button and move the
+                // navigation up to the mode panel.
                 cancelButton.IsSelected = false;
-                modePanel.IsSelected = true;
-                modePanel.IsEnabled = true;
+                modePanel.IsEnabled = modePanel.IsSelected = true;
             }
         };
 
+        // Wire up the actions to perform when the Down action is triggered
+        // for the menu.
         _menu.DownAction = () =>
         {
             if (speedPanel.IsSelected)
             {
-                modePanel.IsSelected = true;
-                modePanel.IsEnabled = true;
-                speedPanel.IsSelected = false;
-                speedPanel.IsEnabled = false;
+                // The speed panel is selected and the down action was
+                // performed, so deselect the speed panel and move the
+                // navigation down to the mode panel.
+                speedPanel.IsEnabled = speedPanel.IsSelected = false;
+                modePanel.IsEnabled = modePanel.IsSelected = true;
             }
             else if (modePanel.IsSelected)
             {
-                modePanel.IsSelected = false;
-                modePanel.IsEnabled = false;
+                // The mode panel is selected and the down action was
+                // performed, so deselect the mode panel and move the
+                // navigation down to the accept button.
+                modePanel.IsEnabled = modePanel.IsSelected = false;
                 acceptButton.IsSelected = true;
             }
         };
 
+        // Wire up the actions to perform when the Left action is triggered
+        // for the menu.
         _menu.LeftAction = () =>
         {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (speedPanel.IsSelected)
             {
+                // The speed panel is selected and the left action was
+                // performed, so change the speed options so it reduces
+                // the speed based on the current speed chosen.
                 if (_options.Speed == GameOptions.SlimeSpeed.Normal)
                 {
                     normalSpeedButton.IsSelected = false;
@@ -201,6 +222,8 @@ public class GameSelectScene : Scene
             }
             else if (modePanel.IsSelected)
             {
+                // The mode panel is select and the left action was performed,
+                // so change the mode option from dark to normal.
                 if (_options.Mode == GameOptions.GameMode.Dark)
                 {
                     darkModeButton.IsSelected = false;
@@ -210,15 +233,26 @@ public class GameSelectScene : Scene
             }
             else if (cancelButton.IsSelected)
             {
+                // The cancel button is selected and the left action was
+                // performed, so deselect the cancel button and select the
+                // accept button.
                 cancelButton.IsSelected = false;
                 acceptButton.IsSelected = true;
             }
         };
 
+        // Wire up the actions to perform when the Right action is triggered
+        // for the menu.
         _menu.RightAction = () =>
         {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (speedPanel.IsSelected)
             {
+                // The speed panel is selected and the right action was
+                // performed, so change the speed options so it increases
+                // the speed based on the current speed chosen.
                 if (_options.Speed == GameOptions.SlimeSpeed.Slow)
                 {
                     slowSpeedButton.IsSelected = false;
@@ -234,6 +268,8 @@ public class GameSelectScene : Scene
             }
             else if (modePanel.IsSelected)
             {
+                // The mode panel is select and the right action was performed,
+                // so change the mode option from normal to dark.
                 if (_options.Mode == GameOptions.GameMode.Normal)
                 {
                     normalModeButton.IsSelected = false;
@@ -243,65 +279,96 @@ public class GameSelectScene : Scene
             }
             else if (acceptButton.IsSelected)
             {
+                // The accept button is selected and the right action was
+                // performed, so deselect the accept button and select the
+                // cancel button.
                 acceptButton.IsSelected = false;
                 cancelButton.IsSelected = true;
             }
         };
 
+        // Wire up the actions to perform when the Confirm action is triggered
+        // for the menu.
         _menu.ConfirmAction = () =>
         {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (speedPanel.IsSelected)
             {
-                speedPanel.IsSelected = false;
-                speedPanel.IsEnabled = false;
-                modePanel.IsSelected = true;
-                modePanel.IsEnabled = true;
+                // The speed panel is selected and the confirm action was
+                // performed, so deselect the speed panel and move the
+                // navigation to the mode panel.
+                speedPanel.IsEnabled = speedPanel.IsSelected = false;
+                modePanel.IsEnabled = modePanel.IsSelected = true;
             }
             else if (modePanel.IsSelected)
             {
-                modePanel.IsSelected = false;
-                modePanel.IsEnabled = false;
+                // The mode panel is selected and the confirm action was
+                // performed, so deselect the mode panel and move the
+                // navigation to the accept button.
+                modePanel.IsEnabled = modePanel.IsSelected = false;
                 acceptButton.IsSelected = true;
             }
             if (acceptButton.IsSelected)
             {
+                // The accept button is selected and the confirm action was
+                // performed, so change the scene to the game scene using
+                // the current options configured.
                 Core.ChangeScene(new GameScene(_options));
             }
             else if (cancelButton.IsSelected)
             {
+                // The cancel button is selected and the confirm action was
+                // performed, so change the scene back to the title scene.
                 Core.ChangeScene(new TitleScene());
             }
         };
 
+        // Wire up the actions to perform when the Cancel action is triggered
+        // for the menu.
         _menu.CancelAction = () =>
         {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (modePanel.IsSelected)
             {
-                modePanel.IsSelected = false;
-                modePanel.IsEnabled = false;
-                speedPanel.IsSelected = true;
-                speedPanel.IsEnabled = true;
+                // The mode panel is selected and the cancel action was
+                // performed, so deselect the mode panel and move the
+                // navigation to the speed panel.
+                modePanel.IsEnabled = modePanel.IsSelected = false;
+                speedPanel.IsEnabled = speedPanel.IsSelected = true;
             }
-            else if (acceptButton.IsSelected || cancelButton.IsSelected)
+            else if (acceptButton.IsSelected)
             {
+                // The accept button is selected and the cancel action was
+                // performed, so deselect the accept button and move the
+                // navigation to the mode panel.
                 acceptButton.IsSelected = false;
-                modePanel.IsSelected = true;
-                modePanel.IsEnabled = true;
+                modePanel.IsEnabled = modePanel.IsSelected = true;
+            }
+            else if (cancelButton.IsSelected)
+            {
+                // The cancel button is selected and the cancel action was
+                // performed, so deselect the cancel button and move the
+                // navigation to the mode panel.
+                acceptButton.IsSelected = false;
+                modePanel.IsEnabled = modePanel.IsSelected = true;
             }
         };
     }
 
     public override void Update(GameTime gameTime)
     {
+        // Update the menu.
         _menu.Update(gameTime);
     }
 
     public override void Draw(GameTime gameTime)
     {
         Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
         _menu.Draw(Core.SpriteBatch);
-
         Core.SpriteBatch.End();
     }
 }

@@ -11,8 +11,19 @@ namespace DungeonSlime.Scenes;
 
 public class TitleScene : Scene
 {
+    // Tracks the ui element that represents the title menu.
     private UIElement _titleMenu;
+
+    // Tracks the ui element that represents the options menu.
     private UIElement _optionsMenu;
+
+    // Tracks the volume level of songs before changes are made in the options
+    // menu so it can be restored if they player selects cancel.
+    private float _previousSongVolume;
+
+    // Tracks the volume level of sound effects before changes are made in the
+    // options menu so it can be restored if the player selects cancel.
+    private float _previousSoundEffectVolume;
 
     public TitleScene() : base() { }
 
@@ -36,17 +47,19 @@ public class TitleScene : Scene
 
     private void CreateTileMenu(TextureAtlas atlas, SoundEffect soundEffect, UIElementController controller)
     {
-        // Create the title menu
+        // Create the root container for the title menu.
         _titleMenu = new UISprite();
         _titleMenu.Position = Vector2.Zero;
         _titleMenu.Controller = controller;
         _titleMenu.IsSelected = true;
 
+        // Create the title sprite as a child of the title menu.
         UISprite titleSprite = _titleMenu.CreateChild<UISprite>();
         titleSprite.Sprite = atlas.CreateSprite("title");
         titleSprite.Sprite.CenterOrigin();
         titleSprite.Position = new Vector2(640, 220);
 
+        // Create the start button as a child of the title menu.
         UIButton startButton = _titleMenu.CreateChild<UIButton>();
         startButton.NotSelectedSprite = atlas.CreateSprite("start-button");
         startButton.NotSelectedSprite.CenterOrigin();
@@ -54,74 +67,112 @@ public class TitleScene : Scene
         startButton.SelectedSprite.CenterOrigin();
         startButton.Position = new Vector2(432, 670);
         startButton.IsSelected = true;
-        startButton.Controller = controller;
 
+        // Create the options button as a child of the title menu.
         UIButton optionsButton = _titleMenu.CreateChild<UIButton>();
         optionsButton.NotSelectedSprite = atlas.CreateSprite("options-button");
         optionsButton.NotSelectedSprite.CenterOrigin();
         optionsButton.SelectedSprite = atlas.CreateAnimatedSprite("options-button-selected");
         optionsButton.SelectedSprite.CenterOrigin();
         optionsButton.Position = new Vector2(848, 670);
-        optionsButton.Controller = controller;
 
-        _titleMenu.RightAction = () =>
-        {
-            Core.Audio.PlaySoundEffect(soundEffect);
-            startButton.IsSelected = false;
-            optionsButton.IsSelected = true;
-        };
-
+        // Wire up the actions to perform when the Left action is triggered
+        // for the menu.
         _titleMenu.LeftAction = () =>
         {
+            // Play the sound effect.
             Core.Audio.PlaySoundEffect(soundEffect);
+
+            // The left action was performed, so deselect the options button and
+            // select the start button.
             startButton.IsSelected = true;
             optionsButton.IsSelected = false;
         };
 
+        // Wire up the actions to perform when the Right action is triggered
+        // for the menu.
+        _titleMenu.RightAction = () =>
+        {
+            // Play the sound effect.
+            Core.Audio.PlaySoundEffect(soundEffect);
+
+            // The right action was performed, so deselect the start button and
+            // select the options button.
+            startButton.IsSelected = false;
+            optionsButton.IsSelected = true;
+        };
+
+        // Wire up the actions to perform when the Confirm action is triggered
+        // for the menu.
         _titleMenu.ConfirmAction = () =>
         {
+            // Play the sound effect.
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (startButton.IsSelected)
             {
-                Core.Audio.PlaySoundEffect(soundEffect);
+                // The start button is selected and the confirm action was
+                // performed, so change the scene to the game select scene.
                 Core.ChangeScene(new GameSelectScene());
             }
             else if (optionsButton.IsSelected)
             {
-                Core.Audio.PlaySoundEffect(soundEffect);
-                _titleMenu.IsEnabled = false;
-                _titleMenu.IsVisible = false;
-                _optionsMenu.IsEnabled = true;
-                _optionsMenu.IsVisible = true;
+                // The accept button is selected and the confirm action was
+                // performed, so disable the title menu...
+                _titleMenu.IsEnabled = _titleMenu.IsVisible = _titleMenu.IsSelected = false;
+
+                // ...cache the current volume levels of songs and
+                // sound effects..
+                _previousSongVolume = Core.Audio.SongVolume;
+                _previousSoundEffectVolume = Core.Audio.SoundEffectVolume;
+
+                // ...and restore the default selections of the title menu for
+                // when they come back to it...
+                startButton.IsSelected = true;
+                optionsButton.IsSelected = false;
+
+                // ...and enable the options menu.
+                _optionsMenu.IsEnabled = _optionsMenu.IsVisible = _optionsMenu.IsSelected = true;
             }
         };
     }
 
     private void CreateOptionsMenu(TextureAtlas atlas, SoundEffect soundEffect, UIElementController controller)
     {
+        // Crete the root container for the options menu.
         _optionsMenu = new UIElement();
         _optionsMenu.Controller = controller;
+        _optionsMenu.IsEnabled = false;
+        _optionsMenu.IsVisible = false;
 
+        // Create the options label as a child of the options menu.
         UISprite optionsLabel = _optionsMenu.CreateChild<UISprite>();
         optionsLabel.Sprite = atlas.CreateSprite("options-label");
         optionsLabel.Position = new Vector2(112, 20);
 
+        // Create the enter label as a child of the options menu.
         UISprite enterLabel = _optionsMenu.CreateChild<UISprite>();
         enterLabel.Sprite = atlas.CreateSprite("enter-label");
         enterLabel.Position = new Vector2(640, 52);
 
+        // Create the escape label as a child of the options menu.
         UISprite escapeLabel = _optionsMenu.CreateChild<UISprite>();
         escapeLabel.Sprite = atlas.CreateSprite("escape-label");
         escapeLabel.Position = new Vector2(804, 52);
 
+        // Create the music panel as a child of the options menu.
         UISprite musicPanel = _optionsMenu.CreateChild<UISprite>();
         musicPanel.Sprite = atlas.CreateSprite("panel");
         musicPanel.Position = new Vector2(198, 139);
+        musicPanel.IsSelected = true;
 
+        // Create the sound effect panel as a child of the options menu.
         UISprite soundEffectPanel = _optionsMenu.CreateChild<UISprite>();
         soundEffectPanel.Sprite = atlas.CreateSprite("panel");
         soundEffectPanel.Position = new Vector2(198, 406);
         soundEffectPanel.IsEnabled = false;
 
+        // Create the accept button as a child of the options menu.
         UIButton acceptButton = _optionsMenu.CreateChild<UIButton>();
         acceptButton.NotSelectedSprite = atlas.CreateSprite("accept-button");
         acceptButton.NotSelectedSprite.CenterOrigin();
@@ -130,6 +181,7 @@ public class TitleScene : Scene
         acceptButton.Position = new Vector2(432, 670);
         acceptButton.Controller = controller;
 
+        // Create the cancel button as a child of the options menu.
         UIButton cancelButton = _optionsMenu.CreateChild<UIButton>();
         cancelButton.NotSelectedSprite = atlas.CreateSprite("cancel-button");
         cancelButton.NotSelectedSprite.CenterOrigin();
@@ -138,10 +190,12 @@ public class TitleScene : Scene
         cancelButton.Position = new Vector2(848, 670);
         cancelButton.Controller = controller;
 
-        UISprite musicLabel = musicPanel.CreateChild<UISprite>();
-        musicLabel.Sprite = atlas.CreateSprite("music-label");
-        musicLabel.Position = new Vector2(42, 42);
+        // Create the music text as a child of the music panel.
+        UISprite musicText = musicPanel.CreateChild<UISprite>();
+        musicText.Sprite = atlas.CreateSprite("music-text");
+        musicText.Position = new Vector2(42, 42);
 
+        // Create the music volume slider as a child of the music panel.
         UISlider<float> musicVolumeSlider = musicPanel.CreateChild<UISlider<float>>();
         musicVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
         musicVolumeSlider.FillSprite = atlas.CreateSprite("slider-fill");
@@ -154,10 +208,12 @@ public class TitleScene : Scene
         musicVolumeSlider.Controller = controller;
         musicVolumeSlider.IsSelected = true;
 
-        UISprite soundLabel = soundEffectPanel.CreateChild<UISprite>();
-        soundLabel.Sprite = atlas.CreateSprite("sound-label");
-        soundLabel.Position = new Vector2(42, 42);
+        // Create the sound text as a child of the sound effect panel.
+        UISprite soundText = soundEffectPanel.CreateChild<UISprite>();
+        soundText.Sprite = atlas.CreateSprite("sound-text");
+        soundText.Position = new Vector2(42, 42);
 
+        // Create the sound effect volume slider as a child of the sound effect panel.
         UISlider<float> soundEffectVolumeSlider = soundEffectPanel.CreateChild<UISlider<float>>();
         soundEffectVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
         soundEffectVolumeSlider.FillSprite = atlas.CreateSprite("slider-fill");
@@ -169,148 +225,224 @@ public class TitleScene : Scene
         soundEffectVolumeSlider.Position = new Vector2(27, 117);
         soundEffectVolumeSlider.Controller = controller;
 
+        // By setting the disabled color of the root options menu, it will
+        // propagate the value to all child elements
+        _optionsMenu.DisabledColor = new Color(70, 86, 130, 255);
+
+        // Wire up the actions to perform when the Up Action is triggered
+        // for the menu.
         _optionsMenu.UpAction = () =>
         {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (soundEffectPanel.IsSelected)
             {
-                Core.Audio.PlaySoundEffect(soundEffect);
-                soundEffectPanel.IsSelected = false;
-                soundEffectPanel.IsEnabled = false;
-                musicPanel.IsSelected = true;
-                musicPanel.IsEnabled = true;
+                // The sound effect panel is selected and the up action was
+                // performed, so deselect the sound effect panel and move the
+                // navigation up to the music panel.
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = false;
+                musicPanel.IsEnabled = musicPanel.IsSelected = true;
             }
             else if (acceptButton.IsSelected)
             {
-                Core.Audio.PlaySoundEffect(soundEffect);
+                // The accept button is selected and the up action was
+                // performed, so deselect the accept button and move the
+                // navigation up to the sound effect panel.
                 acceptButton.IsSelected = false;
-                soundEffectPanel.IsSelected = true;
-                soundEffectPanel.IsEnabled = true;
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = true;
             }
             else if (cancelButton.IsSelected)
             {
-                Core.Audio.PlaySoundEffect(soundEffect);
+                // The cancel button is selected and the up action was
+                // performed, so deselect the cancel button and move the
+                // navigation up to the sound effect panel.
                 cancelButton.IsSelected = false;
-                soundEffectPanel.IsSelected = true;
-                soundEffectPanel.IsEnabled = true;
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = true;
             }
         };
 
+        // Wire up the actions to perform when the Down action is triggered
+        // for the menu.
         _optionsMenu.DownAction = () =>
         {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (musicPanel.IsSelected)
             {
-                Core.Audio.PlaySoundEffect(soundEffect);
-                musicPanel.IsSelected = false;
-                musicPanel.IsEnabled = false;
-                soundEffectPanel.IsSelected = true;
-                soundEffectPanel.IsEnabled = true;
+                // The music panel is selected and the down action was
+                // performed, so deselect the music panel and move the
+                // navigation down to the  sound effect panel.
+                musicPanel.IsEnabled = musicPanel.IsSelected = false;
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = true;
             }
             else if (soundEffectPanel.IsSelected)
             {
-                Core.Audio.PlaySoundEffect(soundEffect);
-                soundEffectPanel.IsSelected = false;
-                soundEffectPanel.IsEnabled = false;
+                // The sound effect panel is selected and the down action was
+                // performed, so deselect the sound effect panel and move the
+                // navigation down to the accept button.
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = false;
                 acceptButton.IsSelected = true;
             }
         };
 
+        // Wire up the actions to perform when the Left action is triggered
+        // for the menu.
         _optionsMenu.LeftAction = () =>
         {
             if (musicPanel.IsSelected)
             {
-                Core.Audio.PlaySoundEffect(soundEffect);
+                // The music panel is selected and the right action was
+                // performed, so step down the music volume slider.
                 Core.Audio.SongVolume = musicVolumeSlider.StepDown();
             }
             else if (soundEffectPanel.IsSelected)
             {
+                // The sound effect panel is selected and the right action was
+                // performed, so step down the sound effect volume slider.
                 Core.Audio.SoundEffectVolume = soundEffectVolumeSlider.StepDown();
-                Core.Audio.PlaySoundEffect(soundEffect);
+
             }
             else if (cancelButton.IsSelected)
             {
+                // The cancel button is selected and the right action was
+                // performed, so deselect the cancel button and move the
+                // navigation to the accept button.
                 cancelButton.IsSelected = false;
                 acceptButton.IsSelected = true;
             }
+
+            // For this action, we'll play the sound effect at the end of the
+            // action so that if the sound effect volume slider was adjusted
+            // the sound effect played will have those changes.
+            Core.Audio.PlaySoundEffect(soundEffect);
         };
 
+        // Wire up the actions to perform when the Right action is triggered
+        // for the menu.
         _optionsMenu.RightAction = () =>
         {
             if (musicPanel.IsSelected)
             {
+                // The music panel is selected and the right action was
+                // performed, so step up the music volume slider.
+                Core.Audio.SongVolume = musicVolumeSlider.StepUp();
+
+                // Play the sound effect
                 Core.Audio.PlaySoundEffect(soundEffect);
-                Core.Audio.SongVolume = musicVolumeSlider.StepUp(0;)
             }
             else if (soundEffectPanel.IsSelected)
             {
+                // The sound effect panel is selected and the right action was
+                // performed, so step up the sound effect volume slider.
                 Core.Audio.SoundEffectVolume = soundEffectVolumeSlider.StepUp();
-                Core.Audio.PlaySoundEffect(soundEffect);
+
             }
             else if (acceptButton.IsSelected)
             {
+                // The accept button is selected and the right action was
+                // performed, so deselect the accept button and move the
+                // navigation to the cancel button.
                 acceptButton.IsSelected = false;
                 cancelButton.IsSelected = true;
             }
+
+            // For this action, we'll play the sound effect at the end of the
+            // action so that if the sound effect volume slider was adjusted
+            // the sound effect played will have those changes.
+            Core.Audio.PlaySoundEffect(soundEffect);
         };
 
+        // Wire up the actions to perform when the Confirm action is triggered
+        // for the menu.
         _optionsMenu.ConfirmAction = () =>
         {
+            // Play the sound effect.
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (musicPanel.IsSelected)
             {
-                musicPanel.IsSelected = false;
-                musicPanel.IsEnabled = false;
-                soundEffectPanel.IsSelected = true;
-                soundEffectPanel.IsEnabled = true;
+                // The music panel is selected and the confirm action was
+                // performed, so deselect the music panel and move the
+                // navigation to the sound effect panel.
+                musicPanel.IsEnabled = musicPanel.IsSelected = false;
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = true;
             }
             else if (soundEffectPanel.IsSelected)
             {
-                soundEffectPanel.IsSelected = false;
-                soundEffectPanel.IsEnabled = false;
+                // The sound effect panel is selected and the confirm action was
+                // performed, so deselect the sound effect panel and move the
+                // navigation to the accept button.
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = false;
                 acceptButton.IsSelected = true;
             }
             else if (acceptButton.IsSelected)
             {
-                musicVolumeSlider.IsSelected = true;
-                soundEffectVolumeSlider.IsSelected = false;
-                acceptButton.IsSelected = false;
-                cancelButton.IsSelected = false;
-                musicPanel.IsEnabled = true;
-                soundEffectPanel.IsEnabled = false;
-                _titleMenu.IsEnabled = true;
-                _titleMenu.IsVisible = true;
+                // The accept button is selected and the confirm action was
+                // performed, so disable the options menu...
+                _optionsMenu.IsEnabled = _optionsMenu.IsVisible = _optionsMenu.IsSelected = false;
+
+                // ...and restore the default selections of the options menu in
+                // case they come back to it...
+                musicPanel.IsEnabled = musicPanel.IsSelected = true;
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = false;
+                acceptButton.IsSelected = cancelButton.IsSelected = false;
+
+                // ...and enable the title menu.
+                _titleMenu.IsEnabled = _titleMenu.IsVisible = _titleMenu.IsSelected = true;
             }
             else if (cancelButton.IsSelected)
             {
-                musicVolumeSlider.IsSelected = true;
-                soundEffectVolumeSlider.IsSelected = false;
-                acceptButton.IsSelected = false;
-                cancelButton.IsSelected = false;
-                musicPanel.IsEnabled = true;
-                soundEffectPanel.IsEnabled = false;
-                _titleMenu.IsEnabled = true;
-                _titleMenu.IsVisible = true;
+                // The cancel button is selected and the confirm action was
+                // performed, so disable the options menu...
+                _optionsMenu.IsEnabled = _optionsMenu.IsVisible = _optionsMenu.IsSelected = false;
+
+                // ...and restore the song and sound effect volume levels...
+                musicVolumeSlider.Value = Core.Audio.SongVolume = _previousSongVolume;
+                soundEffectVolumeSlider.Value = Core.Audio.SoundEffectVolume = _previousSoundEffectVolume;
+
+                // ...and restore the default selections of the options menu in
+                // case they come back to it...
+                musicPanel.IsEnabled = musicPanel.IsSelected = true;
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = false;
+                acceptButton.IsSelected = cancelButton.IsSelected = false;
+
+                // ...and enable the title menu.
+                _titleMenu.IsEnabled = _titleMenu.IsVisible = _titleMenu.IsSelected = true;
             }
         };
 
+        // Wire up the actions to perform when the Cancel action is triggered
+        // for the menu.
         _optionsMenu.CancelAction = () =>
         {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (soundEffectPanel.IsSelected)
             {
-                soundEffectPanel.IsSelected = false;
-                soundEffectPanel.IsEnabled = false;
-                musicPanel.IsSelected = true;
-                musicPanel.IsEnabled = true;
+                // The sound effect panel is selected and the cancel action was
+                // performed, so deselect the sound effect panel and move the
+                // navigation back to the music panel.
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = false;
+                musicPanel.IsEnabled = musicPanel.IsSelected = true;
             }
             else if (acceptButton.IsSelected)
             {
-                soundEffectPanel.IsSelected = true;
-                soundEffectPanel.IsEnabled = true;
+                // The accept button is selected and the cancel action was
+                // performed, so deselect the accept button and move the
+                // navigation back to the sound effect panel.
                 acceptButton.IsSelected = false;
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = true;
             }
             else if (cancelButton.IsSelected)
             {
-                soundEffectPanel.IsSelected = true;
-                soundEffectPanel.IsEnabled = true;
+                // The cancel button is selected and the cancel action was
+                // performed, so deselect the cancel button and move the
+                // navigation back to the sound effect panel.
                 cancelButton.IsSelected = false;
+                soundEffectPanel.IsEnabled = soundEffectPanel.IsSelected = true;
             }
         };
 
@@ -318,6 +450,7 @@ public class TitleScene : Scene
 
     public override void Update(GameTime gameTime)
     {
+        // Update
         _titleMenu.Update(gameTime);
         _optionsMenu.Update(gameTime);
     }

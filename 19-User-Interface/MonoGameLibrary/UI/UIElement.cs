@@ -247,6 +247,10 @@ public class UIElement : IEnumerable<UIElement>
     /// <param name="gameTime">A snapshot of the timing values for the current update cycle.</param>
     public virtual void Update(GameTime gameTime)
     {
+        if(!IsEnabled)
+        {
+            return;
+        }
         if (IsSelected && Controller != null && !_wasSelectedThisFrame)
         {
             HandleNavigation();

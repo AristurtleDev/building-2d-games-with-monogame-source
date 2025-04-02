@@ -3,10 +3,6 @@
   <Texture>images/ui-atlas</Texture>
   <Regions>
     <Region name="title" x="0" y="0" width="751" height="240" />
-    <Region name="mode-label" x="758" y="0" width="156" height="35" />
-    <Region name="speed-label" x="758" y="35" width="193" height="35" />
-    <Region name="music-label" x="758" y="70" width="178" height="35" />
-    <Region name="sound-label" x="758" y="105" width="114" height="35" />
     <Region name="escape-label" x="755" y="140" width="219" height="28" />
     <Region name="enter-label" x="755" y="168" width="149" height="28" />
     <Region name="panel" x="0" y="240" width="849" height="221" />
@@ -42,10 +38,15 @@
     <Region name="quit-button-selected-2" x="256" y="853" width="256" height="52" />
     <Region name="select-label" x="512" y="757" width="290" height="72" />
     <Region name="options-label" x="512" y="829" width="315" height="72" />
-    <Region name="paused-label" x="0" y="905" width="283" height="72" />
-    <Region name="gameover-label" x="283" y="905" width="416" height="72" />
-    <Region name="slider" x="0" y="980" width="782" height="44" />
-    <Region name="slider-fill" x="782" y="984" width="1" height="36" />
+    <Region name="slider" x="0" y="905" width="782" height="44" />
+    <Region name="slider-fill" x="782" y="910" width="1" height="36" />
+    <Region name="mode-text" x="0" y="949" width="156" height="35" />
+    <Region name="speed-text" x="156" y="949" width="193" height="35" />
+    <Region name="music-text" x="349" y="949" width="178" height="35" />
+    <Region name="sound-text" x="527" y="949" width="114" height="35" />
+    <Region name="paused-text" x="641" y="949" width="232" height="35" />
+    <Region name="game-over-text" x="0" y="984" width="346" height="35" />
+    <Region name="overlay" x="15" y="105" width="1" height="1" />
   </Regions>
   <Animations>
     <Animation name="slow-button-selected" delay="300">
