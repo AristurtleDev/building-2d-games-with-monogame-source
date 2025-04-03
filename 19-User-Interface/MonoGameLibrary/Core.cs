@@ -18,10 +18,6 @@ public class Core : Game
     /// </summary>
     public static Core Instance => s_instance;
 
-    // The scene that was previously active if told to cache scene when
-    // changing scenes.
-    private static Scene s_previousScene;
-
     // The scene that is currently active.
     private static Scene s_activeScene;
 
@@ -172,45 +168,20 @@ public class Core : Game
         base.Draw(gameTime);
     }
 
-    public static void ChangeScene(Scene next, bool cacheCurrentScene = false)
+    public static void ChangeScene(Scene next)
     {
-        // Only set the next scene value if it si not the same instance as the
-        // currently active scene.
+        // Only set the next scene value if it is not the same
+        // instance as the currently active scene.
         if (s_activeScene != next)
         {
             s_nextScene = next;
         }
-
-
-        // If caching is requested and there's an active scene to cache, store
-        // a reference to the current active scene in the previous scene
-        if (cacheCurrentScene && s_activeScene != null)
-        {
-            s_previousScene = s_activeScene;
-        }
-    }
-
-    public static bool ReturnToCachedScene()
-    {
-        // Check if there is a cached previous scene, and if so, change scene
-        // to that one
-        if (s_previousScene != null)
-        {
-            ChangeScene(s_previousScene, false);
-
-            // Clear the cached scene reference to prevent circular transitions
-            s_previousScene = null;
-
-            return true;
-        }
-
-        return false;
     }
 
     private static void TransitionScene()
     {
-        // If there is an active scene and it was not cached, dispose of it
-        if(s_activeScene != null && s_activeScene != s_previousScene)
+        // If there is an active scene, dispose of it
+        if (s_activeScene != null)
         {
             s_activeScene.Dispose();
         }
@@ -224,11 +195,10 @@ public class Core : Game
         // Null out the next scene value so it doesn't trigger a change over and over.
         s_nextScene = null;
 
-        // If the active scene now is not null, and it wasn't the cached scene
-        // that was already initialized, then initialize it.
+        // If the active scene now is not null, initialize it.
         // Remember, just like with Game, the Initialize call also calls the
-        // Scene.LoadContent.
-        if (s_activeScene != null && !s_activeScene.IsInitialized)
+        // Scene.LoadContent
+        if (s_activeScene != null)
         {
             s_activeScene.Initialize();
         }

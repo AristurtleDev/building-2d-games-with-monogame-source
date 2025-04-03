@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGameLibrary.UI;
@@ -37,12 +36,16 @@ public class UIElement : IEnumerable<UIElement>
     {
         get
         {
-            if (Parent == null)
+            // If there is a parent element, return the sum of the parent
+            // element's absolute position with this element's relative position.
+            if (Parent is UIElement parent)
             {
-                return Position;
+                return parent.AbsolutePosition + Position;
             }
 
-            return Parent.AbsolutePosition + Position;
+            // Otherwise, just return this element's position since it has no
+            // parent to be relative to.
+            return Position;
         }
     }
 
@@ -110,26 +113,19 @@ public class UIElement : IEnumerable<UIElement>
     /// </remarks>
     public Color EnabledColor
     {
-        get => _enabledColor;
-        set
+        get
         {
-            // If the color being set is the same color that is already set,
-            // short circuit and return early so we don't waste time cycling
-            // through all children.
-            if (_enabledColor == value)
+            // If there is a parent element, return back the enabled color of
+            // the parent to maintain visual consistency with grouped element.
+            if (Parent is UIElement parent)
             {
-                return;
+                return parent.EnabledColor;
             }
 
-            _enabledColor = value;
-
-            // Update enabled color of each child ui element to match
-            // for visual consistency.
-            foreach (UIElement child in this)
-            {
-                child.EnabledColor = value;
-            }
+            // Otherwise, return the enabled color of this element
+            return _enabledColor;
         }
+        set => _enabledColor = value;
     }
 
     /// <summary>
@@ -141,26 +137,19 @@ public class UIElement : IEnumerable<UIElement>
     /// </remarks>
     public Color DisabledColor
     {
-        get => _disabledColor;
-        set
+        get
         {
-            // If the color being set is the same color that is already set,
-            // short circuit and return early so we don't waste time cycling
-            // through all children.
-            if (_disabledColor == value)
+            // If there is a parent element, return back the disabled color of
+            // the parent to maintain visual consistency with grouped element.
+            if (Parent is UIElement parent)
             {
-                return;
+                return parent.DisabledColor;
             }
 
-            _disabledColor = value;
-
-            // Update the disabled color of each child ui element to match
-            // for visual consistency.
-            foreach (UIElement child in this)
-            {
-                child.DisabledColor = value;
-            }
+            // Otherwise, return the enabled color of this element
+            return _disabledColor;
         }
+        set => _disabledColor = value;
     }
 
     /// <summary>
@@ -175,6 +164,11 @@ public class UIElement : IEnumerable<UIElement>
             _wasSelectedThisFrame = value;
         }
     }
+
+    /// <summary>
+    /// Gets or Sets the UI Element controller used for navigation input for this UI element.
+    /// </summary>
+    public IUIElementController Controller { get; set; }
 
     /// <summary>
     /// Gets or Sets the action to perform when this ui element is selected and
@@ -213,11 +207,6 @@ public class UIElement : IEnumerable<UIElement>
     public Action CancelAction { get; set; }
 
     /// <summary>
-    /// Gets or Sets the UI Element controller used for navigation input for this UI element.
-    /// </summary>
-    public IUIElementController Controller { get; set; }
-
-    /// <summary>
     /// Creates a new ui element with an optional parent.
     /// </summary>
     public UIElement()
@@ -247,7 +236,7 @@ public class UIElement : IEnumerable<UIElement>
     /// <param name="gameTime">A snapshot of the timing values for the current update cycle.</param>
     public virtual void Update(GameTime gameTime)
     {
-        if(!IsEnabled)
+        if (!IsEnabled)
         {
             return;
         }

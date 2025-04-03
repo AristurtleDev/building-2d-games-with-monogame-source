@@ -3,8 +3,6 @@
   <Texture>images/ui-atlas</Texture>
   <Regions>
     <Region name="title" x="0" y="0" width="751" height="240" />
-    <Region name="escape-label" x="755" y="140" width="219" height="28" />
-    <Region name="enter-label" x="755" y="168" width="149" height="28" />
     <Region name="panel" x="0" y="240" width="849" height="221" />
     <Region name="slow-button" x="24" y="461" width="208" height="43" />
     <Region name="slow-button-selected-1" x="0" y="505" width="256" height="52" />
@@ -36,17 +34,22 @@
     <Region name="quit-button" x="280" y="757" width="208" height="43" />
     <Region name="quit-button-selected-1" x="256" y="801" width="256" height="52" />
     <Region name="quit-button-selected-2" x="256" y="853" width="256" height="52" />
-    <Region name="select-label" x="512" y="757" width="290" height="72" />
-    <Region name="options-label" x="512" y="829" width="315" height="72" />
+    <Region name="retry-button" x="536" y="757" width="208" height="43" />
+    <Region name="retry-button-selected-1" x="512" y="801" width="256" height="52" />
+    <Region name="retry-button-selected-2" x="512" y="853" width="256" height="52" />
+    <Region name="mode-text" x="791" y="757" width="156" height="35" />
+    <Region name="speed-text" x="791" y="792" width="193" height="35" />
+    <Region name="music-text" x="791" y="827" width="178" height="35" />
+    <Region name="sound-text" x="791" y="862" width="114" height="35" />
+    <Region name="paused-text" x="791" y="897" width="232" height="35" />
+    <Region name="game-over-text" x="678" y="949" width="346" height="35" />
     <Region name="slider" x="0" y="905" width="782" height="44" />
-    <Region name="slider-fill" x="782" y="910" width="1" height="36" />
-    <Region name="mode-text" x="0" y="949" width="156" height="35" />
-    <Region name="speed-text" x="156" y="949" width="193" height="35" />
-    <Region name="music-text" x="349" y="949" width="178" height="35" />
-    <Region name="sound-text" x="527" y="949" width="114" height="35" />
-    <Region name="paused-text" x="641" y="949" width="232" height="35" />
-    <Region name="game-over-text" x="0" y="984" width="346" height="35" />
-    <Region name="overlay" x="15" y="105" width="1" height="1" />
+    <Region name="select-label" x="0" y="949" width="290" height="72" />
+    <Region name="options-label" x="291" y="949" width="315" height="72" />
+    <Region name="enter-label" x="649" y="984" width="149" height="28" />
+    <Region name="escape-label" x="805" y="984" width="219" height="28" />
+    <Region name="white-pixel" x="8" y="0" width="1" height="1" />
+    <Region name="overlay-pixel" x="15" y="105" width="1" height="1" />
   </Regions>
   <Animations>
     <Animation name="slow-button-selected" delay="300">
@@ -88,6 +91,10 @@
     <Animation name="quit-button-selected" delay="300">
       <Frame region="quit-button-selected-1" />
       <Frame region="quit-button-selected-2" />
+    </Animation>
+    <Animation name="retry-button-selected" delay="300">
+      <Frame region="retry-button-selected-1" />
+      <Frame region="retry-button-selected-2" />
     </Animation>
   </Animations>
 </TextureAtlas>

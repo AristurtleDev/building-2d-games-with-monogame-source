@@ -14,9 +14,6 @@ public class GameSelectScene : Scene
     // Tracks the ui element that represent the game select menu.
     private UIElement _menu;
 
-    // The game options that are configured through the menu.
-    private GameOptions _options;
-
     public GameSelectScene() : base() { }
 
     public override void LoadContent()
@@ -36,6 +33,11 @@ public class GameSelectScene : Scene
 
     private void CreateGameSelectMenu(TextureAtlas atlas, SoundEffect soundEffect, UIElementController controller)
     {
+        // Tracks the game options chosen
+        GameOptions options;
+        options.Speed = GameOptions.SlimeSpeed.Normal;
+        options.Mode = GameOptions.GameMode.Normal;
+
         // Create the root container for the game select menu.
         _menu = new UIElement();
         _menu.Controller = controller;
@@ -177,6 +179,9 @@ public class GameSelectScene : Scene
         // for the menu.
         _menu.DownAction = () =>
         {
+            // Play the sound effect
+            Core.Audio.PlaySoundEffect(soundEffect);
+
             if (speedPanel.IsSelected)
             {
                 // The speed panel is selected and the down action was
@@ -207,28 +212,28 @@ public class GameSelectScene : Scene
                 // The speed panel is selected and the left action was
                 // performed, so change the speed options so it reduces
                 // the speed based on the current speed chosen.
-                if (_options.Speed == GameOptions.SlimeSpeed.Normal)
+                if (options.Speed == GameOptions.SlimeSpeed.Normal)
                 {
                     normalSpeedButton.IsSelected = false;
                     slowSpeedButton.IsSelected = true;
-                    _options.Speed = GameOptions.SlimeSpeed.Slow;
+                    options.Speed = GameOptions.SlimeSpeed.Slow;
                 }
-                else if (_options.Speed == GameOptions.SlimeSpeed.Fast)
+                else if (options.Speed == GameOptions.SlimeSpeed.Fast)
                 {
                     fastSpeedButton.IsSelected = false;
                     normalSpeedButton.IsSelected = true;
-                    _options.Speed = GameOptions.SlimeSpeed.Normal;
+                    options.Speed = GameOptions.SlimeSpeed.Normal;
                 }
             }
             else if (modePanel.IsSelected)
             {
                 // The mode panel is select and the left action was performed,
                 // so change the mode option from dark to normal.
-                if (_options.Mode == GameOptions.GameMode.Dark)
+                if (options.Mode == GameOptions.GameMode.Dark)
                 {
                     darkModeButton.IsSelected = false;
                     normalModeButton.IsSelected = true;
-                    _options.Mode = GameOptions.GameMode.Normal;
+                    options.Mode = GameOptions.GameMode.Normal;
                 }
             }
             else if (cancelButton.IsSelected)
@@ -253,28 +258,28 @@ public class GameSelectScene : Scene
                 // The speed panel is selected and the right action was
                 // performed, so change the speed options so it increases
                 // the speed based on the current speed chosen.
-                if (_options.Speed == GameOptions.SlimeSpeed.Slow)
+                if (options.Speed == GameOptions.SlimeSpeed.Slow)
                 {
                     slowSpeedButton.IsSelected = false;
                     normalSpeedButton.IsSelected = true;
-                    _options.Speed = GameOptions.SlimeSpeed.Normal;
+                    options.Speed = GameOptions.SlimeSpeed.Normal;
                 }
-                else if (_options.Speed == GameOptions.SlimeSpeed.Normal)
+                else if (options.Speed == GameOptions.SlimeSpeed.Normal)
                 {
                     normalSpeedButton.IsSelected = false;
                     fastSpeedButton.IsSelected = true;
-                    _options.Speed = GameOptions.SlimeSpeed.Fast;
+                    options.Speed = GameOptions.SlimeSpeed.Fast;
                 }
             }
             else if (modePanel.IsSelected)
             {
                 // The mode panel is select and the right action was performed,
                 // so change the mode option from normal to dark.
-                if (_options.Mode == GameOptions.GameMode.Normal)
+                if (options.Mode == GameOptions.GameMode.Normal)
                 {
                     normalModeButton.IsSelected = false;
                     darkModeButton.IsSelected = true;
-                    _options.Mode = GameOptions.GameMode.Dark;
+                    options.Mode = GameOptions.GameMode.Dark;
                 }
             }
             else if (acceptButton.IsSelected)
@@ -315,7 +320,7 @@ public class GameSelectScene : Scene
                 // The accept button is selected and the confirm action was
                 // performed, so change the scene to the game scene using
                 // the current options configured.
-                Core.ChangeScene(new GameScene(_options));
+                Core.ChangeScene(new GameScene(options));
             }
             else if (cancelButton.IsSelected)
             {

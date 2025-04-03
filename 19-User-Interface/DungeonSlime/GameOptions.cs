@@ -17,10 +17,4 @@ public struct GameOptions
 
     public SlimeSpeed Speed;
     public GameMode Mode;
-
-    public GameOptions()
-    {
-        Speed = SlimeSpeed.Normal;
-        Mode = GameMode.Normal;
-    }
 }

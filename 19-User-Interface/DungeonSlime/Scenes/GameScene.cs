@@ -162,12 +162,11 @@ public class GameScene : Scene
     {
         // Create the root container for the paused menu.
         _pauseMenu = new UISprite();
-        _pauseMenu.Sprite = atlas.CreateSprite("overlay");
+        _pauseMenu.Sprite = atlas.CreateSprite("overlay-pixel");
         _pauseMenu.Sprite.Scale = Core.GraphicsDevice.PresentationParameters.Bounds.Size.ToVector2();
         _pauseMenu.Controller = controller;
         _pauseMenu.IsSelected = true;
-        _pauseMenu.IsEnabled = false;
-        _pauseMenu.IsVisible = false;
+        _pauseMenu.IsEnabled = _pauseMenu.IsVisible = false;
 
         // Create the paused panel as a child of the paused menu.
         UISprite pausePanel = _pauseMenu.CreateChild<UISprite>();
@@ -186,6 +185,7 @@ public class GameScene : Scene
         resumeButton.SelectedSprite = atlas.CreateAnimatedSprite("resume-button-selected");
         resumeButton.SelectedSprite.CenterOrigin();
         resumeButton.Position = new Vector2(148, 148);
+        resumeButton.IsSelected = true;
 
         // Create the quite button as a child of the paused panel.
         UIButton quitButton = pausePanel.CreateChild<UIButton>();
@@ -267,7 +267,7 @@ public class GameScene : Scene
     {
         // Create the root container for the game over menu.
         _gameOverMenu = new UISprite();
-        _gameOverMenu.Sprite = atlas.CreateSprite("overlay");
+        _gameOverMenu.Sprite = atlas.CreateSprite("overlay-pixel");
         _gameOverMenu.Sprite.Scale = Core.GraphicsDevice.PresentationParameters.Bounds.Size.ToVector2();
         _gameOverMenu.Controller = controller;
         _gameOverMenu.IsSelected = true;
@@ -506,8 +506,8 @@ public class GameScene : Scene
         // If the escape key is pressed, return to the title screen
         if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Escape))
         {
-            _pauseMenu.IsEnabled = true;
-            _pauseMenu.IsVisible = true;
+            _pauseMenu.IsEnabled = _pauseMenu.IsVisible = _pauseMenu.IsSelected = true;
+
         }
 
         // If the space key is held down, the movement speed increases by 1.5

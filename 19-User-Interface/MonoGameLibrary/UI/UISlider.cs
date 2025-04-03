@@ -106,7 +106,7 @@ public class UISlider<T> : UIElement where T : System.Numerics.INumber<T>
         float min = Convert.ToSingle(MinValue);
         float max = Convert.ToSingle(MaxValue);
         float percentage = (value - min) / (max - min);
-        FillSprite.Scale = new Vector2(FillBounds.Width * percentage, 1.0f);
+        FillSprite.Scale = new Vector2(FillBounds.Width * percentage, FillBounds.Height);
 
 
         // Set the color of the fill sprite based on the enabled property.

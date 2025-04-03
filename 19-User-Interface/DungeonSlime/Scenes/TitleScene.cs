@@ -27,6 +27,17 @@ public class TitleScene : Scene
 
     public TitleScene() : base() { }
 
+    public override void Initialize()
+    {
+        // Explicitly set exit on escape to false so that the game doesn't exit
+        // when the options menu is open and the user presses escape to cancel
+        // an action.  Instead, we'll perform the exit check in the title menu's
+        // cancel logic
+        Core.ExitOnEscape = false;
+
+        base.Initialize();
+    }
+
     public override void LoadContent()
     {
         // Load the ui texture atlas from the XML configuration file.
@@ -135,6 +146,10 @@ public class TitleScene : Scene
                 _optionsMenu.IsEnabled = _optionsMenu.IsVisible = _optionsMenu.IsSelected = true;
             }
         };
+
+        // If the cancel button is pressed while the title menu is active, tell
+        // the game to exit.
+        _titleMenu.CancelAction = Core.Instance.Exit;
     }
 
     private void CreateOptionsMenu(TextureAtlas atlas, SoundEffect soundEffect, UIElementController controller)
@@ -198,7 +213,7 @@ public class TitleScene : Scene
         // Create the music volume slider as a child of the music panel.
         UISlider<float> musicVolumeSlider = musicPanel.CreateChild<UISlider<float>>();
         musicVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
-        musicVolumeSlider.FillSprite = atlas.CreateSprite("slider-fill");
+        musicVolumeSlider.FillSprite = atlas.CreateSprite("white-pixel");
         musicVolumeSlider.FillBounds = new Rectangle(108, 4, 566, 36);
         musicVolumeSlider.Value = Core.Audio.SongVolume;
         musicVolumeSlider.MinValue = 0.0f;
@@ -216,7 +231,7 @@ public class TitleScene : Scene
         // Create the sound effect volume slider as a child of the sound effect panel.
         UISlider<float> soundEffectVolumeSlider = soundEffectPanel.CreateChild<UISlider<float>>();
         soundEffectVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
-        soundEffectVolumeSlider.FillSprite = atlas.CreateSprite("slider-fill");
+        soundEffectVolumeSlider.FillSprite = atlas.CreateSprite("white-pixel");
         soundEffectVolumeSlider.FillBounds = new Rectangle(108, 4, 566, 36);
         soundEffectVolumeSlider.Value = Core.Audio.SoundEffectVolume;
         soundEffectVolumeSlider.MinValue = 0.0f;
