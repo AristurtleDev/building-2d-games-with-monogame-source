@@ -6,6 +6,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGameLibrary.UI;
 
+/// <summary>
+/// Base class for all UI elements, providing hierarchy, input handling, and common properties.
+/// UIElement can contain child elements to create complex UI structures.
+/// </summary>
 public class UIElement : IEnumerable<UIElement>
 {
     private List<UIElement> _children;
@@ -17,60 +21,45 @@ public class UIElement : IEnumerable<UIElement>
     private Color _disabledColor;
 
     /// <summary>
-    /// Gets the ui element that is the parent of this ui element, or null of there is no parent.
+    /// Gets the parent element of this UI element, if one exists.
     /// </summary>
     public UIElement Parent { get; private set; }
 
     /// <summary>
-    /// Gets or Sets the position of this element.
+    /// Gets or sets the position of this element relative to its parent.
     /// </summary>
-    /// <remarks>
-    /// If this element is a child element, this position is relative to the position of the parent.
-    /// </remarks>
     public Vector2 Position { get; set; }
 
     /// <summary>
-    /// Gets the position of this element relative to the game screen.
+    /// Gets the absolute position of this element in screen space,
+    /// calculated by combining this element's position with its parent's absolute position.
     /// </summary>
     public Vector2 AbsolutePosition
     {
         get
         {
-            // If there is a parent element, return the sum of the parent
-            // element's absolute position with this element's relative position.
             if (Parent is UIElement parent)
             {
                 return parent.AbsolutePosition + Position;
             }
 
-            // Otherwise, just return this element's position since it has no
-            // parent to be relative to.
             return Position;
         }
     }
 
     /// <summary>
-    /// Gets or Sets a value that indicates whether this UI ELement is enabled.
+    /// Gets or sets whether this element can receive input and perform actions.
+    /// An element is only enabled if both it and all its parents are enabled.
     /// </summary>
-    /// <remarks>
-    /// If this UI element is a child of another UI element, and that parent is
-    /// not enabled, this this will return false.
-    /// </remarks>
     public bool IsEnabled
     {
         get
         {
-            // If there is a parent element, and if that parent element is not
-            // enabled, then return false automatically since all children of
-            // a disabled parent are also disabled.
             if (Parent is UIElement parent && !parent.IsEnabled)
             {
                 return false;
             }
 
-            // Otherwise, there is either no parent element or the parent element
-            // is enabled, in which case we just return back the enabled state
-            // of this element
             return _isEnabled;
 
         }
@@ -78,82 +67,25 @@ public class UIElement : IEnumerable<UIElement>
     }
 
     /// <summary>
-    /// Gets or Sets a value that indicates whether this UI element is visible.
+    /// Gets or sets whether this element is visible.
+    /// An element is only visible if both it and all its parents are visible.
     /// </summary>
-    /// <remarks>
-    /// If this UI element is a child of another UI element, and that parent is
-    /// not visible, then this will return false.
-    /// </remarks>
     public bool IsVisible
     {
         get
         {
-            // If there is a parent element, and if that parent element is not
-            // visible, then return false automatically since all children of
-            // a non-visible parent are also not visible.
             if (Parent is UIElement parent && !parent.IsVisible)
             {
                 return false;
             }
 
-            // Otherwise, there is either no parent element or the parent element
-            // is visible, in which case, we just return back the visual state
-            // of this element
             return _isVisible;
         }
         set => _isVisible = value;
     }
 
     /// <summary>
-    /// Gets or Sets the color mask to apply to this element and all its children
-    //  when it is enabled.
-    /// </summary>
-    /// <remarks>
-    /// Default value is Color.White.
-    /// </remarks>
-    public Color EnabledColor
-    {
-        get
-        {
-            // If there is a parent element, return back the enabled color of
-            // the parent to maintain visual consistency with grouped element.
-            if (Parent is UIElement parent)
-            {
-                return parent.EnabledColor;
-            }
-
-            // Otherwise, return the enabled color of this element
-            return _enabledColor;
-        }
-        set => _enabledColor = value;
-    }
-
-    /// <summary>
-    /// Gets or Sets the color mask to apply to this element and all its children
-    //  when it is disabled.
-    /// </summary>
-    /// <remarks>
-    /// Default value is Color.White.
-    /// </remarks>
-    public Color DisabledColor
-    {
-        get
-        {
-            // If there is a parent element, return back the disabled color of
-            // the parent to maintain visual consistency with grouped element.
-            if (Parent is UIElement parent)
-            {
-                return parent.DisabledColor;
-            }
-
-            // Otherwise, return the enabled color of this element
-            return _disabledColor;
-        }
-        set => _disabledColor = value;
-    }
-
-    /// <summary>
-    /// Gets or Sets a value that indicates if this ui element is currently selected.
+    /// Gets or sets whether this element is currently selected to receive input.
     /// </summary>
     public bool IsSelected
     {
@@ -166,48 +98,78 @@ public class UIElement : IEnumerable<UIElement>
     }
 
     /// <summary>
-    /// Gets or Sets the UI Element controller used for navigation input for this UI element.
+    /// Gets or sets the color used when the element is enabled.
+    /// If not explicitly set, inherits from parent element.
+    /// </summary>
+    public Color EnabledColor
+    {
+        get
+        {
+            if (Parent is UIElement parent)
+            {
+                return parent.EnabledColor;
+            }
+
+            return _enabledColor;
+        }
+        set => _enabledColor = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the color used when the element is disabled.
+    /// If not explicitly set, inherits from parent element.
+    /// </summary>
+    public Color DisabledColor
+    {
+        get
+        {
+            if (Parent is UIElement parent)
+            {
+                return parent.DisabledColor;
+            }
+
+            return _disabledColor;
+        }
+        set => _disabledColor = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the controller that handles navigation input for this element.
     /// </summary>
     public IUIElementController Controller { get; set; }
 
     /// <summary>
-    /// Gets or Sets the action to perform when this ui element is selected and
-    /// the up menu input is pressed.
+    /// Action performed when navigating up from this element.
     /// </summary>
     public Action UpAction { get; set; }
 
     /// <summary>
-    /// Gets or Sets the action to perform when this ui element is selected and
-    /// the down menu input is pressed.
+    /// Action performed when navigating down from this element.
     /// </summary>
     public Action DownAction { get; set; }
 
     /// <summary>
-    /// Gets or Sets the action to perform when this ui element is selected and
-    /// the left menu input is pressed.
+    /// Action performed when navigating left from this element.
     /// </summary>
     public Action LeftAction { get; set; }
 
     /// <summary>
-    /// Gets or Sets the action to perform when this ui element is selected and
-    /// the right menu input is pressed.
+    /// Action performed when navigating right from this element.
     /// </summary>
     public Action RightAction { get; set; }
 
     /// <summary>
-    /// Gets or Sets the action to perform when this ui element is selected and
-    /// the confirm menu input is pressed.
+    /// Action performed when confirming a selection on this element.
     /// </summary>
     public Action ConfirmAction { get; set; }
 
     /// <summary>
-    /// Gets or Sets the action to perform when this ui element is selected and
-    /// the cancel menu input in pressed.
+    /// Action performed when canceling from this element.
     /// </summary>
     public Action CancelAction { get; set; }
 
     /// <summary>
-    /// Creates a new ui element with an optional parent.
+    /// Initializes a new instance of the UIElement class.
     /// </summary>
     public UIElement()
     {
@@ -219,9 +181,10 @@ public class UIElement : IEnumerable<UIElement>
     }
 
     /// <summary>
-    /// Adds the given ui element as a child of this ui element.
+    /// Creates and adds a child UI element of the specified type.
     /// </summary>
-    /// <param name="child">The ui element to add as a child of this ui element.</param>
+    /// <typeparam name="T">Type of UI element to create, must derive from UIElement.</typeparam>
+    /// <returns>The newly created child element.</returns>
     public T CreateChild<T>() where T : UIElement, new()
     {
         T child = new T();
@@ -231,15 +194,17 @@ public class UIElement : IEnumerable<UIElement>
     }
 
     /// <summary>
-    /// Updates this ui element.
+    /// Updates this element and all its children.
     /// </summary>
-    /// <param name="gameTime">A snapshot of the timing values for the current update cycle.</param>
+    /// <param name="gameTime">Time elapsed since the last update.</param>
     public virtual void Update(GameTime gameTime)
     {
         if (!IsEnabled)
         {
             return;
         }
+
+        // Handle navigation only if the element is selected but wasn't just selected this frame
         if (IsSelected && Controller != null && !_wasSelectedThisFrame)
         {
             HandleNavigation();
@@ -247,12 +212,16 @@ public class UIElement : IEnumerable<UIElement>
 
         _wasSelectedThisFrame = false;
 
+        // Update all child elements
         foreach (UIElement child in _children)
         {
             child.Update(gameTime);
         }
     }
 
+    /// <summary>
+    /// Processes navigation input and invokes appropriate actions.
+    /// </summary>
     private void HandleNavigation()
     {
         if (Controller.NavigateUp() && UpAction != null)
@@ -282,12 +251,11 @@ public class UIElement : IEnumerable<UIElement>
     }
 
     /// <summary>
-    /// Draws this ui element.
+    /// Draws this element and all its children.
     /// </summary>
-    /// <param name="spriteBatch">The sprite batch used to draw.</param>
+    /// <param name="spriteBatch">The sprite batch to use for drawing.</param>
     public virtual void Draw(SpriteBatch spriteBatch)
     {
-        // Draw each child element of this element that is also a visual element.
         foreach (UIElement child in _children)
         {
             child.Draw(spriteBatch);
@@ -295,14 +263,13 @@ public class UIElement : IEnumerable<UIElement>
     }
 
     /// <summary>
-    /// Returns an enumerator that iterates through each child element in this ui element.
+    /// Returns an enumerator that iterates through the child elements.
     /// </summary>
-    /// <returns>An enumerator that iterates through each child element in this ui element.</returns>
+    /// <returns>An enumerator of child UI elements.</returns>
     public IEnumerator<UIElement> GetEnumerator() => _children.GetEnumerator();
 
     /// <summary>
-    /// Returns an enumerator that iterates through each child element in this ui element.
+    /// Implements the non-generic IEnumerable interface.
     /// </summary>
-    /// <returns>An enumerator that iterates through each child element in this ui element.</returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

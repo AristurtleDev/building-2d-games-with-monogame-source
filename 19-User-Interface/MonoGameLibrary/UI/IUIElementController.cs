@@ -1,47 +1,44 @@
 namespace MonoGameLibrary.UI;
 
 /// <summary>
-/// Represents the controller for UI element.
+/// Interface for handling UI element navigation through various input sources.
+/// Implement this to create custom controllers for keyboard, gamepad, or other input methods.
 /// </summary>
 public interface IUIElementController
 {
     /// <summary>
-    /// Returns a value that indicates whether the ui element this controller is for should trigger the navigate up
-    /// action.
+    /// Determines if the user has attempted to navigate upward in the UI.
     /// </summary>
-    /// <returns>true if the navigate up action should trigger; otherwise, false.</returns>
+    /// <returns>True if upward navigation was triggered; otherwise, false.</returns>
     bool NavigateUp();
 
     /// <summary>
-    /// Returns a value that indicates whether the ui element this controller is for should trigger the navigate down
-    /// action.
+    /// Determines if the user has attempted to navigate downward in the UI.
     /// </summary>
-    /// <returns>true if the navigate down action should trigger; otherwise, false.</returns>
+    /// <returns>True if downward navigation was triggered; otherwise, false.</returns>
     bool NavigateDown();
 
     /// <summary>
-    /// Returns a value that indicates whether the ui element this controller is for should trigger the navigate left
-    /// action.
+    /// Determines if the user has attempted to navigate left in the UI.
     /// </summary>
-    /// <returns>true if the navigate left action should trigger; otherwise, false.</returns>
+    /// <returns>True if leftward navigation was triggered; otherwise, false.</returns>
     bool NavigateLeft();
 
     /// <summary>
-    /// Returns a value that indicates whether the ui element this controller is for should trigger the navigate right
-    /// action.
+    /// Determines if the user has attempted to navigate right in the UI.
     /// </summary>
-    /// <returns>true if the navigate right action should trigger; otherwise, false.</returns>
+    /// <returns>True if rightward navigation was triggered; otherwise, false.</returns>
     bool NavigateRight();
 
     /// <summary>
-    /// Returns a value that indicates whether the ui element this controller is for should trigger the confirm action.
+    /// Determines if the user has triggered a confirmation action on the current UI element.
     /// </summary>
-    /// <returns>true if the confirm action should trigger; otherwise, false.</returns>
+    /// <returns>True if confirmation was triggered; otherwise, false.</returns>
     bool Confirm();
 
     /// <summary>
-    /// Returns a value that indicates whether the ui element this controller is for should trigger the cancel action.
+    /// Determines if the user has triggered a cancellation action on the current UI element.
     /// </summary>
-    /// <returns>true if the cancel action should trigger; otherwise, false.</returns>
+    /// <returns>True if cancellation was triggered; otherwise, false.</returns>
     bool Cancel();
 }

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:56f75485421035bd315c8070ecd12de9:c670c501c95a33fde544bc2b8ad5675b:de420866b409bd7a6fc6a26e5e8d2c7b$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="ui-atlas.png" width="1024" height="1024">
+    <sprite n="white-pixel" x="715" y="819" w="1" h="1"/>
+    <sprite n="title" x="0" y="0" w="751" h="240"/>
+    <sprite n="start-button" x="208" y="776" w="208" h="43"/>
+    <sprite n="start-button-selected-2" x="768" y="637" w="256" h="52"/>
+    <sprite n="start-button-selected-1" x="512" y="637" w="256" h="52"/>
+    <sprite n="sound-text" x="232" y="819" w="114" h="35"/>
+    <sprite n="slider" x="0" y="689" w="782" h="44"/>
+    <sprite n="retry-button" x="0" y="776" w="208" h="43"/>
+    <sprite n="retry-button-selected-2" x="256" y="637" w="256" h="52"/>
+    <sprite n="retry-button-selected-1" x="0" y="637" w="256" h="52"/>
+    <sprite n="resume-button" x="624" y="733" w="208" h="43"/>
+    <sprite n="resume-button-selected-2" x="768" y="585" w="256" h="52"/>
+    <sprite n="resume-button-selected-1" x="512" y="585" w="256" h="52"/>
+    <sprite n="quit-button" x="416" y="733" w="208" h="43"/>
+    <sprite n="quit-button-selected-2" x="256" y="585" w="256" h="52"/>
+    <sprite n="quit-button-selected-1" x="0" y="585" w="256" h="52"/>
+    <sprite n="paused-text" x="0" y="819" w="232" h="35"/>
+    <sprite n="panel" x="0" y="240" w="849" h="221"/>
+    <sprite n="overlay-pixel" x="714" y="819" w="1" h="1"/>
+    <sprite n="options-label" x="0" y="461" w="315" h="72"/>
+    <sprite n="options-button" x="208" y="733" w="208" h="43"/>
+    <sprite n="options-button-selected-2" x="768" y="533" w="256" h="52"/>
+    <sprite n="options-button-selected-1" x="512" y="533" w="256" h="52"/>
+    <sprite n="music-text" x="762" y="776" w="178" h="35"/>
+    <sprite n="game-over-text" x="416" y="776" w="346" h="35"/>
+    <sprite n="escape-label" x="495" y="819" w="219" h="28"/>
+    <sprite n="enter-label" x="346" y="819" w="149" h="28"/>
+    <sprite n="cancel-button" x="0" y="733" w="208" h="43"/>
+    <sprite n="cancel-button-selected-2" x="256" y="533" w="256" h="52"/>
+    <sprite n="cancel-button-selected-1" x="0" y="533" w="256" h="52"/>
+    <sprite n="accept-button" x="782" y="689" w="208" h="43"/>
+    <sprite n="accept-button-2" x="571" y="461" w="256" h="52"/>
+    <sprite n="accept-button-1" x="315" y="461" w="256" h="52"/>
+</TextureAtlas>

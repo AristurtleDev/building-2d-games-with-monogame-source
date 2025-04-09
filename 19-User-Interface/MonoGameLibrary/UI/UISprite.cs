@@ -4,63 +4,55 @@ using MonoGameLibrary.Graphics;
 
 namespace MonoGameLibrary.UI;
 
+/// <summary>
+/// A simple UI element that displays a sprite.
+/// Useful for static elements like icons, backgrounds, and decorations.
+/// </summary>
 public class UISprite : UIElement
 {
     /// <summary>
-    /// Gets or Sets the sprite represented by this ui element.
+    /// Gets or sets the sprite to display.
     /// </summary>
     public Sprite Sprite { get; set; }
 
     /// <summary>
-    /// Creates a new ui sprite.
+    /// Updates the sprite, handling animation if the sprite is animated.
     /// </summary>
-    public UISprite() : base() { }
-
-    /// <summary>
-    /// Updates this ui sprite.
-    /// </summary>
-    /// <param name="gameTime">A snapshot of the timing values for the current update cycle.</param>
+    /// <param name="gameTime">Time elapsed since the last update.</param>
     public override void Update(GameTime gameTime)
     {
-        // If disabled, short circuit and return back early
         if (!IsEnabled)
         {
             return;
         }
 
-        // If the sprite provided is actually an animated sprite, update it.
+        // Update animation if the sprite is an animated sprite
         if (Sprite is AnimatedSprite animatedSprite)
         {
             animatedSprite.Update(gameTime);
         }
 
-        // Call base update so that child elements are updated.
         base.Update(gameTime);
     }
 
     /// <summary>
-    /// Draws this ui sprite.
+    /// Draws the sprite with the appropriate color based on enabled state.
     /// </summary>
-    /// <param name="spriteBatch">The sprite batch used for rendering.</param>
+    /// <param name="spriteBatch">The sprite batch to use for drawing.</param>
     public override void Draw(SpriteBatch spriteBatch)
     {
-        // If not visible, short circuit and return back early.
         if (!IsVisible)
         {
             return;
         }
 
-        // Only draw the sprite if there is a sprite to draw
         if (Sprite != null)
         {
-            // Set the color of the sprite based on the enabled property
+            // Apply enabled/disabled color to the sprite
             Sprite.Color = IsEnabled ? EnabledColor : DisabledColor;
-
-            // Draw the sprite
             Sprite.Draw(spriteBatch, AbsolutePosition);
         }
 
-        // Call base draw so that child elements are drawn.
         base.Draw(spriteBatch);
     }
 }

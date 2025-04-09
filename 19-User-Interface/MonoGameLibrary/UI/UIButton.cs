@@ -4,25 +4,29 @@ using MonoGameLibrary.Graphics;
 
 namespace MonoGameLibrary.UI;
 
+/// <summary>
+/// A UI element that represents a button with different visual states
+/// for selected and non-selected states.
+/// </summary>
 public class UIButton : UIElement
 {
     /// <summary>
-    /// Gets or Sets the sprite to draw when this ui button is not selected.
+    /// Gets or sets the sprite used when the button is not selected.
     /// </summary>
     public Sprite NotSelectedSprite { get; set; }
 
     /// <summary>
-    /// Gets or Sets the sprite to draw when this ui button is
+    /// Gets or sets the sprite used when the button is selected.
     /// </summary>
     public Sprite SelectedSprite { get; set; }
 
     /// <summary>
-    /// Creates a new ui button.
+    /// Updates the button's state and animations.
     /// </summary>
-    public UIButton() : base() { }
-
+    /// <param name="gameTime">Time elapsed since the last update.</param>
     public override void Update(GameTime gameTime)
     {
+        // Update animations if sprites are animated
         if (NotSelectedSprite is AnimatedSprite notSelectedSprite)
         {
             notSelectedSprite.Update(gameTime);
@@ -36,33 +40,29 @@ public class UIButton : UIElement
         base.Update(gameTime);
     }
 
+    /// <summary>
+    /// Draws the appropriate button sprite based on selection state.
+    /// </summary>
+    /// <param name="spriteBatch">The sprite batch to use for drawing.</param>
     public override void Draw(SpriteBatch spriteBatch)
     {
-        // If not visual, short circuit and return back early.
         if (!IsVisible)
         {
             return;
         }
 
-        // Draw the selected or not selected sprite based on the selected property.
+        // Draw different sprites based on selection state
         if (IsSelected)
         {
-            // Set the color of the selected sprite based on the enabled property.
             SelectedSprite.Color = IsEnabled ? EnabledColor : DisabledColor;
-
-            // Draw the selected sprite.
             SelectedSprite.Draw(spriteBatch, AbsolutePosition);
         }
         else
         {
-            // Set the color of the not selected sprite based on the enabled property.
             NotSelectedSprite.Color = IsEnabled ? EnabledColor : DisabledColor;
-
-            // Draw the not selected sprite.
             NotSelectedSprite.Draw(spriteBatch, AbsolutePosition);
         }
 
-        // Call base draw so that child elements are drawn.
         base.Draw(spriteBatch);
     }
 }

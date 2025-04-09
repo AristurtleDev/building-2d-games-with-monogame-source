@@ -11,6 +11,19 @@ namespace DungeonSlime.Scenes;
 
 public class TitleScene : Scene
 {
+    // The texture used for the background pattern.
+    private Texture2D _backgroundPattern;
+
+    // The destination rectangle for the background pattern to fill.
+    private Rectangle _backgroundDestination;
+
+    // The offset to apply when drawing the background pattern so it appears to
+    // be scrolling.
+    private Vector2 _backgroundOffset;
+
+    // The speed that the background pattern scrolls.
+    private float _scrollSpeed = 50.0f;
+
     // Tracks the ui element that represents the title menu.
     private UIElement _titleMenu;
 
@@ -29,19 +42,29 @@ public class TitleScene : Scene
 
     public override void Initialize()
     {
+        base.Initialize();
+
         // Explicitly set exit on escape to false so that the game doesn't exit
         // when the options menu is open and the user presses escape to cancel
         // an action.  Instead, we'll perform the exit check in the title menu's
         // cancel logic
         Core.ExitOnEscape = false;
 
-        base.Initialize();
+        // Initialize the offset of the background pattern at zero
+        _backgroundOffset = Vector2.Zero;
+
+        // Set the background pattern destination rectangle to fill the entire
+        // screen background
+        _backgroundDestination = Core.GraphicsDevice.PresentationParameters.Bounds;
     }
 
     public override void LoadContent()
     {
+        // Load the background pattern texture.
+        _backgroundPattern = Content.Load<Texture2D>("images/background-pattern");
+
         // Load the ui texture atlas from the XML configuration file.
-        TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/ui-atlas-definition.xml");
+        TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/atlas-definition.xml");
 
         // Load the sound effect to play when ui actions occur.
         SoundEffect uiSoundEffect = Core.Content.Load<SoundEffect>("audio/ui");
@@ -124,7 +147,7 @@ public class TitleScene : Scene
             {
                 // The start button is selected and the confirm action was
                 // performed, so change the scene to the game select scene.
-                Core.ChangeScene(new GameSelectScene());
+                Core.ChangeScene(new GameScene());
             }
             else if (optionsButton.IsSelected)
             {
@@ -207,11 +230,11 @@ public class TitleScene : Scene
 
         // Create the music text as a child of the music panel.
         UISprite musicText = musicPanel.CreateChild<UISprite>();
-        musicText.Sprite = atlas.CreateSprite("music-text");
+        musicText.Sprite = atlas.CreateSprite("music-label");
         musicText.Position = new Vector2(42, 42);
 
         // Create the music volume slider as a child of the music panel.
-        UISlider<float> musicVolumeSlider = musicPanel.CreateChild<UISlider<float>>();
+        UISlider musicVolumeSlider = musicPanel.CreateChild<UISlider>();
         musicVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
         musicVolumeSlider.FillSprite = atlas.CreateSprite("white-pixel");
         musicVolumeSlider.FillBounds = new Rectangle(108, 4, 566, 36);
@@ -225,11 +248,11 @@ public class TitleScene : Scene
 
         // Create the sound text as a child of the sound effect panel.
         UISprite soundText = soundEffectPanel.CreateChild<UISprite>();
-        soundText.Sprite = atlas.CreateSprite("sound-text");
+        soundText.Sprite = atlas.CreateSprite("sound-effect-label");
         soundText.Position = new Vector2(42, 42);
 
         // Create the sound effect volume slider as a child of the sound effect panel.
-        UISlider<float> soundEffectVolumeSlider = soundEffectPanel.CreateChild<UISlider<float>>();
+        UISlider soundEffectVolumeSlider = soundEffectPanel.CreateChild<UISlider>();
         soundEffectVolumeSlider.SliderSprite = atlas.CreateSprite("slider");
         soundEffectVolumeSlider.FillSprite = atlas.CreateSprite("white-pixel");
         soundEffectVolumeSlider.FillBounds = new Rectangle(108, 4, 566, 36);
@@ -465,18 +488,33 @@ public class TitleScene : Scene
 
     public override void Update(GameTime gameTime)
     {
-        // Update
+        // Update the offsets for the background pattern wrapping so that it
+        // scrolls down and to the right.
+        float offset = _scrollSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+        _backgroundOffset.X -= offset;
+        _backgroundOffset.Y -= offset;
+
+        // Ensure that the offsets do not go beyond the texture bounds so it is
+        // a seamless wrap
+        _backgroundOffset.X %= _backgroundPattern.Width;
+        _backgroundOffset.Y %= _backgroundPattern.Height;
+
         _titleMenu.Update(gameTime);
         _optionsMenu.Update(gameTime);
     }
 
     public override void Draw(GameTime gameTime)
     {
-        Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        Core.GraphicsDevice.Clear(new Color(32, 40, 78, 255));
 
+         // Draw the background pattern first using the PointWrap sampler state.
+        Core.SpriteBatch.Begin(samplerState: SamplerState.PointWrap);
+        Core.SpriteBatch.Draw(_backgroundPattern, _backgroundDestination, new Rectangle(_backgroundOffset.ToPoint(), _backgroundDestination.Size), Color.White * 0.5f);
+        Core.SpriteBatch.End();
+
+        Core.SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
         _titleMenu.Draw(Core.SpriteBatch);
         _optionsMenu.Draw(Core.SpriteBatch);
-
         Core.SpriteBatch.End();
     }
 }
