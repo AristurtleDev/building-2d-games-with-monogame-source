@@ -120,9 +120,6 @@ public class GameScene : Scene
         // Load the font
         _font = Core.Content.Load<SpriteFont>("fonts/gameFont");
 
-        // Create the ui texture atlas from the XML configuration file.
-        TextureAtlas uiAtlas = TextureAtlas.FromFile(Core.Content, "images/ui-atlas-definition.xml");
-
         // Load the sound effect to play when ui actions occur.
         SoundEffect uiSoundEffect = Core.Content.Load<SoundEffect>("audio/ui");
 
@@ -130,10 +127,10 @@ public class GameScene : Scene
         UIElementController controller = new UIElementController();
 
         // Create the pause menu.
-        CreatePauseMenu(uiAtlas, uiSoundEffect, controller);
+        CreatePauseMenu(atlas, uiSoundEffect, controller);
 
         // Create the game over menu.
-        CreateGameOverMenu(uiAtlas, uiSoundEffect, controller);
+        CreateGameOverMenu(atlas, uiSoundEffect, controller);
     }
 
     private void CreatePauseMenu(TextureAtlas atlas, SoundEffect soundEffect, UIElementController controller)
@@ -153,7 +150,7 @@ public class GameScene : Scene
 
         // Create the paused text as a child of the paused panel.
         UISprite pausedText = pausePanel.CreateChild<UISprite>();
-        pausedText.Sprite = atlas.CreateSprite("paused-text");
+        pausedText.Sprite = atlas.CreateSprite("paused-label");
         pausedText.Position = new Vector2(42, 42);
 
         // Create the resume button as a child of the paused panel.
@@ -258,7 +255,7 @@ public class GameScene : Scene
 
         // Create the game over text as a child of the game over panel.
         UISprite gameOverText = gameOverPanel.CreateChild<UISprite>();
-        gameOverText.Sprite = atlas.CreateSprite("paused-text");
+        gameOverText.Sprite = atlas.CreateSprite("game-over-label");
         gameOverText.Position = new Vector2(42, 42);
 
         // Create the retry button as a child of the game over panel.
@@ -335,15 +332,9 @@ public class GameScene : Scene
 
     public override void Update(GameTime gameTime)
     {
-        if (_pauseMenu.IsEnabled)
-        {
-            _pauseMenu.Update(gameTime);
-        }
-        else if (_gameOverMenu.IsEnabled)
-        {
-            _gameOverMenu.Update(gameTime);
-        }
-        else
+        _pauseMenu.Update(gameTime);
+        _gameOverMenu.Update(gameTime);
+        if (!_pauseMenu.IsEnabled && !_gameOverMenu.IsEnabled)
         {
             UpdateGame(gameTime);
         }
@@ -485,7 +476,6 @@ public class GameScene : Scene
         if (Core.Input.Keyboard.WasKeyJustPressed(Keys.Escape))
         {
             _pauseMenu.IsEnabled = _pauseMenu.IsVisible = _pauseMenu.IsSelected = true;
-
         }
 
         // If the space key is held down, the movement speed increases by 1.5
@@ -528,13 +518,15 @@ public class GameScene : Scene
         // If the + button is pressed, increase the volume.
         if (keyboard.WasKeyJustPressed(Keys.OemPlus))
         {
-            Core.Audio.IncreaseVolume(0.1f);
+            Core.Audio.SongVolume -= 0.1f;
+            Core.Audio.SoundEffectVolume -= 0.1f;
         }
 
         // If the - button was pressed, decrease the volume.
         if (keyboard.WasKeyJustPressed(Keys.OemMinus))
         {
-            Core.Audio.DecreaseVolume(0.1f);
+            Core.Audio.SongVolume -= 0.1f;
+            Core.Audio.SoundEffectVolume -= 0.1f;
         }
     }
 
@@ -542,6 +534,11 @@ public class GameScene : Scene
     {
         // Get the gamepad info for gamepad one.
         GamePadInfo gamePadOne = Core.Input.GamePads[(int)PlayerIndex.One];
+
+        if (gamePadOne.WasButtonJustPressed(Buttons.Start))
+        {
+            _pauseMenu.IsEnabled = _pauseMenu.IsVisible = _pauseMenu.IsSelected = true;
+        }
 
         // If the A button is held down, the movement speed increases by 1.5
         // and the gamepad vibrates as feedback to the player.
@@ -622,14 +619,8 @@ public class GameScene : Scene
             0.0f                // layerDepth
         );
 
-        if (_pauseMenu.IsVisible)
-        {
-            _pauseMenu.Draw(Core.SpriteBatch);
-        }
-        else if (_gameOverMenu.IsVisible)
-        {
-            _gameOverMenu.Draw(Core.SpriteBatch);
-        }
+        _pauseMenu.Draw(Core.SpriteBatch);
+        _gameOverMenu.Draw(Core.SpriteBatch);
 
         // Always end the sprite batch when finished.
         Core.SpriteBatch.End();

@@ -38,8 +38,6 @@ public class TitleScene : Scene
     // options menu so it can be restored if the player selects cancel.
     private float _previousSoundEffectVolume;
 
-    public TitleScene() : base() { }
-
     public override void Initialize()
     {
         base.Initialize();
@@ -60,11 +58,11 @@ public class TitleScene : Scene
 
     public override void LoadContent()
     {
+        // Create a texture atlas from the XML configuration file.
+        TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/atlas-definition.xml");
+
         // Load the background pattern texture.
         _backgroundPattern = Content.Load<Texture2D>("images/background-pattern");
-
-        // Load the ui texture atlas from the XML configuration file.
-        TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/atlas-definition.xml");
 
         // Load the sound effect to play when ui actions occur.
         SoundEffect uiSoundEffect = Core.Content.Load<SoundEffect>("audio/ui");
@@ -217,7 +215,6 @@ public class TitleScene : Scene
         acceptButton.SelectedSprite = atlas.CreateAnimatedSprite("accept-button-selected");
         acceptButton.SelectedSprite.CenterOrigin();
         acceptButton.Position = new Vector2(432, 670);
-        acceptButton.Controller = controller;
 
         // Create the cancel button as a child of the options menu.
         UIButton cancelButton = _optionsMenu.CreateChild<UIButton>();
@@ -226,7 +223,6 @@ public class TitleScene : Scene
         cancelButton.SelectedSprite = atlas.CreateAnimatedSprite("cancel-button-selected");
         cancelButton.SelectedSprite.CenterOrigin();
         cancelButton.Position = new Vector2(848, 670);
-        cancelButton.Controller = controller;
 
         // Create the music text as a child of the music panel.
         UISprite musicText = musicPanel.CreateChild<UISprite>();
@@ -244,7 +240,6 @@ public class TitleScene : Scene
         musicVolumeSlider.Step = 0.1f;
         musicVolumeSlider.Position = new Vector2(27, 117);
         musicVolumeSlider.Controller = controller;
-        musicVolumeSlider.IsSelected = true;
 
         // Create the sound text as a child of the sound effect panel.
         UISprite soundText = soundEffectPanel.CreateChild<UISprite>();
@@ -261,7 +256,6 @@ public class TitleScene : Scene
         soundEffectVolumeSlider.MaxValue = 1.0f;
         soundEffectVolumeSlider.Step = 0.1f;
         soundEffectVolumeSlider.Position = new Vector2(27, 117);
-        soundEffectVolumeSlider.Controller = controller;
 
         // By setting the disabled color of the root options menu, it will
         // propagate the value to all child elements
