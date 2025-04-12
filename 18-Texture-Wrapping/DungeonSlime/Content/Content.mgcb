@@ -31,19 +31,19 @@
 /processorParam:Quality=Best
 /build:audio/theme.ogg
 
-#begin fonts/gameFont.spritefont
+#begin fonts/04B_30.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:fonts/gameFont.spritefont
+/build:fonts/04B_30.spritefont
 
-#begin fonts/titleFont.spritefont
+#begin fonts/04B_30_5x.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:fonts/titleFont.spritefont
+/build:fonts/04B_30_5x.spritefont
 
 #begin images/atlas-definition.xml
 /copy:images/atlas-definition.xml

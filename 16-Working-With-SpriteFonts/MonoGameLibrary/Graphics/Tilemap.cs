@@ -29,9 +29,19 @@ public class Tilemap
     public int Count { get; }
 
     /// <summary>
-    /// Gets the size of each tile in this tilemap.
+    /// Gets or Sets the scale factor to draw each tile at.
     /// </summary>
-    public int TileSize { get; }
+    public Vector2 Scale { get; set; }
+
+    /// <summary>
+    /// Gets the width, in pixels, each tile is drawn at.
+    /// </summary>
+    public float TileWidth => _tileset.TileWidth * Scale.X;
+
+    /// <summary>
+    /// Gets the height, in pixels, each tile is drawn at.
+    /// </summary>
+    public float TileHeight => _tileset.TileHeight * Scale.Y;
 
     /// <summary>
     /// Creates a new tilemap.
@@ -39,14 +49,13 @@ public class Tilemap
     /// <param name="tileset">The tileset used by this tilemap.</param>
     /// <param name="columns">The total number of columns in this tilemap.</param>
     /// <param name="rows">The total number of rows in this tilemap.</param>
-    /// <param name="tileSize">The size of each tile in this tilemap.</param>
-    public Tilemap(Tileset tileset, int columns, int rows, int tileSize)
+    public Tilemap(Tileset tileset, int columns, int rows)
     {
         _tileset = tileset;
         Rows = rows;
         Columns = columns;
         Count = Columns * Rows;
-        TileSize = tileSize;
+        Scale = Vector2.One;
         _tiles = new int[Count];
     }
 
@@ -89,7 +98,7 @@ public class Tilemap
     /// column and row.
     /// </summary>
     /// <param name="column">The column of the tile in this tilemap.</param>
-    /// <param name="row">The row of hte tile in this tilemap.</param>
+    /// <param name="row">The row of the tile in this tilemap.</param>
     /// <returns>The texture region of the tile from this tilemap at the specified column and row.</returns>
     public TextureRegion GetTile(int column, int row)
     {
@@ -111,8 +120,8 @@ public class Tilemap
             int x = i % Columns;
             int y = i / Columns;
 
-            Vector2 position = new Vector2(x * TileSize, y * TileSize);
-            tile.Draw(spriteBatch, position, Color.White);
+            Vector2 position = new Vector2(x * TileWidth, y * TileHeight);
+            tile.Draw(spriteBatch, position, Color.White, 0.0f, Vector2.Zero, Scale, SpriteEffects.None, 1.0f);
         }
     }
 
@@ -132,10 +141,6 @@ public class Tilemap
             {
                 XDocument doc = XDocument.Load(reader);
                 XElement root = doc.Root;
-
-                // The <Tilemap> element contains an attribute that specifies the
-                // size of each tile in the tilemap
-                int tileSize = int.Parse(root.Attribute("tileSize")?.Value ?? "0");
 
                 // The <Tileset> element contains the information about the tileset
                 // used by the tilemap.
@@ -197,7 +202,7 @@ public class Tilemap
                 int columnCount = rows[0].Split(" ", StringSplitOptions.RemoveEmptyEntries).Length;
 
                 // Create the tilemap
-                Tilemap tilemap = new Tilemap(tileset, columnCount, rows.Length, tileSize);
+                Tilemap tilemap = new Tilemap(tileset, columnCount, rows.Length);
 
                 // Process each row
                 for (int row = 0; row < rows.Length; row++)

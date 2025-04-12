@@ -518,8 +518,8 @@ public class GameScene : Scene
         // If the + button is pressed, increase the volume.
         if (keyboard.WasKeyJustPressed(Keys.OemPlus))
         {
-            Core.Audio.SongVolume -= 0.1f;
-            Core.Audio.SoundEffectVolume -= 0.1f;
+            Core.Audio.SongVolume += 0.1f;
+            Core.Audio.SoundEffectVolume += 0.1f;
         }
 
         // If the - button was pressed, decrease the volume.

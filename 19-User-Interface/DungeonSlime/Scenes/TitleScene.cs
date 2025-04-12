@@ -239,7 +239,6 @@ public class TitleScene : Scene
         musicVolumeSlider.MaxValue = 1.0f;
         musicVolumeSlider.Step = 0.1f;
         musicVolumeSlider.Position = new Vector2(27, 117);
-        musicVolumeSlider.Controller = controller;
 
         // Create the sound text as a child of the sound effect panel.
         UISprite soundText = soundEffectPanel.CreateChild<UISprite>();

@@ -13,26 +13,35 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin font.spritefont
+#begin audio/bounce.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/bounce.wav
+
+#begin audio/collect.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/collect.wav
+
+#begin audio/theme.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/theme.ogg
+
+#begin fonts/04B_30.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:font.spritefont
+/build:fonts/04B_30.spritefont
 
-#begin cobblestone.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=True
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=false
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:cobblestone.jpg
+#begin images/atlas-definition.xml
+/copy:images/atlas-definition.xml
 
-#begin logo-32.png
+#begin images/atlas.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -42,9 +51,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:logo-32.png
+/build:images/atlas.png
 
-#begin logo-1024.png
+#begin images/logo.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -54,5 +63,8 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:logo-1024.png
+/build:images/logo.png
+
+#begin images/tilemap-definition.xml
+/copy:images/tilemap-definition.xml
 

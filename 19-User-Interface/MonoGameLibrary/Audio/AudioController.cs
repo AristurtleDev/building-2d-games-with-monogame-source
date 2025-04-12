@@ -130,7 +130,7 @@ public class AudioController : IDisposable
     /// <param name="disposing">Indicates whether managed resources should be disposed.</param>
     protected void Dispose(bool disposing)
     {
-        if (IsDisposed)
+        if(IsDisposed)
         {
             return;
         }
@@ -277,5 +277,4 @@ public class AudioController : IDisposable
             MuteAudio();
         }
     }
-
 }
