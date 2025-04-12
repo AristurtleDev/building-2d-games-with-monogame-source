@@ -303,13 +303,15 @@ public class Game1 : Core
         // If the + button is pressed, increase the volume.
         if (Input.Keyboard.WasKeyJustPressed(Keys.OemPlus))
         {
-            Audio.IncreaseVolume(0.1f);
+            Audio.SongVolume += 0.1f;
+            Audio.SoundEffectVolume += 0.1f;
         }
 
         // If the - button was pressed, decrease the volume.
         if (Input.Keyboard.WasKeyJustPressed(Keys.OemMinus))
         {
-            Audio.DecreaseVolume(0.1f);
+            Audio.SongVolume -= 0.1f;
+            Audio.SoundEffectVolume -= 0.1f;
         }
     }
 
