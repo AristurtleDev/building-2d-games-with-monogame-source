@@ -25,11 +25,23 @@
 /processorParam:Quality=Best
 /build:audio/collect.wav
 
+#begin audio/game_over.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/game_over.ogg
+
 #begin audio/theme.ogg
 /importer:OggImporter
 /processor:SongProcessor
 /processorParam:Quality=Best
 /build:audio/theme.ogg
+
+#begin audio/ui.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/ui.wav
 
 #begin fonts/04B_30_5x.spritefont
 /importer:FontDescriptionImporter
@@ -86,4 +98,19 @@
 
 #begin images/tilemap-definition.xml
 /copy:images/tilemap-definition.xml
+
+#begin images/ui-atlas-definition.xml
+/copy:images/ui-atlas-definition.xml
+
+#begin images/ui-atlas.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:images/ui-atlas.png
 
