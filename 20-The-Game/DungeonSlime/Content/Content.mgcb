@@ -25,11 +25,11 @@
 /processorParam:Quality=Best
 /build:audio/collect.wav
 
-#begin audio/game_over.ogg
-/importer:OggImporter
-/processor:SongProcessor
+#begin audio/ui.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/game_over.ogg
+/build:audio/ui.wav
 
 #begin audio/theme.ogg
 /importer:OggImporter
@@ -37,25 +37,19 @@
 /processorParam:Quality=Best
 /build:audio/theme.ogg
 
-#begin audio/ui.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:audio/ui.wav
-
-#begin fonts/04B_30_5x.spritefont
+#begin fonts/gameFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:fonts/04B_30_5x.spritefont
+/build:fonts/gameFont.spritefont
 
-#begin fonts/04B_30.spritefont
+#begin fonts/titleFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:fonts/04B_30.spritefont
+/build:fonts/titleFont.spritefont
 
 #begin images/atlas-definition.xml
 /copy:images/atlas-definition.xml
