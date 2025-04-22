@@ -178,9 +178,14 @@ public class TitleScene : Scene
         optionsText.X = 10;
         optionsText.Y = 10;
         optionsText.Text = "OPTIONS";
+        optionsText.UseCustomFont = true;
+        optionsText.FontScale = 0.5f;
+        optionsText.CustomFontFile = @"fonts/04b_30.fnt";
         _optionsPanel.AddChild(optionsText);
 
         OptionsSlider musicSlider = new OptionsSlider(_atlas);
+        musicSlider.Name = "MusicSlider";
+        musicSlider.Text = "MUSIC";
         musicSlider.Visual.Anchor(Gum.Wireframe.Anchor.Top);
         musicSlider.Visual.Y = 30f;
         musicSlider.Minimum = 0;
@@ -193,6 +198,8 @@ public class TitleScene : Scene
         _optionsPanel.AddChild(musicSlider);
 
         OptionsSlider sfxSlider = new OptionsSlider(_atlas);
+        sfxSlider.Name = "SfxSlider";
+        sfxSlider.Text = "SFX";
         sfxSlider.Visual.Anchor(Gum.Wireframe.Anchor.Top);
         sfxSlider.Visual.Y = 93;
         sfxSlider.Minimum = 0;
