@@ -46,13 +46,12 @@ public class Game1 : Core
         FrameworkElement.TabKeyCombos.Add(
            new KeyCombo() { PushedKey = Microsoft.Xna.Framework.Input.Keys.Down });
 
-        // Our game is at a resolution of 1280 x 720, however the assets created for
-        // the UI were done so at 1/4th the size to keep the size of the texture
-        // atlas small.  So we'll set the default canvas size as 1/4th the size of
-        // the resolution then tell gum to zoom in by a factor of 4.
-        GumService.Default.CanvasWidth = 1280 / 4f;
-        GumService.Default.CanvasHeight = 720 / 4f;
-        GumService.Default.Renderer.Camera.Zoom = 4;
+        // The assets created for the UI were done so at 1/4th the size to keep the size of the
+        // texture atlas small.  So we'll set the default canvas size to be 1/4th the size of
+        // the game's resolution then tell gum to zoom in by a factor of 4.
+        GumService.Default.CanvasWidth = GraphicsDevice.PresentationParameters.BackBufferWidth / 4.0f;
+        GumService.Default.CanvasHeight = GraphicsDevice.PresentationParameters.BackBufferHeight / 4.0f;
+        GumService.Default.Renderer.Camera.Zoom = 4.0f;
 
         // Start the game with the title scene.
         ChangeScene(new TitleScene());
