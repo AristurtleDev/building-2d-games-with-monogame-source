@@ -20,6 +20,11 @@ public abstract class Scene : IDisposable
     public bool IsDisposed { get; private set; }
 
     /// <summary>
+    /// Gets or Sets a value that indicates if this scene has been initialized previously.
+    /// </summary>
+    public bool IsInitialized { get; private set; }
+
+    /// <summary>
     /// Creates a new scene instance.
     /// </summary>
     public Scene()
@@ -45,6 +50,7 @@ public abstract class Scene : IDisposable
     public virtual void Initialize()
     {
         LoadContent();
+        IsInitialized = true;
     }
 
     /// <summary>
