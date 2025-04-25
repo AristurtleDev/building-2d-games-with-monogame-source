@@ -110,11 +110,11 @@ public class TitleScene : Scene
     {
         // Create a container to hold all of our buttons
         _titleScreenButtonsPanel = new Panel();
-        _titleScreenButtonsPanel.Visual.Dock(Gum.Wireframe.Dock.Fill);
+        _titleScreenButtonsPanel.Dock(Gum.Wireframe.Dock.Fill);
         _titleScreenButtonsPanel.AddToRoot();
 
         var startButton = new Button();
-        startButton.Visual.Anchor(Gum.Wireframe.Anchor.BottomLeft);
+        startButton.Anchor(Gum.Wireframe.Anchor.BottomLeft);
         startButton.Visual.X = 50;
         startButton.Visual.Y = -12;
         startButton.Visual.Width = 70;
@@ -123,7 +123,7 @@ public class TitleScene : Scene
         _titleScreenButtonsPanel.AddChild(startButton);
 
         _optionsButton = new Button();
-        _optionsButton.Visual.Anchor(Gum.Wireframe.Anchor.BottomRight);
+        _optionsButton.Anchor(Gum.Wireframe.Anchor.BottomRight);
         _optionsButton.Visual.X = -50;
         _optionsButton.Visual.Y = -12;
         _optionsButton.Visual.Width = 70;
@@ -161,7 +161,7 @@ public class TitleScene : Scene
     private void CreateOptionsPanel()
     {
         _optionsPanel = new Panel();
-        _optionsPanel.Visual.Dock(Gum.Wireframe.Dock.Fill);
+        _optionsPanel.Dock(Gum.Wireframe.Dock.Fill);
         _optionsPanel.IsVisible = false;
         _optionsPanel.AddToRoot();
 
@@ -172,7 +172,7 @@ public class TitleScene : Scene
         _optionsPanel.AddChild(optionsText);
 
         var musicSlider = new Slider();
-        musicSlider.Visual.Anchor(Gum.Wireframe.Anchor.Top);
+        musicSlider.Anchor(Gum.Wireframe.Anchor.Top);
         musicSlider.Visual.Y = 30f;
         musicSlider.Minimum = 0;
         musicSlider.Maximum = 1;
@@ -184,7 +184,7 @@ public class TitleScene : Scene
         _optionsPanel.AddChild(musicSlider);
 
         var sfxSlider = new Slider();
-        sfxSlider.Visual.Anchor(Gum.Wireframe.Anchor.Top);
+        sfxSlider.Anchor(Gum.Wireframe.Anchor.Top);
         sfxSlider.Visual.Y = 93;
         sfxSlider.Minimum = 0;
         sfxSlider.Maximum = 1;
@@ -197,7 +197,7 @@ public class TitleScene : Scene
 
         _optionsBackButton = new Button();
         _optionsBackButton.Text = "BACK";
-        _optionsBackButton.Visual.Anchor(Gum.Wireframe.Anchor.BottomRight);
+        _optionsBackButton.Anchor(Gum.Wireframe.Anchor.BottomRight);
         _optionsBackButton.X = -28f;
         _optionsBackButton.Y = -10f;
         _optionsBackButton.Click += HandleOptionsButtonBack;
