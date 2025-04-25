@@ -8,109 +8,257 @@ namespace DungeonSlime.GameObjects;
 
 public class Slime
 {
-    private Vector2 _nextDirection;
-    private List<SlimeSegment> _segments;
+    // A constant value that represents the amount of time to wait between
+    // movement updates.
+    private static readonly TimeSpan s_movementTime = TimeSpan.FromMilliseconds(10000);
+
+    // The amount of time that has elapsed since the last movement update.
     private TimeSpan _movementTimer;
-    private float _movementLerpAmount;
-    private static readonly TimeSpan s_movementTime = TimeSpan.FromMilliseconds(500);
+    private float _movementOffset;
 
+    // The next direction to apply to the head of the slime chain during the
+    // next movement update.
+    private Vector2 _nextDirection;
+
+    // Tracks the segments of the slime chain.
+    private List<SlimeSegment> _segments;
+
+    /// <summary>
+    /// Gets or Sets the AnimatedSprite used when drawing each slime segment.
+    /// </summary>
     public AnimatedSprite Sprite { get; set; }
-    public Vector2 Position { get; set; }
-    public GameController Controller { get; set; }
-    public float MovementAmount { get; set; }
 
+    /// <summary>
+    /// Gets or Sets the bounds of the room the slime is confined to.
+    /// </summary>
+    public Rectangle RoomBounds { get; set; }
+
+    /// <summary>
+    /// Gets or Sets the size, in pixels, of each tile the slime has to move
+    /// across.
+    /// </summary>
+    public int TileSize { get; set; }
+
+    /// <summary>
+    /// Event that is raised if it is detected that the head segment of the slime
+    /// has collided with a body segment.
+    /// </summary>
+    public event EventHandler BodyCollision;
+
+    /// <summary>
+    /// Event that is raised if it is detected that the head segment of the slime
+    /// has collided with  a wall.
+    /// </summary>
+    public event EventHandler WallCollision;
+
+    /// <summary>
+    /// Initializes the slime, can be used to reset it back to an initial state.
+    /// </summary>
+    /// <param name="startingPosition">The position the slime should start at.</param>
+    public void Initialize(Vector2 startingPosition)
+    {
+        // Initialize the segment collection.
+        _segments = new List<SlimeSegment>();
+
+        // Create the initial head of the slime chain.
+        SlimeSegment head = new SlimeSegment();
+        head.At = startingPosition;
+        head.To = startingPosition + new Vector2(TileSize, 0);
+        head.Direction = Vector2.UnitX;
+
+        // Add it to the segment collection.
+        _segments.Add(head);
+
+        // Set the initial next direction as the same direction the head is
+        // moving.
+        _nextDirection = head.Direction;
+
+        // Zero out the movement timer.
+        _movementTimer = TimeSpan.Zero;
+    }
+
+    /// <summary>
+    /// Updates the slime.
+    /// </summary>
+    /// <param name="gameTime">A snapshot of the timing values for the current update cycle.</param>
     public void Update(GameTime gameTime)
     {
+        // Update the animated sprite.
         Sprite.Update(gameTime);
 
-        CheckInput();
+        // Handle any player input
+        HandleInput();
 
-        // Increment the movement timer.
-        _movementTimer += gameTime.ElapsedGameTime * 2.5f;
+        // Increment the movement timer by the frame elapsed time.
+        _movementTimer += gameTime.ElapsedGameTime;
 
-        // If the movement timer has exceeded the time to move, move the slime chain.
+        // If the movement timer has accumulated enough time to be greater than
+        // the movement time threshold, then perform a full movement.
         if (_movementTimer >= s_movementTime)
         {
             _movementTimer -= s_movementTime;
-            UpdateSlimeMovement();
+            Move();
         }
 
-        // Update the movement lerp amount.
-        _movementLerpAmount = (float)(_movementTimer.TotalSeconds / s_movementTime.TotalSeconds);
+        // Update the movement lerp offset amount
+        _movementOffset = (float)(_movementTimer.TotalSeconds / s_movementTime.TotalSeconds);
     }
 
-    private void CheckInput()
+    private void HandleInput()
     {
-        // Store the potential direction change.
         Vector2 potentialNextDirection = _nextDirection;
 
-        // Check Movement Actions
-        if (Controller.MoveUp())
+        if (GameController.MoveUp())
         {
             potentialNextDirection = -Vector2.UnitY;
         }
-        else if (Controller.MoveDown())
+        else if (GameController.MoveDown())
         {
             potentialNextDirection = Vector2.UnitY;
         }
-        else if (Controller.MoveLeft())
+        else if (GameController.MoveLeft())
         {
             potentialNextDirection = -Vector2.UnitX;
         }
-        else if (Controller.MoveRight())
+        else if (GameController.MoveRight())
         {
             potentialNextDirection = Vector2.UnitX;
         }
 
-        // Only allow direction change if it is not reversing the current direction.
-        // This prevents the head segment of the slime chain from backing into itself.
-        if (Vector2.Dot(potentialNextDirection, _segments[0].Direction) >= 0)
+        // Only allow direction change if it is not reversing the current
+        // direction.  This prevents the slime from backing into itself.
+        float dot = Vector2.Dot(potentialNextDirection, _segments[0].Direction);
+        if (dot >= 0)
         {
             _nextDirection = potentialNextDirection;
         }
     }
 
-    private void UpdateSlimeMovement()
+    private void Move()
     {
-        // Get the head segment.
-        SlimeSegment currentHead = _segments[0];
-
-        // Create a new segment that will be placed at the position the current
-        // head segment is moving to.
-        SlimeSegment newHead = new SlimeSegment();
-        newHead.Direction = _nextDirection;
-        newHead.At = currentHead.To;
-        newHead.To = newHead.At + newHead.Direction * MovementAmount;
-
-        // Add the new head to the font of the chain
-        _segments.Insert(0, newHead);
-
-        // Remove the tail from the chain
-        _segments.RemoveAt(_segments.Count - 1);
-    }
-
-    public Circle GetBounds()
-    {
-        // Get the head segment.
+        // Capture the value of the head segment
         SlimeSegment head = _segments[0];
 
-        // Create the bounds
+        // Update the direction the head is supposed to move in to the
+        // next direction cached.
+        head.Direction = _nextDirection;
+
+        // Update the head's "at" position to be where it was moving "to"
+        head.At = head.To;
+
+        // Update the head's "to" position to the next tile in the direction
+        // it is moving.
+        head.To = head.At + head.Direction * TileSize;
+
+        // Insert the new adjusted value for the head at the front of the
+        // segments and remove the tail segment. This effectively moves
+        // the entire chain forward without needing to loop through every
+        // segment and update its "at" and "to" positions.
+        _segments.Insert(0, head);
+        _segments.RemoveAt(_segments.Count - 1);
+
+        // Now that the slime has moved, check if the next position it will
+        // move to during the next movement update will be valid (inside the
+        // bounds of the room). If not, then a wall collision occurs.
+        if (!RoomBounds.Contains(head.To))
+        {
+            OnWallCollision();
+            return;
+        }
+
+        // Iterate through all of the segments except the head and check
+        // if they are at the same position as the head. If they are, then
+        // the head is colliding with a body segment and a body collision
+        // has occurred.
+        for (int i = 1; i < _segments.Count; i++)
+        {
+            SlimeSegment segment = _segments[i];
+
+            if (head.At == segment.At)
+            {
+                OnBodyCollision();
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Informs the slime to grow by one segment.
+    /// </summary>
+    public void Grow()
+    {
+        // Capture the value of the tail segment
+        SlimeSegment tail = _segments[_segments.Count - 1];
+
+        // Create a new tail segment that is positioned a grid cell in the
+        // reverse direction from the tail moving to the tail.
+        SlimeSegment newTail = new SlimeSegment();
+        newTail.At = tail.To + tail.ReverseDirection * TileSize;
+        newTail.To = tail.At;
+        newTail.Direction = Vector2.Normalize(tail.At - newTail.At);
+
+        // Add the new tail segment
+        _segments.Add(newTail);
+    }
+
+    /// <summary>
+    /// Returns a Circle value that represents collision bounds of the slime.
+    /// </summary>
+    /// <returns>A Circle value.</returns>
+    public Circle GetBounds()
+    {
+        SlimeSegment head = _segments[0];
+
+        // Calculate the visual position of the head at the moment of this
+        // method call by lerping between the "at" and "to" position by the
+        // movement offset lerp amount
+        Vector2 pos = Vector2.Lerp(head.At, head.To, _movementOffset);
+
+        // Create the bounds using the calculated visual position of the head.
         Circle bounds = new Circle(
-            (int)(head.At.X + Sprite.Width * 0.5f),
-            (int)(head.At.Y + Sprite.Height * 0.5f),
+            (int)(pos.X + (Sprite.Width * 0.5f)),
+            (int)(pos.Y + (Sprite.Height * 0.5f)),
             (int)(Sprite.Width * 0.5f)
         );
 
         return bounds;
     }
 
+    private void OnBodyCollision()
+    {
+        EventHandler handler = BodyCollision;
+
+        if (handler != null)
+        {
+            BodyCollision.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    private void OnWallCollision()
+    {
+        EventHandler handler = WallCollision;
+
+        if (handler != null)
+        {
+            handler.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    /// <summary>
+    /// Draws the slime.
+    /// </summary>
     public void Draw()
     {
-        // Iterate each segment and calculate the position to draw it at visually
-        // based on the movement lerp amount
+        // Iterate through each segment and draw it
         foreach (SlimeSegment segment in _segments)
         {
-            Vector2 pos = Vector2.Lerp(segment.At, segment.To, _movementLerpAmount);
+            // Calculate the visual position of the segment at the moment by
+            // lerping between its "at" and "to" position by the movement
+            // offset lerp amount
+            Vector2 pos = Vector2.Lerp(segment.At, segment.To, _movementOffset);
+
+            // Draw the slime sprite at the calculated visual position of this
+            // segment
             Sprite.Draw(Core.SpriteBatch, pos);
         }
     }

@@ -23,6 +23,15 @@ public class Game1 : Core
         // Start playing the background music
         Audio.PlaySong(_themeSong);
 
+        // Initialize the Gum UI service
+        InitializeGum();
+
+        // Start the game with the title scene.
+        ChangeScene(new TitleScene());
+    }
+
+    private void InitializeGum()
+    {
         // Initialize the Gum service
         GumService.Default.Initialize(this);
 
@@ -52,9 +61,6 @@ public class Game1 : Core
         GumService.Default.CanvasWidth = GraphicsDevice.PresentationParameters.BackBufferWidth / 4.0f;
         GumService.Default.CanvasHeight = GraphicsDevice.PresentationParameters.BackBufferHeight / 4.0f;
         GumService.Default.Renderer.Camera.Zoom = 4.0f;
-
-        // Start the game with the title scene.
-        ChangeScene(new TitleScene());
     }
 
 
