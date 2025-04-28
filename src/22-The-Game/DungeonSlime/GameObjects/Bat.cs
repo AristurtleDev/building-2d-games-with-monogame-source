@@ -10,27 +10,30 @@ public class Bat
 {
     private const float MOVEMENT_SPEED = 5.0f;
 
-    // Tracks the position of the bat.
-    private Vector2 _position;
-
     // Tracks the velocity of the bat.
     private Vector2 _velocity;
 
-    /// <summary>
-    /// Gets or Sets the AnimatedSprite used when drawing the bat.
-    /// </summary>
-    public AnimatedSprite Sprite { get; set; }
+    // The AnimatedSprite used when drawing the bat.
+    private AnimatedSprite _sprite;
+
+    // The sound effect to play when the bat bounces off the edge of the room.
+    private SoundEffect _bounceSoundEffect;
 
     /// <summary>
-    /// Gets or Sets the sound effect to play when the bat bounces off the
-    /// edge of the room.
+    /// Gets or Sets the position of the bat.
     /// </summary>
-    public SoundEffect BounceSoundEffect { get; set; }
+    public Vector2 Position { get; set;}
 
     /// <summary>
-    /// Gets or Sets the bounds of the room the bat is confined to.
+    /// Creates a new Bat using the specified animated sprite and sound effect.
     /// </summary>
-    public Rectangle RoomBounds { get; set; }
+    /// <param name="sprite">The AnimatedSprite ot use when drawing the bat.</param>
+    /// <param name="bounceSoundEffect">The sound effect to play when the bat bounces off a wall.</param>
+    public Bat(AnimatedSprite sprite, SoundEffect bounceSoundEffect)
+    {
+        _sprite = sprite;
+        _bounceSoundEffect = bounceSoundEffect;
+    }
 
     /// <summary>
     /// Updates the bat.
@@ -38,50 +41,11 @@ public class Bat
     /// <param name="gameTime">A snapshot of the timing values for the current update cycle.</param>
     public void Update(GameTime gameTime)
     {
-        Sprite.Update(gameTime);
+        // Update the animated sprite
+        _sprite.Update(gameTime);
 
-        // Calculate a new position for the bat
-        Vector2 newPosition = _position + _velocity; ;
-
-        // Get the bounds for the bat
-        Circle bounds = GetBounds();
-
-        // Use distance based checks to determine if the bat is within the
-        // bounds of the room, and if it is outside, reflect it about the normal
-        // of the edge it went outside of
-        Vector2 normal = Vector2.Zero;
-        if (bounds.Left < RoomBounds.Left)
-        {
-            normal.X = Vector2.UnitX.X;
-            newPosition.X = RoomBounds.Left;
-        }
-        else if (bounds.Right > RoomBounds.Right)
-        {
-            normal.X = -Vector2.UnitX.X;
-            newPosition.X = RoomBounds.Right - Sprite.Width;
-        }
-
-        if (bounds.Top < RoomBounds.Top)
-        {
-            normal.Y = Vector2.UnitY.Y;
-            newPosition.Y = RoomBounds.Top;
-        }
-        else if (bounds.Bottom > RoomBounds.Bottom)
-        {
-            normal.Y = -Vector2.UnitY.Y;
-            newPosition.Y = RoomBounds.Bottom - Sprite.Height;
-        }
-
-        // If the normal is anything but Vector2.Zero, this means the bat
-        // went outside the bounds and we should reflect it about the normal.
-        if (normal != Vector2.Zero)
-        {
-            _velocity = Vector2.Reflect(_velocity, normal);
-            Core.Audio.PlaySoundEffect(BounceSoundEffect);
-        }
-
-        // Assign the new position
-        _position = newPosition;
+        // Update the position of the bat based on the velocity.
+        Position += _velocity;
     }
 
     /// <summary>
@@ -90,17 +54,17 @@ public class Bat
     /// <returns>A Circle value.</returns>
     public Circle GetBounds()
     {
-        int x = (int)(_position.X + Sprite.Width * 0.5f);
-        int y = (int)(_position.Y + Sprite.Height * 0.5f);
-        int radius = (int)(Sprite.Width * 0.25f);
+        int x = (int)(Position.X + _sprite.Width * 0.5f);
+        int y = (int)(Position.Y + _sprite.Height * 0.5f);
+        int radius = (int)(_sprite.Width * 0.25f);
 
         return new Circle(x, y, radius);
     }
 
     /// <summary>
-    /// Assigns a new random velocity to the bat.
+    /// Randomizes the velocity of the bat.
     /// </summary>
-    public void AssignRandomVelocity()
+    public void RandomizeVelocity()
     {
         // Generate a random angle
         float angle = (float)(Random.Shared.NextDouble() * MathHelper.TwoPi);
@@ -116,65 +80,36 @@ public class Bat
     }
 
     /// <summary>
-    /// Positions the bat so that it is within the room bounds away from the
-    /// slime.
+    /// Handles a bounce event when the bat collides with a wall or boundary.
     /// </summary>
-    /// <param name="slime">The slime to position the bat away from</param>
-    public void PositionAwayFromSlime(Slime slime)
+    /// <param name="normal">The normal vector of the surface the bat is bouncing against.</param>
+    public void Bounce(Vector2 normal)
     {
-        // Get center of room bounds
-        float centerX = RoomBounds.X + RoomBounds.Width * 0.5f;
-        float centerY = RoomBounds.Y + RoomBounds.Height * 0.5f;
-        Vector2 center = new Vector2(centerX, centerY);
+        Vector2 newPosition = Position;
 
-        // Get the center of the slime bounds
-        Circle slimeBounds = slime.GetBounds();
-        Vector2 slimePos = new Vector2(slimeBounds.X, slimeBounds.Y);
-
-        // Calculate the vector from the center of the room to the slime
-        Vector2 centerToSlime = slimePos - center;
-
-        // Determine the furthest wall by finding which component (x or y) is
-        // larger and in which direction.
-        if (Math.Abs(centerToSlime.X) > Math.Abs(centerToSlime.Y))
+        // Adjust the position based on the normal to prevent sticking to walls.
+        if(normal.X != 0)
         {
-            // Slime is closer to either the left or right wall so the
-            // Y position will be the center Y position
-            _position.Y = center.Y;
-
-            // Now determine the x position based on which wall the slime
-            // is closest to.
-            if (centerToSlime.X > 0)
-            {
-                // Slime is on the right side, place bat at the left wall
-                _position.X = RoomBounds.Left + Sprite.Width;
-            }
-            else
-            {
-                // Slime is on the left side, place bat at the right wall
-                _position.X = RoomBounds.Right - Sprite.Width * 2.0f;
-            }
-        }
-        else
-        {
-            // Slime is closer to either the top or bottom wall, so the
-            // X position will be the center X position
-            _position.X = center.X;
-
-            // Now determine the Y position based on which wall the slime is
-            // closest to.
-            if (centerToSlime.Y > 0)
-            {
-                // Slime is closer to the bottom, place bat at the top wall.
-                _position.Y = RoomBounds.Top - Sprite.Height;
-            }
-            else
-            {
-                // Slime is closer to the top, place bat at bottom wall
-                _position.Y = RoomBounds.Bottom - Sprite.Height * 2.0f;
-            }
+            // We are bouncing off a vertical wall (left/right).
+            // Move slightly away from the wall in the direction of the normal.
+            newPosition.X += normal.X * (_sprite.Width * 0.1f);
         }
 
+        if(normal.Y != 0)
+        {
+            // We are bouncing off a horizontal wall (top/bottom).
+            // Move slightly way from the wall in the direction of the normal.
+            newPosition.Y += normal.Y * (_sprite.Height * 0.1f);
+        }
+
+        // Apply the new position
+        Position = newPosition;
+
+        // Apply reflection based on the normal.
+        _velocity = Vector2.Reflect(_velocity, normal);
+
+        // Play the bounce sound effect.
+        Core.Audio.PlaySoundEffect(_bounceSoundEffect);
     }
 
     /// <summary>
@@ -182,7 +117,6 @@ public class Bat
     /// </summary>
     public void Draw()
     {
-        Sprite.Draw(Core.SpriteBatch, _position);
+        _sprite.Draw(Core.SpriteBatch, Position);
     }
-
 }

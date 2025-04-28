@@ -1,15 +1,10 @@
 using System;
 using DungeonSlime.GameObjects;
 using DungeonSlime.UI;
-using Gum.DataTypes;
-using Gum.Managers;
-using Gum.Wireframe;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameGum;
-using MonoGameGum.Forms.Controls;
-using MonoGameGum.GueDeriving;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using MonoGameLibrary.Scenes;
@@ -18,6 +13,13 @@ namespace DungeonSlime.Scenes;
 
 public class GameScene : Scene
 {
+    private enum GameState
+    {
+        Playing,
+        Paused,
+        GameOver
+    }
+
     // Reference to the slime.
     private Slime _slime;
 
@@ -33,45 +35,15 @@ public class GameScene : Scene
     // The sound effect to play when the slime eats a bat.
     private SoundEffect _collectSoundEffect;
 
-    // The SpriteFont Description used to draw text
-    private SpriteFont _font;
-
     // Tracks the players score.
     private int _score;
 
-    // Defines the position to draw the score text at.
-    private Vector2 _scoreTextPosition;
+    private GameSceneUI _ui;
 
-    // Defines the origin used when drawing the score text.
-    private Vector2 _scoreTextOrigin;
-
-    // A reference to the pause panel UI element so we can set its visibility
-    // when the game is paused.
-    private Panel _pausePanel;
-
-    // A reference to the resume button UI element so we can focus it
-    // when the game is paused.
-    private AnimatedButton _resumeButton;
-
-    // The UI sound effect to play when a UI event is triggered.
-    private SoundEffect _uiSoundEffect;
-
-    // Reference to the texture atlas that we can pass to UI elements when they
-    // are created.
-    private TextureAtlas _atlas;
+    private GameState _state;
 
     public override void Initialize()
     {
-        // Create the slime
-        _slime = new Slime();
-
-        // Register with the slime's collision events
-        _slime.BodyCollision += GameOver;
-        _slime.WallCollision += GameOver;
-
-        // Create the bat.
-        _bat = new Bat();
-
         // LoadContent is called during base.Initialize().
         base.Initialize();
 
@@ -79,109 +51,58 @@ public class GameScene : Scene
         // the escape key will be used to return back to the title screen
         Core.ExitOnEscape = false;
 
-        Rectangle screenBounds = Core.GraphicsDevice.PresentationParameters.Bounds;
+        // Create the room bounds by getting the bounds of the screen then
+        // using the Inflate method to "Deflate" the bounds by the width and
+        // height of a tile so that the bounds only covers the inside room of
+        // the dungeon tilemap.
+        _roomBounds = Core.GraphicsDevice.PresentationParameters.Bounds;
+        _roomBounds.Inflate(-_tilemap.TileWidth, -_tilemap.TileHeight);
 
-        _roomBounds = new Rectangle(
-            (int)_tilemap.TileWidth,
-            (int)_tilemap.TileHeight,
-            screenBounds.Width - (int)_tilemap.TileWidth * 2,
-            screenBounds.Height - (int)_tilemap.TileHeight * 2
-        );
+        // Subscribe to the slime's BodyCollision event so that a game over
+        // can be triggered when this event is raised.
+        _slime.BodyCollision += OnSlimeBodyCollision;
 
-        // Both the slime and the bat need to be made aware of the bounds of
-        // the room
-        _slime.RoomBounds = _roomBounds;
-        _bat.RoomBounds = _roomBounds;
+        // Create any UI elements from the root element created in previous
+        // scenes
+        GumService.Default.Root.Children.Clear();
 
-        // The slime needs to be made aware of the size of a tile so it can
-        // calculate its movements
-        _slime.TileSize = (int)_tilemap.TileWidth;
-
-        // Set the position of the score text to align to the left edge of the
-        // room bounds, and to vertically be at the center of the first tile.
-        _scoreTextPosition = new Vector2(_roomBounds.Left, _tilemap.TileHeight * 0.5f);
-
-        // Set the origin of the text so it's left-centered.
-        float scoreTextYOrigin = _font.MeasureString("Score").Y * 0.5f;
-        _scoreTextOrigin = new Vector2(0, scoreTextYOrigin);
-
+        // Initialize the user interface for the game scene.
         InitializeUI();
 
+        // Initialize a new game to be played.
         InitializeNewGame();
     }
 
     private void InitializeUI()
     {
+        // Clear out any previous UI element incase we came here
+        // from a different scene.
         GumService.Default.Root.Children.Clear();
 
-        CreatePausePanel();
+        // Create the game scene ui instance.
+        _ui = new GameSceneUI();
+
+        // Subscribe to the events from the game scene ui.
+        _ui.ResumeButtonClick += OnResumeButtonClicked;
+        _ui.RetryButtonClick += OnRetryButtonClicked;
+        _ui.QuitButtonClick += OnQuitButtonClicked;
     }
 
-    private void CreatePausePanel()
+    private void OnResumeButtonClicked(object sender, EventArgs args)
     {
-        _pausePanel = new Panel();
-        _pausePanel.Visual.Anchor(Anchor.Center);
-        _pausePanel.Visual.WidthUnits = DimensionUnitType.Absolute;
-        _pausePanel.Visual.HeightUnits = DimensionUnitType.Absolute;
-        _pausePanel.Visual.Height = 70;
-        _pausePanel.Visual.Width = 264;
-        _pausePanel.IsVisible = false;
-        _pausePanel.AddToRoot();
-
-        TextureRegion backgroundRegion = _atlas.GetRegion("panel-background");
-
-        NineSliceRuntime background = new NineSliceRuntime();
-        background.Dock(Dock.Fill);
-        background.Texture = backgroundRegion.Texture;
-        background.TextureAddress = TextureAddress.Custom;
-        background.TextureHeight = backgroundRegion.Height;
-        background.TextureLeft = backgroundRegion.SourceRectangle.Left;
-        background.TextureTop = backgroundRegion.SourceRectangle.Top;
-        background.TextureWidth = backgroundRegion.Width;
-        _pausePanel.AddChild(background);
-
-        TextRuntime textInstance = new TextRuntime();
-        textInstance.Text = "PAUSED";
-        textInstance.CustomFontFile = @"fonts/04b_30.fnt";
-        textInstance.UseCustomFont = true;
-        textInstance.FontScale = 0.5f;
-        textInstance.X = 10f;
-        textInstance.Y = 10f;
-        _pausePanel.AddChild(textInstance);
-
-        _resumeButton = new AnimatedButton(_atlas);
-        _resumeButton.Text = "RESUME";
-        _resumeButton.Visual.Anchor(Anchor.BottomLeft);
-        _resumeButton.Visual.X = 9f;
-        _resumeButton.Visual.Y = -9f;
-        _resumeButton.Click += HandleResumeButtonClicked;
-        _pausePanel.AddChild(_resumeButton);
-
-        AnimatedButton quitButton = new AnimatedButton(_atlas);
-        quitButton.Text = "QUIT";
-        quitButton.Visual.Anchor(Anchor.BottomRight);
-        quitButton.Visual.X = -9f;
-        quitButton.Visual.Y = -9f;
-        quitButton.Click += HandleQuitButtonClicked;
-
-        _pausePanel.AddChild(quitButton);
+        // Change the game state back to playing
+        _state = GameState.Playing;
     }
 
-    private void HandleResumeButtonClicked(object sender, EventArgs e)
+    private void OnRetryButtonClicked(object sender, EventArgs args)
     {
-        // A UI interaction occurred, play the sound effect
-        Core.Audio.PlaySoundEffect(_uiSoundEffect);
-
-        // Make the pause panel invisible to resume the game.
-        _pausePanel.IsVisible = false;
+        // Player has chosen to retry, so initialize a new game
+        InitializeNewGame();
     }
 
-    private void HandleQuitButtonClicked(object sender, EventArgs e)
+    private void OnQuitButtonClicked(object sender, EventArgs args)
     {
-        // A UI interaction occurred, play the sound effect
-        Core.Audio.PlaySoundEffect(_uiSoundEffect);
-
-        // Go back to the title scene.
+        // Player has chosen to quit, so return back to the title scene
         Core.ChangeScene(new TitleScene());
     }
 
@@ -193,104 +114,246 @@ public class GameScene : Scene
         slimePos.X = (_tilemap.Columns / 2) * _tilemap.TileWidth;
         slimePos.Y = (_tilemap.Rows / 2) * _tilemap.TileHeight;
 
-        // Initialize the slime with the calculated starting position
-        _slime.Initialize(slimePos);
+        // Initialize the slime
+        _slime.Initialize(slimePos, _tilemap.TileWidth);
 
-        // Initialize the bat by placing it somewhere away from the slime
-        // and assigning it a random velocity
-        _bat.PositionAwayFromSlime(_slime);
-        _bat.AssignRandomVelocity();
+        // Initialize the bat
+        _bat.RandomizeVelocity();
+        PositionBatAwayFromSlime();
 
         // Reset the score
         _score = 0;
+
+        // Set the game state to playing
+        _state = GameState.Playing;
     }
 
     public override void LoadContent()
     {
         // Create the texture atlas from the XML configuration file
-        _atlas = TextureAtlas.FromFile(Core.Content, "images/atlas-definition.xml");
-
-        // Create the animated sprite for the slime from the atlas.
-        _slime.Sprite = _atlas.CreateAnimatedSprite("slime-animation");
-        _slime.Sprite.Scale = new Vector2(4.0f, 4.0f);
-
-        // Create the animated sprite for the bat from the atlas.
-        _bat.Sprite = _atlas.CreateAnimatedSprite("bat-animation");
-        _bat.Sprite.Scale = new Vector2(4.0f, 4.0f);
+        TextureAtlas atlas = TextureAtlas.FromFile(Core.Content, "images/atlas-definition.xml");
 
         // Create the tilemap from the XML configuration file.
         _tilemap = Tilemap.FromFile(Content, "images/tilemap-definition.xml");
         _tilemap.Scale = new Vector2(4.0f, 4.0f);
 
+        // Create the animated sprite for the slime from the atlas.
+        AnimatedSprite slimeAnimation = atlas.CreateAnimatedSprite("slime-animation");
+        slimeAnimation.Scale = new Vector2(4.0f, 4.0f);
+
+        // Create the slime
+        _slime = new Slime(slimeAnimation);
+
+        // Create the animated sprite for the bat from the atlas.
+        AnimatedSprite batAnimation = atlas.CreateAnimatedSprite("bat-animation");
+        batAnimation.Scale = new Vector2(4.0f, 4.0f);
+
         // Load the bounce sound effect for the bat
-        _bat.BounceSoundEffect = Content.Load<SoundEffect>("audio/bounce");
+        SoundEffect bounceSoundEffect = Content.Load<SoundEffect>("audio/bounce");
+
+        // Create the bat
+        _bat = new Bat(batAnimation, bounceSoundEffect);
 
         // Load the collect sound effect
         _collectSoundEffect = Content.Load<SoundEffect>("audio/collect");
-
-        // Load the font
-        _font = Core.Content.Load<SpriteFont>("fonts/04B_30");
-
-        // Load the sound effect to play when ui actions occur.
-        _uiSoundEffect = Core.Content.Load<SoundEffect>("audio/ui");
     }
 
     public override void Update(GameTime gameTime)
     {
         // Ensure the UI is always updated
-        GumService.Default.Update(gameTime);
+        _ui.Update(gameTime);
 
-        // Check if the game should be paused
-        if (GameController.Pause())
-        {
-            PauseGame();
-        }
-
-        // If the game is paused, do not continue
-        if (_pausePanel.IsVisible)
+        // If the game is in a game over state, immediately return back
+        // here
+        if (_state == GameState.GameOver)
         {
             return;
         }
 
-        // Update the slime and the bat
+        // If the pause button is pressed, toggle the pause state
+        if (GameController.Pause())
+        {
+            TogglePause();
+        }
+
+        // At this point, if the game is paused, just return back early
+        if (_state == GameState.Paused)
+        {
+            return;
+        }
+
+        // Update the slime;
         _slime.Update(gameTime);
+
+        // Update the bat;
         _bat.Update(gameTime);
 
-        // Determine if the slime is colliding with the bat, meaning it
-        // eats the bat
+        // Perform collision checks
+        CollisionChecks();
+
+    }
+
+    private void CollisionChecks()
+    {
+        // Capture the current bounds of the slime and bat
         Circle slimeBounds = _slime.GetBounds();
         Circle batBounds = _bat.GetBounds();
 
+        // FIrst perform a collision check to see if the slime is colliding with
+        // the bat, which means the slime eats the bat.
         if (slimeBounds.Intersects(batBounds))
         {
-            // The slime ate the bat, so move the bat to a new position with
-            // a new velocity
-            _bat.PositionAwayFromSlime(_slime);
-            _bat.AssignRandomVelocity();
+            // Move the bat to a new position away from the slime.
+            PositionBatAwayFromSlime();
 
-            // Grow the slime
+            // Randomize the velocity of the bat.
+            _bat.RandomizeVelocity();
+
+            // Tell the slime to grow.
             _slime.Grow();
 
-            // Increment the score
+            // Increment the score.
             _score += 100;
+
+            // Update the score display on the UI.
+            _ui.UpdateScoreText(_score);
 
             // Play the collect sound effect
             Core.Audio.PlaySoundEffect(_collectSoundEffect);
         }
+
+        // Next check if the slime is colliding with the wall by validating if
+        // it is within the bounds of the room.  If it is outside the room
+        // bounds, then it collided with a wall which triggers a game over.
+        if (slimeBounds.Top < _roomBounds.Top ||
+           slimeBounds.Bottom > _roomBounds.Bottom ||
+           slimeBounds.Left < _roomBounds.Left ||
+           slimeBounds.Right > _roomBounds.Right)
+        {
+            GameOver();
+            return;
+        }
+
+        // Finally, check if the bat is colliding with a wall by validating if
+        // it is within the bounds of the room.  If it is outside the room
+        // bounds, then it collided with a wall, and the bat should bounce
+        // off of that wall.
+        if (batBounds.Top < _roomBounds.Top)
+        {
+            _bat.Bounce(Vector2.UnitY);
+        }
+        else if (batBounds.Bottom > _roomBounds.Bottom)
+        {
+            _bat.Bounce(-Vector2.UnitY);
+        }
+
+        if (batBounds.Left < _roomBounds.Left)
+        {
+            _bat.Bounce(Vector2.UnitX);
+        }
+        else if (batBounds.Right > _roomBounds.Right)
+        {
+            _bat.Bounce(-Vector2.UnitX);
+        }
     }
 
-    private void PauseGame()
+    private void PositionBatAwayFromSlime()
     {
-        // Make the pause panel UI element visible.
-        _pausePanel.IsVisible = true;
+        // Get the bounds of the slime and the bat.
+        Circle slimeBounds = _slime.GetBounds();
+        Circle batBounds = _bat.GetBounds();
 
-        // Set the resume button to have focus
-        _resumeButton.IsFocused = true;
+        // Get the center of the room bounds
+        float centerX = _roomBounds.X + _roomBounds.Width * 0.5f;
+        float centerY = _roomBounds.Y + _roomBounds.Height * 0.5f;
+        Vector2 center = new Vector2(centerX, centerY);
+
+        // Get the center of the slime bounds
+        Vector2 slimePos = new Vector2(slimeBounds.X, slimeBounds.Y);
+
+        // Calculate the vector from the center of the room to the slime.
+        Vector2 centerToSlime = slimePos - center;
+
+        // Get the current position of the bat so we can adjust it.
+        Vector2 newBatPosition = _bat.Position;
+
+        // Determine the furthest wall by finding which component (x or y) is
+        // larger and in which direction
+        if (Math.Abs(centerToSlime.X) > Math.Abs(centerToSlime.Y))
+        {
+            // Slime is closer to either the left or right wall, so the Y position
+            // will be the center Y position
+            newBatPosition.Y = center.Y;
+
+            // Now determine the X position based on which wall the slime is
+            // closest to.
+            if (centerToSlime.X > 0)
+            {
+                // Slime is on the right side, place the bat on the left wall
+                newBatPosition.X = _roomBounds.Left;
+            }
+            else
+            {
+                // Slime is on the left side, place the bat on the right wall
+                newBatPosition.X = _roomBounds.Right - batBounds.Radius * 2.0f;
+            }
+        }
+        else
+        {
+            // Slime is closer to either the top or bottom wall, so the X position
+            // will be the center X position
+            newBatPosition.X = center.X;
+
+            // Now determine the Y position based on which wall the slime is
+            // closest to.
+            if (centerToSlime.Y > 0)
+            {
+                // Slime is closer to the bottom, place the bat on the top wall.
+                newBatPosition.Y = _roomBounds.Top;
+            }
+            else
+            {
+                // Slime is closer to the top, place the bat on the bottom wall.
+                newBatPosition.Y = _roomBounds.Bottom - batBounds.Radius * 2.0f;
+            }
+        }
+
+        // Assign the new bat position
+        _bat.Position = newBatPosition;
     }
 
-    private void GameOver(object sender, EventArgs args)
+    private void OnSlimeBodyCollision(object sender, EventArgs args)
     {
+        GameOver();
+    }
 
+    private void TogglePause()
+    {
+        if (_state == GameState.Paused)
+        {
+            // We're now unpausing the game, so hide the pause panel
+            _ui.HidePausePanel();
+
+            // And set the state back to playing
+            _state = GameState.Playing;
+        }
+        else
+        {
+            // We're now pausing the game, so show the pause panel
+            _ui.ShowPausePanel();
+
+            // And set the state to paused
+            _state = GameState.Paused;
+        }
+    }
+
+    private void GameOver()
+    {
+        // Show the game over panel
+        _ui.ShowGameOverPanel();
+
+        // Set the game state to game over
+        _state = GameState.GameOver;
     }
 
     public override void Draw(GameTime gameTime)
@@ -310,23 +373,10 @@ public class GameScene : Scene
         // Draw the bat.
         _bat.Draw();
 
-        // Draw the score
-        Core.SpriteBatch.DrawString(
-            _font,              // spriteFont
-            $"Score: {_score}", // text
-            _scoreTextPosition, // position
-            Color.White,        // color
-            0.0f,               // rotation
-            _scoreTextOrigin,   // origin
-            1.0f,               // scale
-            SpriteEffects.None, // effects
-            0.0f                // layerDepth
-        );
-
         // Always end the sprite batch when finished.
         Core.SpriteBatch.End();
 
-        // Draw the Gum UI
-        GumService.Default.Draw();
+        // Draw the UI
+        _ui.Draw();
     }
 }
