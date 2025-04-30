@@ -9,6 +9,7 @@ using MonoGameGum.Forms.Controls;
 using MonoGameGum.GueDeriving;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
+using RenderingLibrary.Graphics;
 
 namespace DungeonSlime.UI;
 
@@ -80,61 +81,65 @@ public class GameSceneUI : ContainerRuntime
 
         // Create the text that will display the players score and add it as
         // a child to this container.
-        CreateScoreText();
+        _scoreText = CreateScoreText();
         AddChild(_scoreText);
 
         // Create the background overlay that fills the container with a
         // transparent blue background when the pause panel or game over
         // panel is shown to visually take focus away from the active game and
         // add it as a child to this container.
-        CreateOverlay();
+        _overlay = CreateOverlay();
         AddChild(_overlay);
 
         // Create the Pause panel that is displayed when the game is paused and
         // add it as a child to this container
-        CreatePausePanel(atlas);
+        _pausePanel = CreatePausePanel(atlas);
         AddChild(_pausePanel.Visual);
 
         // Create the Game Over panel that is displayed when a game over occurs
         // and add it as a child to this container
-        CreateGameOverPanel(atlas);
+        _gameOverPanel = CreateGameOverPanel(atlas);
         AddChild(_gameOverPanel.Visual);
     }
 
-    private void CreateScoreText()
+    private TextRuntime CreateScoreText()
     {
-        _scoreText = new TextRuntime();
-        _scoreText.Anchor(Gum.Wireframe.Anchor.TopLeft);
-        _scoreText.WidthUnits = DimensionUnitType.RelativeToChildren;
-        _scoreText.X = 20.0f;
-        _scoreText.Y = 5.0f;
-        _scoreText.UseCustomFont = true;
-        _scoreText.CustomFontFile = @"fonts/04b_30.fnt";
-        _scoreText.FontScale = 0.25f;
-        _scoreText.Text = string.Format(s_scoreFormat, 0);
+        TextRuntime text = new TextRuntime();
+        text.Anchor(Gum.Wireframe.Anchor.TopLeft);
+        text.WidthUnits = DimensionUnitType.RelativeToChildren;
+        text.X = 20.0f;
+        text.Y = 5.0f;
+        text.UseCustomFont = true;
+        text.CustomFontFile = @"fonts/04b_30.fnt";
+        text.FontScale = 0.25f;
+        text.Text = string.Format(s_scoreFormat, 0);
+
+        return text;
     }
 
-    private void CreateOverlay()
+    private ColoredRectangleRuntime CreateOverlay()
     {
-        _overlay = new ColoredRectangleRuntime();
-        _overlay = new ColoredRectangleRuntime();
-        _overlay.Dock(Gum.Wireframe.Dock.Fill);
-        _overlay.Red = 20;
-        _overlay.Green = 23;
-        _overlay.Blue = 47;
-        _overlay.Alpha = 175;
-        _overlay.Visible = false;
+        ColoredRectangleRuntime rect = new ColoredRectangleRuntime();
+        rect = new ColoredRectangleRuntime();
+        rect.Dock(Gum.Wireframe.Dock.Fill);
+        rect.Red = 20;
+        rect.Green = 23;
+        rect.Blue = 47;
+        rect.Alpha = 175;
+        rect.Visible = false;
+
+        return rect;
     }
 
-    private void CreatePausePanel(TextureAtlas atlas)
+    private Panel CreatePausePanel(TextureAtlas atlas)
     {
-        _pausePanel = new Panel();
-        _pausePanel.Anchor(Gum.Wireframe.Anchor.Center);
-        _pausePanel.Visual.WidthUnits = DimensionUnitType.Absolute;
-        _pausePanel.Visual.HeightUnits = DimensionUnitType.Absolute;
-        _pausePanel.Visual.Width = 264.0f;
-        _pausePanel.Visual.Height = 70.0f;
-        _pausePanel.IsVisible = false;
+        Panel panel = new Panel();
+        panel.Anchor(Gum.Wireframe.Anchor.Center);
+        panel.Visual.WidthUnits = DimensionUnitType.Absolute;
+        panel.Visual.HeightUnits = DimensionUnitType.Absolute;
+        panel.Visual.Width = 264.0f;
+        panel.Visual.Height = 70.0f;
+        panel.IsVisible = false;
 
         TextureRegion backgroundRegion = atlas.GetRegion("panel-background");
 
@@ -146,7 +151,7 @@ public class GameSceneUI : ContainerRuntime
         background.TextureWidth = backgroundRegion.Width;
         background.TextureTop = backgroundRegion.SourceRectangle.Top;
         background.TextureLeft = backgroundRegion.SourceRectangle.Left;
-        _pausePanel.AddChild(background);
+        panel.AddChild(background);
 
         TextRuntime text = new TextRuntime();
         text.Text = "PAUSED";
@@ -155,7 +160,7 @@ public class GameSceneUI : ContainerRuntime
         text.FontScale = 0.5f;
         text.X = 10.0f;
         text.Y = 10.0f;
-        _pausePanel.AddChild(text);
+        panel.AddChild(text);
 
         _resumeButton = new AnimatedButton(atlas);
         _resumeButton.Text = "RESUME";
@@ -166,7 +171,7 @@ public class GameSceneUI : ContainerRuntime
         _resumeButton.Click += OnResumeButtonClicked;
         _resumeButton.GotFocus += OnElementGotFocus;
 
-        _pausePanel.AddChild(_resumeButton);
+        panel.AddChild(_resumeButton);
 
         AnimatedButton quitButton = new AnimatedButton(atlas);
         quitButton.Text = "QUIT";
@@ -177,18 +182,20 @@ public class GameSceneUI : ContainerRuntime
         quitButton.Click += OnQuitButtonClicked;
         quitButton.GotFocus += OnElementGotFocus;
 
-        _pausePanel.AddChild(quitButton);
+        panel.AddChild(quitButton);
+
+        return panel;
     }
 
-    private void CreateGameOverPanel(TextureAtlas atlas)
+    private Panel CreateGameOverPanel(TextureAtlas atlas)
     {
-        _gameOverPanel = new Panel();
-        _gameOverPanel.Anchor(Gum.Wireframe.Anchor.Center);
-        _gameOverPanel.Visual.WidthUnits = DimensionUnitType.Absolute;
-        _gameOverPanel.Visual.HeightUnits = DimensionUnitType.Absolute;
-        _gameOverPanel.Visual.Width = 264.0f;
-        _gameOverPanel.Visual.Height = 70.0f;
-        _gameOverPanel.IsVisible = false;
+        Panel panel = new Panel();
+        panel.Anchor(Gum.Wireframe.Anchor.Center);
+        panel.Visual.WidthUnits = DimensionUnitType.Absolute;
+        panel.Visual.HeightUnits = DimensionUnitType.Absolute;
+        panel.Visual.Width = 264.0f;
+        panel.Visual.Height = 70.0f;
+        panel.IsVisible = false;
 
         TextureRegion backgroundRegion = atlas.GetRegion("panel-background");
 
@@ -200,16 +207,17 @@ public class GameSceneUI : ContainerRuntime
         background.TextureWidth = backgroundRegion.Width;
         background.TextureTop = backgroundRegion.SourceRectangle.Top;
         background.TextureLeft = backgroundRegion.SourceRectangle.Left;
-        _gameOverPanel.AddChild(background);
+        panel.AddChild(background);
 
         TextRuntime text = new TextRuntime();
         text.Text = "GAME OVER";
+        text.WidthUnits = DimensionUnitType.RelativeToChildren;
         text.UseCustomFont = true;
         text.CustomFontFile = "fonts/04b_30.fnt";
         text.FontScale = 0.5f;
         text.X = 10.0f;
         text.Y = 10.0f;
-        _gameOverPanel.AddChild(text);
+        panel.AddChild(text);
 
         _retryButton = new AnimatedButton(atlas);
         _retryButton.Text = "RETRY";
@@ -220,7 +228,7 @@ public class GameSceneUI : ContainerRuntime
         _retryButton.Click += OnRetryButtonClicked;
         _retryButton.GotFocus += OnElementGotFocus;
 
-        _gameOverPanel.AddChild(_retryButton);
+        panel.AddChild(_retryButton);
 
         AnimatedButton quitButton = new AnimatedButton(atlas);
         quitButton.Text = "QUIT";
@@ -231,7 +239,9 @@ public class GameSceneUI : ContainerRuntime
         quitButton.Click += OnQuitButtonClicked;
         quitButton.GotFocus += OnElementGotFocus;
 
-        _gameOverPanel.AddChild(quitButton);
+        panel.AddChild(quitButton);
+
+        return panel;
     }
 
     private void OnResumeButtonClicked(object sender, EventArgs args)
