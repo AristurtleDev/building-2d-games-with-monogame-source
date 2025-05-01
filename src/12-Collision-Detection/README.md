@@ -1,1 +1,3 @@
-Source files to go with [Chapter 03: The Game1 File](https://aristurtle.net/tutorials/building_2d_games/03_the_game1_file/)
+## Chapter 12: Collision Detection
+
+Tutorial page: [https://aristurtle.net/tutorials/building_2d_games/12_collision_detection/](https://aristurtle.net/tutorials/building_2d_games/12_collision_detection/)

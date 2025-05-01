@@ -1,1 +1,3 @@
-Source files to go with [Chapter 02: Getting Started](https://aristurtle.net/tutorials/building_2d_games/02_getting_started/?tabs=windows)
+## Chapter 02: Getting Started
+
+Tutorial Page: [https://aristurtle.net/tutorials/building_2d_games/02_getting_started/](https://aristurtle.net/tutorials/building_2d_games/02_getting_started/)

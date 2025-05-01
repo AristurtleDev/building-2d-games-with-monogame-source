@@ -1,1 +1,3 @@
-Source files to go with [Chapter 03: The Game1 File](https://aristurtle.net/tutorials/building_2d_games/03_the_game1_file/)
+## Chapter 08: The Sprite Class
+
+Tutorial page: [https://aristurtle.net/tutorials/building_2d_games/08_the_sprite_class/](https://aristurtle.net/tutorials/building_2d_games/08_the_sprite_class/)

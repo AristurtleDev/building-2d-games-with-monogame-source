@@ -1,1 +1,3 @@
-Source files to go with [Chapter 03: The Game1 File](https://aristurtle.net/tutorials/building_2d_games/03_the_game1_file/)
+## Chapter 18: Texture Sampling and Tiling Background
+
+Tutorial page: [https://aristurtle.net/tutorials/building_2d_games/18_texture_sampling/](https://aristurtle.net/tutorials/building_2d_games/18_texture_sampling/)

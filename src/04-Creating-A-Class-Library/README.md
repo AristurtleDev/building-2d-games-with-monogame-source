@@ -1,1 +1,3 @@
-Source files to go with [Chapter 03: The Game1 File](https://aristurtle.net/tutorials/building_2d_games/03_the_game1_file/)
+## Chapter 04: Creating a Class Library
+
+Tutorial Page: [https://aristurtle.net/tutorials/building_2d_games/04_creating_a_class_library/](https://aristurtle.net/tutorials/building_2d_games/04_creating_a_class_library/)
